@@ -1,0 +1,30 @@
+{% extends "strava_web/base.html" %}
+
+{% block title %}Manage Group Memberships{% endblock %}
+
+{% block content %}
+    <h2>Manage Your Group Memberships</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {% for checkbox in field %}
+                    <div>
+                        <label>
+                            {{ checkbox.tag }} {{ checkbox.choice_label }}
+                        </label>
+                    </div>
+                {% endfor %}
+                {% for error in field.errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <div class="form-group">
+            <button type="submit">Update Memberships</button>
+        </div>
+    </form>
+    <p>Only groups that are "open" and "have a dashboard" are listed here for self-management. "admin" group is excluded.</p>
+    <p><a href="{% url 'personal_dashboard' %}" class="button-link" style="background-color: #6c757d;">Back to Dashboard</a></p>
+{% endblock %}

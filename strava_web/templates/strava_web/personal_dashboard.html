@@ -1,0 +1,35 @@
+{% extends "strava_web/base.html" %}
+
+{% block title %}My Dashboard{% endblock %}
+
+{% block content %}
+    <h2>Welcome, {{ user.get_full_name|default:user.username }}!</h2>
+    <p>This is your personal dashboard.</p>
+
+    <h3>Your Information:</h3>
+    <ul>
+        <li>Username: {{ user.username }}</li>
+        <li>Email: {{ user.email|default:"Not set" }}</li>
+        <li>First Name: {{ user.first_name|default:"-" }}</li>
+        <li>Last Name: {{ user.last_name|default:"-" }}</li>
+        <li>Strava Connected: {% if user.is_strava_connected %}Yes (ID: {{ user.strava_id }}){% else %}No{% endif %}</li>
+    </ul>
+
+    <h3>Your Groups:</h3>
+    {% if user_groups %}
+        <ul>
+            {% for group in user_groups %}
+                <li>
+                    {{ group.name }} 
+                    {% if group.has_dashboard %}
+                        <a href="{% url 'group_dashboard' group.id %}" style="margin-left: 10px;">View Dashboard</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You haven't joined any groups yet.</p>
+    {% endif %}
+
+    <p><a href="{% url 'group_membership_edit' %}" class="button-link">Manage Group Memberships</a></p>
+{% endblock %}

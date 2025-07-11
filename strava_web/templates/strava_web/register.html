@@ -1,0 +1,26 @@
+{% extends "strava_web/base.html" %}
+
+{% block title %}Complete Registration{% endblock %}
+
+{% block content %}
+    <h2>Complete Your Registration</h2>
+    <p>Welcome! Please provide your email and set a password to complete your account setup.</p>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small>{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <div class="form-group">
+            <button type="submit">Complete Registration</button>
+        </div>
+    </form>
+{% endblock %}

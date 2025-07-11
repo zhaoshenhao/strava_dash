@@ -1,0 +1,9 @@
+django
+mysqlclient
+requests
+python-decouple
+Pillow
+pytz
+django-messages
+stravalib
+django-unfold

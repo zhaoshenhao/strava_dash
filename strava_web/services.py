@@ -1,0 +1,159 @@
+# strava_web/services.py
+import requests
+from datetime import timedelta, timezone
+from django.conf import settings
+from django.utils.timezone import now
+from django.db import transaction
+from django.contrib.auth import get_user_model
+
+User = get_user_model() # 在服务层获取用户模型
+
+def refresh_strava_token(user_instance):
+    """
+    使用 refresh_token 获取新的 access_token 和 refresh_token。
+    """
+    if not user_instance.strava_refresh_token:
+        raise ValueError("No refresh token available for this user.")
+
+    payload = {
+        'client_id': settings.STRAVA_CLIENT_ID,
+        'client_secret': settings.STRAVA_CLIENT_SECRET,
+        'grant_type': 'refresh_token',
+        'refresh_token': user_instance.strava_refresh_token
+    }
+
+    try:
+        response = requests.post(settings.STRAVA_TOKEN_URL, data=payload)
+        response.raise_for_status()
+        token_data = response.json()
+
+        # 更新用户模型中的令牌信息
+        # 使用原子性操作确保数据一致性
+        with transaction.atomic():
+            user_instance.strava_access_token = token_data['access_token']
+            user_instance.strava_refresh_token = token_data['refresh_token']
+            user_instance.strava_token_expires_at = now() + timedelta(seconds=token_data['expires_in'])
+            user_instance.save(update_fields=['strava_access_token', 'strava_refresh_token', 'strava_token_expires_at'])
+
+        return {
+            'access_token': token_data['access_token'],
+            'refresh_token': token_data['refresh_token'],
+            'expires_in': token_data['expires_in']
+        }
+    except requests.exceptions.RequestException as e:
+        raise Exception(f"Failed to refresh Strava token: {e}")
+
+#@transaction.atomic # 确保数据同步的原子性
+def sync_strava_data_for_user(user_instance):
+    """
+    获取用户的 Strava 数据（统计和跑步比赛活动）。
+    """
+    access_token = user_instance.get_strava_access_token() # 使用用户模型的方法获取 token
+    if not access_token:
+        raise ValueError("Cannot get Strava access token for this user. Re-authorization may be needed.")
+
+    headers = {'Authorization': f'Bearer {access_token}'}
+
+    # 1. 获取聚合统计数据
+    try:
+        stats_url = f"{settings.STRAVA_API_BASE_URL}/athletes/{user_instance.strava_id}/stats"
+        stats_response = requests.get(stats_url, headers=headers)
+        stats_response.raise_for_status()
+        stats_data = stats_response.json()
+
+        # 将 stats_data 映射到 user_instance 的统计字段并保存
+        with transaction.atomic():
+            user_instance.recent_run_distance = stats_data['recent_run_totals']['distance']
+            user_instance.recent_run_count = stats_data['recent_run_totals']['count']
+            user_instance.recent_run_moving_time = stats_data['recent_run_totals']['moving_time']
+            user_instance.recent_run_elapsed_time = stats_data['recent_run_totals']['elapsed_time']
+            user_instance.recent_run_elevation_gain = stats_data['recent_run_totals']['elevation_gain']
+
+            user_instance.ytd_run_distance = stats_data['ytd_run_totals']['distance']
+            user_instance.ytd_run_count = stats_data['ytd_run_totals']['count']
+            user_instance.ytd_run_moving_time = stats_data['ytd_run_totals']['moving_time']
+            user_instance.ytd_run_elapsed_time = stats_data['ytd_run_totals']['elapsed_time']
+            user_instance.ytd_run_elevation_gain = stats_data['ytd_run_totals']['elevation_gain']
+
+            user_instance.all_time_run_distance = stats_data['all_run_totals']['distance']
+            user_instance.all_time_run_count = stats_data['all_run_totals']['count']
+            user_instance.all_time_run_moving_time = stats_data['all_run_totals']['moving_time']
+            user_instance.all_time_run_elapsed_time = stats_data['all_run_totals']['elapsed_time']
+            user_instance.all_time_run_elevation_gain = stats_data['all_run_totals']['elevation_gain']
+            user_instance.save(update_fields=[
+                'recent_run_distance', 'recent_run_count', 'recent_run_moving_time', 'recent_run_elapsed_time', 'recent_run_elevation_gain',
+                'ytd_run_distance', 'ytd_run_count', 'ytd_run_moving_time', 'ytd_run_elapsed_time', 'ytd_run_elevation_gain',
+                'all_time_run_distance', 'all_time_run_count', 'all_time_run_moving_time', 'all_time_run_elapsed_time', 'all_time_run_elevation_gain',
+            ])
+
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to get Strava stats for user {user_instance.id}: {e}")
+        # 这里可以选择记录错误，或者抛出异常让调用者处理
+
+    # 2. 获取跑步比赛活动数据 (增量更新)
+    from strava_web.models import Activity # 避免循环导入
+
+    params = {'per_page': 200, 'type': 'Run'} # 默认只获取 Run 类型活动
+    if user_instance.last_strava_sync:
+        # 将 datetime 对象转换为 Unix timestamp (秒)
+        utc_last_sync = user_instance.last_strava_sync.astimezone(timezone.utc)
+        params['after'] = int(utc_last_sync.timestamp())
+
+    page = 1
+    has_more_activities = True
+
+    while has_more_activities:
+        params['page'] = page
+        try:
+            activities_url = f"{settings.STRAVA_API_BASE_URL}/athlete/activities"
+            activities_response = requests.get(activities_url, headers=headers, params=params)
+            activities_response.raise_for_status()
+            activities_data = activities_response.json()
+
+            if not activities_data:
+                has_more_activities = False
+                break
+
+            for activity_summary in activities_data:
+                # 仅处理跑步活动，并检查是否是比赛 (workout_type == 1)
+                if activity_summary.get('type') == 'Run':
+                    # 保存或更新活动到数据库
+                    Activity.objects.update_or_create(
+                        user=user_instance,
+                        strava_id=activity_summary.get('id'),
+                        defaults={
+                            'name': activity_summary.get('name', ''),
+                            'activity_type': activity_summary.get('type', ''),
+                            'workout_type': activity_summary.get('workout_type'),
+                            'distance': activity_summary.get('distance', 0),
+                            'moving_time': activity_summary.get('moving_time', 0),
+                            'elapsed_time': activity_summary.get('elapsed_time', 0),
+                            'elevation_gain': activity_summary.get('total_elevation_gain', 0),
+                            'start_date': activity_summary.get('start_date'),
+                            'start_date_local': activity_summary.get('start_date_local'),
+                            'timezone': activity_summary.get('timezone'),
+                            'average_speed': activity_summary.get('average_speed'),
+                            'max_speed': activity_summary.get('max_speed'),
+                            'average_heartrate': activity_summary.get('average_heartrate'),
+                            'max_heartrate': activity_summary.get('max_heartrate'),
+                            'average_cadence': activity_summary.get('average_cadence'),
+                            'has_heartrate': activity_summary.get('has_heartrate', False),
+                            'has_power': activity_summary.get('has_power', False),
+                            'is_race': activity_summary.get('workout_type') == 1, # 比赛
+                        }
+                    )
+                    print(f"Processed run activity: {activity_summary.get('start_date')} (ID: {activity_summary['id']})")
+            page += 1
+            if len(activities_data) < params['per_page']:
+                has_more_activities = False
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to get Strava activities for user {user_instance.id} (page {page}): {e}")
+            has_more_activities = False # 遇到错误停止分页
+        except Exception as e:
+            print(f"Error processing activity data for user {user_instance.id}: {e}")
+            has_more_activities = False
+
+    # 更新最后同步时间
+    user_instance.last_strava_sync = now()
+    user_instance.save(update_fields=['last_strava_sync'])
+    print(f"Strava data sync completed for user {user_instance.id}.")

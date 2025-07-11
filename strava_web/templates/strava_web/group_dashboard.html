@@ -1,0 +1,14 @@
+{% extends "strava_web/base.html" %}
+
+{% block title %}{{ group.name }} Dashboard{% endblock %}
+
+{% block content %}
+    <h2>{{ group.name }} Dashboard</h2>
+    <p>This is the dashboard for the group: {{ group.name }}.</p>
+    <p>This group {% if group.is_open %}is open{% else %}is not open{% endif %} for free joining.</p>
+    <p>This group {% if group.has_dashboard %}has a dedicated dashboard{% else %}does not have a dedicated dashboard{% endif %}.</p>
+
+    <p>Group ranking and statistics will appear here.</p>
+
+    <p><a href="{% url 'personal_dashboard' %}" class="button-link" style="background-color: #6c757d;">Back to My Dashboard</a></p>
+{% endblock %}
