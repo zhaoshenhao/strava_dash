@@ -1,4 +1,5 @@
 {% extends "strava_web/base.html" %}
+{% load strava_filters %}
 
 {% block title %}My Dashboard{% endblock %}
 
@@ -10,10 +11,42 @@
     <ul>
         <li>Username: {{ user.username }}</li>
         <li>Email: {{ user.email|default:"Not set" }}</li>
-        <li>First Name: {{ user.first_name|default:"-" }}</li>
-        <li>Last Name: {{ user.last_name|default:"-" }}</li>
+        <li>Name: {{ user.first_name|default:"" }} {{ user.last_name|default:"" }}</li>
         <li>Strava Connected: {% if user.is_strava_connected %}Yes (ID: {{ user.strava_id }}){% else %}No{% endif %}</li>
+        <li>Last Strava Sync: {% if user.last_strava_sync %}{{ user.last_strava_sync|date:"Y-m-d H:i" }}{% else %}Never{% endif %}</li>
     </ul>
+
+    {% if user.is_strava_connected %}
+        <h3>Your Strava Run Statistics:</h3>
+        <h4>Last 4 Weeks (Recent Totals)</h4>
+        <table>
+            <tr><td>Run Count</td><td col="2">{{ user.recent_run_count|default:0 }}</td></tr>
+            <tr><td>Distance</td><td>{{ user.recent_run_distance|default:0|div:1000|floatformat:2 }} km</td><td>{{ user.recent_run_distance|default:0|div:1609.34|floatformat:2 }} mile</td></tr>
+            <tr><td>Moving Time</td><td>{{ user.recent_run_moving_time }} s</td><td>{{ user.recent_run_moving_time|default:0|duration:1 }}</td></tr>
+            <tr><td>Elapsed Time</td><td>{{ user.recent_run_elapsed_time }} s</td><td>{{ user.recent_run_elapsed_time|default:0|duration:1 }}</td></tr>
+            <tr><td>Elevation Gain</td><td col="2">{{ user.recent_run_elevation_gain|default:0|floatformat:0 }} m</td></tr>
+        </table>
+        <h4>Year To Date (YTD Totals)</h4>
+        <table>
+            <tr><td>Run Count</td><td>{{ user.ytd_run_count|default:0 }}</td><td></td></tr>
+            <tr><td>Distance</td><td>{{ user.ytd_run_distance|default:0|div:1000|floatformat:2 }} km</td><td>{{ user.ytd_run_distance|default:0|div:1609.34|floatformat:2 }} mile</td></tr>
+            <tr><td>Moving Time</td><td>{{ user.ytd_run_moving_time }} s</td><td>{{ user.ytd_run_moving_time|default:0|duration:1 }}</td></tr>
+            <tr><td>Elapsed Time</td><td>{{ user.ytd_run_elapsed_time }} s</td><td>{{ user.ytd_run_elapsed_time|default:0|duration:1 }}</td></tr>
+            <tr><td>Elevation Gain</td><td>{{ user.ytd_run_elevation_gain|default:0|floatformat:0 }} m</td><td></td></tr>
+        </table>
+        <h4>All Time Totals</h4>
+        <table>
+            <tr><td>Run Count</td><td>{{ user.all_time_run_count|default:0 }}</td><td></td></tr>
+            <tr><td>Distance</td><td>{{ user.all_time_run_distance|default:0|div:1000|floatformat:2 }} km</td><td>{{ user.all_time_run_distance|default:0|div:1609.34|floatformat:0 }} mile</td></tr>
+            <tr><td>Moving Time</td><td>{{ user.all_time_run_moving_time }} s</td><td>{{ user.all_time_run_moving_time|default:0|duration:1 }}</td></tr>
+            <tr><td>Elapsed Time</td><td>{{ user.all_time_run_elapsed_time }} s</td><td>{{ user.all_time_run_elapsed_time|default:0|duration:1 }}</td></tr>
+            <tr><td>Elevation Gain</td><td>{{ user.all_time_run_elevation_gain|default:0|floatformat:0 }} m</td><td></td></tr>
+        </table>
+        <p><a href="{% url 'group_membership_edit' %}" class="button-link">Manage Group Memberships</a></p>
+    {% else %}
+        <p>Connect your Strava account to see your personal statistics and activities!</p>
+        <p><a href="{% url 'strava_login' %}" class="button-link" style="background-color: #fc4c02;">Connect Strava Account</a></p>
+    {% endif %}
 
     <h3>Your Groups:</h3>
     {% if user_groups %}
@@ -30,6 +63,6 @@
     {% else %}
         <p>You haven't joined any groups yet.</p>
     {% endif %}
-
     <p><a href="{% url 'group_membership_edit' %}" class="button-link">Manage Group Memberships</a></p>
 {% endblock %}
+

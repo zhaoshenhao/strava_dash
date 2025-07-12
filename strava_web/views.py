@@ -301,3 +301,5 @@ def home(request):
 
 class CustomLogoutView(LogoutView):
     next_page = 'home' # 登出后重定向到名为 'home' 的 URL
+
+
