@@ -1,0 +1,51 @@
+from datetime import timedelta
+
+def get_float(val):
+    return val if val else 0.0
+
+def get_int(val):
+    return val if val else 0
+
+def get_monday_of_week(given_date):
+    wd = given_date.weekday() - 1
+    if wd < 0:
+        wd = 6
+    days_since_monday = wd % 7
+    monday_datetime = given_date - timedelta(days=days_since_monday)
+    return monday_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
+
+def get_days_ago(given_date, days):
+    start_date = given_date - timedelta(days=days)
+    return start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+
+def calculate_pace(total_distance_meters, total_time_seconds, is_metric):
+    if total_distance_meters <= 0 or total_time_seconds < 0:
+        return "N/A"
+    if total_time_seconds == 0:
+        return "0:00"
+    if is_metric:
+        unit_distance_meters = 1000  # 1公里 = 1000米
+    else:
+        unit_distance_meters = 1609.34  # 1英里 = 1609.34米
+    pace_seconds_per_unit = (total_time_seconds / total_distance_meters) * unit_distance_meters
+    minutes = int(pace_seconds_per_unit // 60)
+    seconds = int(pace_seconds_per_unit % 60)
+    return f"{minutes}:{seconds:02d}"
+
+def convert_seconds_to_dhms(total_seconds):
+    if not isinstance(total_seconds, (int, float)) or total_seconds < 0:
+        # Handle non-integer, non-positive, or non-numeric input
+        return 0, 0, 0, 0
+
+    total_seconds = int(total_seconds) # Ensure it's an integer for calculations
+
+    days = total_seconds // (24 * 3600)
+    remaining_seconds_after_days = total_seconds % (24 * 3600)
+
+    hours = remaining_seconds_after_days // 3600
+    remaining_seconds_after_hours = remaining_seconds_after_days % 3600
+
+    minutes = remaining_seconds_after_hours // 60
+    seconds = remaining_seconds_after_hours % 60
+    return days, hours, minutes, seconds
+

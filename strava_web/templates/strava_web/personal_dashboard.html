@@ -18,13 +18,25 @@
 
     {% if user.is_strava_connected %}
         <h3>Your Strava Run Statistics:</h3>
+        <h4>This Weeks (Weekly Totals)</h4>
+        <table>
+            <tr><td>Run Count</td><td col="2">{{ user.weekly_run_count|default:0 }}</td></tr>
+            <tr><td>Distance</td><td>{{ user.weekly_run_distance|default:0|div:1000|floatformat:2 }} km</td><td>{{ user.weekly_run_distance|default:0|div:1609.34|floatformat:2 }} mile</td></tr>
+            <tr><td>Moving Time</td><td>{{ user.weekly_run_moving_time }} s</td><td>{{ user.weekly_run_moving_time|default:0|duration:1 }}</td></tr>
+            <tr><td>Elapsed Time</td><td>{{ user.weekly_run_elapsed_time }} s</td><td>{{ user.weekly_run_elapsed_time|default:0|duration:1 }}</td></tr>
+            <tr><td>Elevation Gain</td><td col="2">{{ user.weekly_run_elevation_gain|default:0|floatformat:0 }} m</td></tr>
+            <tr><td>Average Pace</td><td>{{ user.weekly_run_distance|default:0|km_pace:user.weekly_run_moving_time }}/km</td><td>{{ user.weekly_run_distance|default:0|mile_pace:user.weekly_run_moving_time }}/mile</td></tr>
+            <tr><td>Heart Rate</td><td>{{ user.weekly_avg_heartrate|default:0|floatformat:1 }} avg</td><td>{{ user.weekly_max_heartrate|default:0|floatformat:1 }} max</td></tr>
+        </table>
         <h4>Last 4 Weeks (Recent Totals)</h4>
         <table>
             <tr><td>Run Count</td><td col="2">{{ user.recent_run_count|default:0 }}</td></tr>
             <tr><td>Distance</td><td>{{ user.recent_run_distance|default:0|div:1000|floatformat:2 }} km</td><td>{{ user.recent_run_distance|default:0|div:1609.34|floatformat:2 }} mile</td></tr>
             <tr><td>Moving Time</td><td>{{ user.recent_run_moving_time }} s</td><td>{{ user.recent_run_moving_time|default:0|duration:1 }}</td></tr>
             <tr><td>Elapsed Time</td><td>{{ user.recent_run_elapsed_time }} s</td><td>{{ user.recent_run_elapsed_time|default:0|duration:1 }}</td></tr>
+            <tr><td>Average Pace</td><td>{{ user.recent_run_distance|default:0|km_pace:user.recent_run_moving_time }}/km</td><td>{{ user.recent_run_distance|default:0|mile_pace:user.recent_run_moving_time }}/mile</td></tr>
             <tr><td>Elevation Gain</td><td col="2">{{ user.recent_run_elevation_gain|default:0|floatformat:0 }} m</td></tr>
+            <tr><td>Heart Rate</td><td>{{ user.recent_avg_heartrate|default:0|floatformat:1 }} avg.</td><td>{{ user.recent_max_heartrate|default:0|floatformat:1 }} max</td></tr>
         </table>
         <h4>Year To Date (YTD Totals)</h4>
         <table>
@@ -32,6 +44,7 @@
             <tr><td>Distance</td><td>{{ user.ytd_run_distance|default:0|div:1000|floatformat:2 }} km</td><td>{{ user.ytd_run_distance|default:0|div:1609.34|floatformat:2 }} mile</td></tr>
             <tr><td>Moving Time</td><td>{{ user.ytd_run_moving_time }} s</td><td>{{ user.ytd_run_moving_time|default:0|duration:1 }}</td></tr>
             <tr><td>Elapsed Time</td><td>{{ user.ytd_run_elapsed_time }} s</td><td>{{ user.ytd_run_elapsed_time|default:0|duration:1 }}</td></tr>
+            <tr><td>Average Pace</td><td>{{ user.ytd_run_distance|default:0|km_pace:user.ytd_run_moving_time }}/km</td><td>{{ user.ytd_run_distance|default:0|mile_pace:user.ytd_run_moving_time }}/mile</td></tr>
             <tr><td>Elevation Gain</td><td>{{ user.ytd_run_elevation_gain|default:0|floatformat:0 }} m</td><td></td></tr>
         </table>
         <h4>All Time Totals</h4>

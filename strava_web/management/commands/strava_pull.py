@@ -16,10 +16,16 @@ class Command(BaseCommand):
             type=int,
             help='Optional: Sync data for a specific user ID.',
         )
+        parser.add_argument(
+            '--days',
+            type=int,
+            default=0,
+            help='Optional: Sync data for last n days .',
+        )
 
     def handle(self, *args, **options):
         user_id = options['user_id']
-
+        days = options['days']
         if user_id:
             try:
                 user = User.objects.get(pk=user_id)
@@ -39,7 +45,7 @@ class Command(BaseCommand):
         for user in users_to_sync:
             try:
                 self.stdout.write(f'Syncing data for user: {user.username} (Strava ID: {user.strava_id})...')
-                sync_strava_data_for_user(user)
+                sync_strava_data_for_user(user, days)
                 self.stdout.write(self.style.SUCCESS(f'Successfully synced data for {user.username}.'))
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f'Failed to sync data for {user.username}: {e}'))

@@ -34,26 +34,37 @@ class CustomUser(AbstractUser):
 
     # ----- 聚合统计数据 (可以直接存在用户表，或单独的统计表) -----
     # 近期跑步统计 (Last 4 Weeks) - Strava API 中的 recent_run_totals
-    recent_run_distance = models.FloatField(null=True, blank=True) # 米
-    recent_run_count = models.IntegerField(null=True, blank=True)
-    recent_run_moving_time = models.IntegerField(null=True, blank=True) # 秒
-    recent_run_elapsed_time = models.IntegerField(null=True, blank=True) # 秒
-    recent_run_elevation_gain = models.FloatField(null=True, blank=True) # 米
-
+    recent_run_distance = models.FloatField(default=0.0) # 米
+    recent_run_count = models.IntegerField(default=0)
+    recent_run_moving_time = models.IntegerField(default=0) # 秒
+    recent_run_elapsed_time = models.IntegerField(default=0) # 秒
+    recent_run_elevation_gain = models.FloatField(default=0) # 米
+    recent_avg_heartrate = models.FloatField(default=0.0)
+    recent_max_heartrate = models.FloatField(default=0.0)
+    
     # 年度至今跑步统计 (Year To Date) - Strava API 中的 ytd_run_totals
-    ytd_run_distance = models.FloatField(null=True, blank=True) # 米
-    ytd_run_count = models.IntegerField(null=True, blank=True)
-    ytd_run_moving_time = models.IntegerField(null=True, blank=True) # 秒
-    ytd_run_elapsed_time = models.IntegerField(null=True, blank=True) # 秒
-    ytd_run_elevation_gain = models.FloatField(null=True, blank=True) # 米
+    ytd_run_distance = models.FloatField(default=0.0) # 米
+    ytd_run_count = models.IntegerField(default=0)
+    ytd_run_moving_time = models.IntegerField(default=0) # 秒
+    ytd_run_elapsed_time = models.IntegerField(default=0) # 秒
+    ytd_run_elevation_gain = models.FloatField(default=0) # 米
 
     # 历史总跑步统计 (All Time) - Strava API 中的 all_run_totals
-    all_time_run_distance = models.FloatField(null=True, blank=True) # 米
-    all_time_run_count = models.IntegerField(null=True, blank=True)
-    all_time_run_moving_time = models.IntegerField(null=True, blank=True) # 秒
-    all_time_run_elapsed_time = models.IntegerField(null=True, blank=True) # 秒
-    all_time_run_elevation_gain = models.FloatField(null=True, blank=True) # 米
+    all_time_run_distance = models.FloatField(default=0) # 米
+    all_time_run_count = models.IntegerField(default=0)
+    all_time_run_moving_time = models.IntegerField(default=0) # 秒
+    all_time_run_elapsed_time = models.IntegerField(default=0) # 秒
+    all_time_run_elevation_gain = models.FloatField(default=0) # 米
 
+    # 最近一周跑步统计数据 (从周日开始计算)
+    weekly_run_distance = models.FloatField(default=0.0) # meters
+    weekly_run_count = models.IntegerField(default=0)
+    weekly_run_moving_time = models.IntegerField(default=0) # seconds
+    weekly_run_elapsed_time = models.IntegerField(default=0) # seconds
+    weekly_run_elevation_gain = models.FloatField(default=0.0) # meters
+    weekly_avg_heartrate = models.FloatField(default=0.0)
+    weekly_max_heartrate = models.FloatField(default=0.0)
+    
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"
