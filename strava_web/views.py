@@ -264,11 +264,35 @@ def group_dashboard(request, group_id):
         messages.error(request, "您没有权限查看该组的 Dashboard。")
         return redirect('personal_dashboard')
 
+    # 检查当前用户是否是该群组的管理员
+    is_group_admin = (group.admin == request.user)
+    
     context = {
         'group': group,
+        'is_group_admin': is_group_admin, # 将管理员状态传递给模板
         # 这里将是组群排行数据，待实现
     }
     return render(request, 'strava_web/group_dashboard.html', context)
+
+# 群组管理页面（仅管理员可见）
+@login_required
+def group_manage_members(request, group_id):
+    group = get_object_or_404(Group, id=group_id)
+
+    # 检查当前用户是否是该群组的管理员
+    if group.admin != request.user:
+        messages.error(request, "您没有权限管理该组。")
+        return redirect('group_dashboard', group_id=group.id) # 重定向回群组 Dashboard
+
+    # 这里可以添加管理成员的逻辑，例如列出成员、移除成员等
+    group_members = group.members.all() # 获取所有群组成员
+
+    context = {
+        'group': group,
+        'group_members': group_members,
+        'is_group_admin': True, # 明确表示是管理员
+    }
+    return render(request, 'strava_web/group_manage_members.html', context) # 你需要创建这个模板
 
 @login_required
 def join_group(request, group_id):

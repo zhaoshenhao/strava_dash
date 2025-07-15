@@ -1,4 +1,5 @@
 from datetime import timedelta
+from django.utils import timezone
 
 def get_float(val):
     return val if val else 0.0
@@ -7,10 +8,7 @@ def get_int(val):
     return val if val else 0
 
 def get_monday_of_week(given_date):
-    wd = given_date.weekday() - 1
-    if wd < 0:
-        wd = 6
-    days_since_monday = wd % 7
+    days_since_monday = given_date.weekday() % 7
     monday_datetime = given_date - timedelta(days=days_since_monday)
     return monday_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
 
@@ -49,3 +47,6 @@ def convert_seconds_to_dhms(total_seconds):
     seconds = remaining_seconds_after_hours % 60
     return days, hours, minutes, seconds
 
+def local_now():
+    utc_now = timezone.now()
+    return timezone.localtime(utc_now)

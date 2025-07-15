@@ -6,7 +6,7 @@ from django.utils.timezone import now
 from django.db import transaction
 from django.contrib.auth import get_user_model
 from strava_web.models import Activity
-from strava_web.utils import get_monday_of_week, get_float, get_int, get_days_ago
+from strava_web.utils import get_monday_of_week, get_float, get_int, get_days_ago, local_now
 
 User = get_user_model() # 在服务层获取用户模型
 
@@ -167,7 +167,7 @@ def sync_strava_data_for_user(user_instance, days):
     print(f"Strava data sync completed for user {user_instance.id}.")
     
 def get_weekly_activities(user_instance):
-    start_of_28_days = get_days_ago(now(), 28)
+    start_of_28_days = get_days_ago(local_now(), 28)
     activities = Activity.objects.filter(
         activity_type='Run',
         start_date_local__gte=start_of_28_days,
@@ -177,7 +177,7 @@ def get_weekly_activities(user_instance):
     
 def update_stats(user_instance):
     all_recent_activities = get_weekly_activities(user_instance)
-    start_of_week_local = get_monday_of_week(now())
+    start_of_week_local = get_monday_of_week(local_now())
     if not all_recent_activities:
         print(f"Weekly stats for user {user_instance.id} are up-to-date. No save needed.")
         return

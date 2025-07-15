@@ -1,0 +1,10 @@
+{# strava_web/group_dashboard.html #}
+<h1>{{ group.name }} Dashboard</h1>
+
+{% if is_group_admin %}
+    <p>您是本群组的管理员。</p>
+    <a href="{% url 'group_manage_members' group.id %}" class="btn btn-primary">管理群组成员</a>
+{% endif %}
+
+<p>群组管理员：{{ group.admin.username|default:"未指定" }}</p>
+{# ... 其他群组 Dashboard 内容 ... #}

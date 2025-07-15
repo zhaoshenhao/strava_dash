@@ -65,6 +65,16 @@ class CustomUser(AbstractUser):
     weekly_avg_heartrate = models.FloatField(default=0.0)
     weekly_max_heartrate = models.FloatField(default=0.0)
     
+    groups = models.ManyToManyField(
+        Group,
+        related_name='members', # related_name 仍然指向 Group 的成员
+        related_query_name='member',
+        blank=True,
+        help_text=('The groups this user belongs to. A user will get all permissions '
+                   'granted to each of their groups.'),
+        verbose_name=('groups'),
+    )
+
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"
@@ -119,6 +129,31 @@ Group.add_to_class('is_open', models.BooleanField(default=True, verbose_name="Al
                                                 help_text="If checked, users can freely join this group."))
 Group.add_to_class('has_dashboard', models.BooleanField(default=True, verbose_name="Has Dashboard",
                                                         help_text="If checked, this group has a dedicated data dashboard."))
+# 新增 admin 字段，指向 CustomUser，表示该群组的管理员
+# on_delete=models.SET_NULL 表示如果管理员用户被删除，该群组的 admin 字段会设为 NULL
+# related_name='administered_groups' 允许通过 user.administered_groups.all() 获取该用户管理的所有群组
+Group.add_to_class('admin', models.ForeignKey(
+    settings.AUTH_USER_MODEL,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    related_name='administered_groups',
+    verbose_name="Group Admin",
+    help_text="The designated administrator for this group (if any)."
+))
+Group.add_to_class('description', models.TextField(
+    max_length=500,
+    blank=True,
+    verbose_name="群组描述",
+    help_text="群组的详细描述，最多500字。"
+))
+# announcement 字段
+Group.add_to_class('announcement', models.TextField(
+    max_length=1000, # 公告通常不宜过长
+    blank=True,
+    verbose_name="群组公告",
+    help_text="群组的重要公告，最多1000字。"
+))
 
 # Activity 模型 (用于存储 Strava 活动数据)
 class Activity(models.Model):

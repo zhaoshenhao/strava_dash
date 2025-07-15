@@ -5,8 +5,20 @@
 {% block content %}
     <h2>{{ group.name }} Dashboard</h2>
     <p>This is the dashboard for the group: {{ group.name }}.</p>
+    {% if group.announcement %}
+        <div class="alert alert-info" role="alert">
+            <strong>群组公告：</strong> {{ group.announcement|linebreaksbr }}
+        </div>
+    {% endif %}
     <p>This group {% if group.is_open %}is open{% else %}is not open{% endif %} for free joining.</p>
     <p>This group {% if group.has_dashboard %}has a dedicated dashboard{% else %}does not have a dedicated dashboard{% endif %}.</p>
+    <p>群组管理员：{{ group.admin.username|default:"未指定" }}</p>
+    <h2>群组描述</h2>
+    {% if group.description %}
+        <p>{{ group.description|linebreaksbr }}</p> {# 使用 linebreaksbr 过滤器将换行符转换为 <br> 标签 #}
+    {% else %}
+        <p>该群组暂无描述。</p>
+    {% endif %}
 
     <p>Group ranking and statistics will appear here.</p>
 
