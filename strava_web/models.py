@@ -155,6 +155,30 @@ Group.add_to_class('announcement', models.TextField(
     help_text="群组的重要公告，最多1000字。"
 ))
 
+# GroupApplication 模型
+class GroupApplication(models.Model):
+    STATUS_CHOICES = [
+        ('pending', '待批准'),
+        ('approved', '已批准'),
+        ('rejected', '已拒绝'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='group_applications', verbose_name="申请人")
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='applications', verbose_name="申请群组")
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending', verbose_name="申请状态")
+    applied_at = models.DateTimeField(auto_now_add=True, verbose_name="申请时间")
+    reviewed_at = models.DateTimeField(null=True, blank=True, verbose_name="审核时间")
+    reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_applications', verbose_name="审核人")
+
+    class Meta:
+        unique_together = ('user', 'group') # 确保一个用户只能对一个群组有一个申请
+        ordering = ['-applied_at']
+        verbose_name = "群组申请"
+        verbose_name_plural = "群组申请"
+
+    def __str__(self):
+        return f"{self.user.username} 申请加入 {self.group.name} - 状态: {self.get_status_display()}"
+
 # Activity 模型 (用于存储 Strava 活动数据)
 class Activity(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='strava_activities')

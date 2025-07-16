@@ -3,8 +3,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
-from .models import CustomUser, Activity
-from .forms import CustomUserProfileForm # 导入你的 CustomUserProfileForm
+from .models import CustomUser, Activity, GroupApplication
 from unfold.admin import ModelAdmin
 
 # 自定义用户模型的 Admin
@@ -54,3 +53,37 @@ class ActivityAdmin(ModelAdmin):
     search_fields = ('name', 'user__username', 'strava_id')
     raw_id_fields = ('user',) # 对于 ForeignKey 字段，使用 raw_id_fields 可以提高性能
     date_hierarchy = 'start_date_local' # 按日期分层显示
+
+# 注册 GroupApplication
+@admin.register(GroupApplication)
+class GroupApplicationAdmin(ModelAdmin):
+    list_display = ('user', 'group', 'status', 'applied_at', 'reviewed_at', 'reviewer')
+    list_filter = ('status', 'group')
+    search_fields = ('user__username', 'group__name')
+    raw_id_fields = ('user', 'group', 'reviewer') # 使用 raw_id_fields 提高性能
+    readonly_fields = ('applied_at',) # 申请时间自动生成，不允许手动修改
+    actions = ['approve_applications', 'reject_applications'] # 添加批量操作
+
+    def approve_applications(self, request, queryset):
+        # 批量批准申请
+        for application in queryset:
+            if application.status == 'pending':
+                application.status = 'approved'
+                application.reviewed_at = timezone.now()
+                application.reviewer = request.user
+                application.save()
+                # 将用户添加到群组
+                application.group.members.add(application.user)
+        self.message_user(request, "选定的申请已批准。")
+    approve_applications.short_description = "批准选定的申请"
+
+    def reject_applications(self, request, queryset):
+        # 批量拒绝申请
+        for application in queryset:
+            if application.status == 'pending':
+                application.status = 'rejected'
+                application.reviewed_at = timezone.now()
+                application.reviewer = request.user
+                application.save()
+        self.message_user(request, "选定的申请已拒绝。")
+    reject_applications.short_description = "拒绝选定的申请"

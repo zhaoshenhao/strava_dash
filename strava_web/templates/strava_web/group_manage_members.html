@@ -1,10 +1,83 @@
-{# strava_web/group_dashboard.html #}
-<h1>{{ group.name }} Dashboard</h1>
+{# strava_web/group_manage_members.html #}
+{% extends 'base.html' %}
+{% block title %}管理 {{ group.name }} 成员{% endblock %}
 
-{% if is_group_admin %}
-    <p>您是本群组的管理员。</p>
-    <a href="{% url 'group_manage_members' group.id %}" class="btn btn-primary">管理群组成员</a>
-{% endif %}
+{% block content %}
+<div class="container mt-4">
+    <h1>管理 {{ group.name }} 成员</h1>
+    <p><a href="{% url 'group_dashboard' group.id %}">返回群组仪表板</a></p>
 
-<p>群组管理员：{{ group.admin.username|default:"未指定" }}</p>
-{# ... 其他群组 Dashboard 内容 ... #}
+    {% if messages %}
+        <ul class="messages list-unstyled">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2>待处理的加入申请</h2>
+        </div>
+        <div class="card-body">
+            {% if pending_applications %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>申请人</th>
+                        <th>申请时间</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for application in pending_applications %}
+                    <tr>
+                        <td>{{ application.user.username }}</td>
+                        <td>{{ application.applied_at|date:"Y-m-d H:i" }}</td>
+                        <td>{{ application.get_status_display }}</td>
+                        <td>
+                            <form action="{% url 'review_group_application' application.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">批准</button>
+                            </form>
+                            <form action="{% url 'review_group_application' application.id %}" method="post" style="display:inline; margin-left: 5px;">
+                                {% csrf_token %}
+                                <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">拒绝</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>目前没有待处理的加入申请。</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2>当前群组成员</h2>
+        </div>
+        <div class="card-body">
+            {% if group_members %}
+            <ul class="list-group">
+                {% for member in group_members %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ member.username }}
+                    {# 这里可以添加移除成员的按钮，需要额外的视图和逻辑 #}
+                    {# <form action="{% url 'remove_group_member' group.id member.id %}" method="post" style="display:inline;"> #}
+                    {#     {% csrf_token %} #}
+                    {#     <button type="submit" class="btn btn-danger btn-sm">移除</button> #}
+                    {# </form> #}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>该群组目前没有成员。</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

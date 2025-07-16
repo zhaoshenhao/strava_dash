@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import Group
+from .models import GroupApplication
 
 User = get_user_model()
 
@@ -73,3 +74,13 @@ class GroupMembershipForm(forms.Form):
             self.fields['groups'].initial = self.user.groups.filter(
                 is_open=True, has_dashboard=True
             ).exclude(name='admin')
+
+# 不需要为 GroupApplication 创建一个用于用户提交的表单，因为我们使用按钮触发
+# 但可以为管理员审核创建一个简单的表单（如果需要更复杂的审核流程）
+# class GroupApplicationReviewForm(forms.ModelForm):
+#     class Meta:
+#         model = GroupApplication
+#         fields = ['status'] # 管理员可以修改状态
+#         widgets = {
+#             'status': forms.RadioSelect, # 示例：使用单选按钮选择状态
+#         }
