@@ -220,126 +220,124 @@ def profile_edit(request):
 @login_required
 def group_membership_edit(request):
     """
-    用户可以加入或离开开放的组。
+    用户可以查看所有开放和封闭的组，并进行加入/申请/退出操作。
     """
-    
-    open_groups = Group.objects.filter(is_open=True, has_dashboard=True).exclude(name='admin')
-    user_current_groups = request.user.groups.all()
-
-    if request.method == 'POST':
-        form = GroupMembershipForm(request.POST, user=request.user)
-        if form.is_valid():
-            selected_groups = form.cleaned_data['groups']
-
-            # 移除用户从旧组中离开
-            for group in user_current_groups:
-                if group in open_groups and group not in selected_groups:
-                    request.user.groups.remove(group)
-                    messages.info(request, f"您已离开组: {group.name}")
-
-            # 添加用户到新选择的组
-            for group in selected_groups:
-                if group in open_groups and group not in user_current_groups:
-                    request.user.groups.add(group)
-                    messages.success(request, f"您已加入组: {group.name}")
-
-            return redirect('personal_dashboard')
-        else:
-            messages.error(request, "请修正表单中的错误。")
-    else:
-        form = GroupMembershipForm(user=request.user) # 预填充用户已加入的组
-
-    # --- 封闭组申请功能 ---
-    # 获取所有封闭的、有 Dashboard 的组
-    closed_groups_queryset = Group.objects.filter(is_open=False, has_dashboard=True) \
-                                        .exclude(name='admin') \
-                                        .annotate(member_count=Count('member')) # 计算成员数
+    # 获取所有有 Dashboard 的组，排除 'admin' 组
+    all_groups_queryset = Group.objects.filter(has_dashboard=True).exclude(name='admin') \
+                                       .annotate(member_count=Count('member')) # 计算成员数
 
     # 搜索功能
     search_query = request.GET.get('search', '')
     if search_query:
-        closed_groups_queryset = closed_groups_queryset.filter(
+        all_groups_queryset = all_groups_queryset.filter(
             Q(name__icontains=search_query) |
             Q(admin__username__icontains=search_query)
         )
+
+    # 准备数据以包含群组类型、成员状态和申请状态
+    groups_data = []
+    for group in all_groups_queryset:
+        is_member = request.user.groups.filter(id=group.id).exists()
+        application = None
+        application_status_display = "" # 用于封闭组的申请状态
+        action_button_text = ""
+        action_button_class = ""
+        action_button_disabled = False
+        action_url_name = ""
+        is_application_form = False # 判断是否是申请的表单
+
+        if is_member:
+            # 如果是成员，显示“退出”按钮
+            action_button_text = "退出"
+            action_button_class = "btn-danger"
+            action_url_name = "leave_group" # 这是一个新的/修改后的URL，需要JS确认
+        elif group.is_open:
+            # 如果是开放组且不是成员，显示“加入”按钮
+            action_button_text = "加入"
+            action_button_class = "btn-success"
+            action_url_name = "join_group"
+        else:
+            # 如果是封闭组且不是成员，处理申请逻辑
+            try:
+                application = GroupApplication.objects.get(user=request.user, group=group)
+                if application.status == 'pending':
+                    application_status_display = "等待批准"
+                    action_button_text = "等待"
+                    action_button_class = "btn-warning"
+                    action_button_disabled = True
+                elif application.status == 'rejected':
+                    # 检查是否在拒绝后7天内
+                    if application.reviewed_at and (timezone.now() - application.reviewed_at).days < 7:
+                        application_status_display = "已拒绝 (7天内不可重申)"
+                        action_button_text = "拒绝"
+                        action_button_class = "btn-secondary"
+                        action_button_disabled = True
+                    else:
+                        application_status_display = "已拒绝 (可重新申请)"
+                        action_button_text = "申请" # 超过7天可重新申请
+                        action_button_class = "btn-primary"
+                        is_application_form = True # 标记为申请表单
+                        action_url_name = "apply_for_group"
+            except GroupApplication.DoesNotExist:
+                # 未申请
+                application_status_display = "未申请"
+                action_button_text = "申请"
+                action_button_class = "btn-primary"
+                is_application_form = True # 标记为申请表单
+                action_url_name = "apply_for_group"
+
+        groups_data.append({
+            'group': group,
+            'group_type': "开放" if group.is_open else "封闭",
+            'is_member': is_member,
+            'member_count': group.member_count,
+            'application_status_display': application_status_display,
+            'action_button_text': action_button_text,
+            'action_button_class': action_button_class,
+            'action_button_disabled': action_button_disabled,
+            'action_url_name': action_url_name,
+            'is_application_form': is_application_form,
+        })
 
     # 排序功能
     sort_by = request.GET.get('sort_by', 'name') # 默认按组名排序
     order = request.GET.get('order', 'asc') # 默认升序
 
-    if sort_by == 'name':
-        closed_groups_queryset = closed_groups_queryset.order_by(f"{'' if order == 'asc' else '-'}{sort_by}")
-    elif sort_by == 'member_count':
-        closed_groups_queryset = closed_groups_queryset.order_by(f"{'' if order == 'asc' else '-'}{sort_by}")
-    elif sort_by == 'admin':
-        closed_groups_queryset = closed_groups_queryset.order_by(f"{'' if order == 'asc' else '-'}admin__username")
-    # 对于 'member_status' 和 'application_status' 排序，需要在 Python 中处理，因为它们是动态计算的
-    # 或者在数据库层面做更复杂的 annotation，这里简化为不直接支持这两种排序
+    def get_sort_key(item):
+        if sort_by == 'name':
+            return item['group'].name
+        elif sort_by == 'member_count':
+            return item['member_count']
+        elif sort_by == 'admin':
+            return item['group'].admin.username if item['group'].admin else ''
+        elif sort_by == 'group_type':
+            # 开放在前，封闭在后
+            return (0 if item['group'].is_open else 1, item['group'].name)
+        elif sort_by == 'is_member':
+            # 成员在前，非成员在后
+            return (0 if item['is_member'] else 1, item['group'].name)
+        return item['group'].name # 默认
 
-    # 准备数据以包含成员状态和申请状态
-    closed_groups_data = []
-    for group in closed_groups_queryset:
-        is_member = request.user.groups.filter(id=group.id).exists()
-        application = None
-        application_status_display = "未申请"
-        application_button_text = "申请"
-        application_button_disabled = False
-        
-        if not is_member: # 如果不是成员，才检查申请状态
-            try:
-                application = GroupApplication.objects.get(user=request.user, group=group)
-                if application.status == 'pending':
-                    application_status_display = "等待批准"
-                    application_button_text = "等待"
-                    application_button_disabled = True
-                elif application.status == 'approved':
-                    # 这应该不会发生，因为批准后用户就成为成员了。
-                    # 但为了逻辑严谨，如果发生，也显示已批准。
-                    application_status_display = "已批准 (请刷新)"
-                    application_button_text = "已批准"
-                    application_button_disabled = True
-                elif application.status == 'rejected':
-                    # 检查是否在拒绝后7天内
-                    if application.reviewed_at and (timezone.now() - application.reviewed_at).days < 7:
-                        application_status_display = "已拒绝"
-                        application_button_text = "拒绝"
-                        application_button_disabled = True
-                    else:
-                        application_status_display = "已拒绝 (可重新申请)"
-                        application_button_text = "申请" # 超过7天可重新申请
-                        application_button_disabled = False
-            except GroupApplication.DoesNotExist:
-                pass # 未申请
-
-        closed_groups_data.append({
-            'group': group,
-            'member_count': group.member_count,
-            'is_member': is_member,
-            'application_status_display': application_status_display,
-            'application_button_text': application_button_text,
-            'application_button_disabled': application_button_disabled,
-            'current_application_id': application.id if application else None, # 传递申请ID
-        })
+    groups_data.sort(key=get_sort_key, reverse=(order == 'desc'))
 
     # 分页
     page = request.GET.get('page', 1)
-    paginator = Paginator(closed_groups_data, 10) # 每页10个
+    paginator = Paginator(groups_data, 10) # 每页10个
     try:
-        closed_groups_paginated = paginator.page(page)
+        groups_paginated = paginator.page(page)
     except PageNotAnInteger:
-        closed_groups_paginated = paginator.page(1)
+        groups_paginated = paginator.page(1)
     except EmptyPage:
-        closed_groups_paginated = paginator.page(paginator.num_pages)
+        groups_paginated = paginator.page(paginator.num_pages)
 
     context = {
-        'form': form,
-        'open_groups': open_groups,
-        'user_current_groups': user_current_groups,
+        'groups_paginated': groups_paginated,
         'search_query': search_query,
         'sort_by': sort_by,
         'order': order,
     }
     return render(request, 'strava_web/group_membership_edit.html', context)
+
 
 
 # 组群 Dashboard 占位符
@@ -366,23 +364,28 @@ def group_dashboard(request, group_id):
 
 # 群组管理页面（仅管理员可见）
 @login_required
+@login_required
 def group_manage_members(request, group_id):
     group = get_object_or_404(Group, id=group_id)
 
     # 检查当前用户是否是该群组的管理员
     if group.admin != request.user:
         messages.error(request, "您没有权限管理该组。")
-        return redirect('group_dashboard', group_id=group.id) # 重定向回群组 Dashboard
+        return redirect('group_dashboard', group_id=group.id)
 
-    # 这里可以添加管理成员的逻辑，例如列出成员、移除成员等
-    group_members = group.members.all() # 获取所有群组成员
+    # 获取所有群组成员
+    group_members = group.members.all()
+
+    # 获取待处理的申请
+    pending_applications = GroupApplication.objects.filter(group=group, status='pending')
 
     context = {
         'group': group,
         'group_members': group_members,
-        'is_group_admin': True, # 明确表示是管理员
+        'pending_applications': pending_applications, # 传递待处理申请
+        'is_group_admin': True,
     }
-    return render(request, 'strava_web/group_manage_members.html', context) # 你需要创建这个模板
+    return render(request, 'strava_web/group_manage_members.html', context)
 
 # 新增：申请加入封闭组
 @login_required
@@ -404,9 +407,15 @@ def apply_for_group(request, group_id):
         if existing_application.status == 'pending':
             messages.info(request, "您已经提交了申请，请等待管理员审核。")
         elif existing_application.status == 'rejected' and \
-             (timezone.now() - existing_application.reviewed_at).days < 7:
+             existing_application.reviewed_at and (timezone.now() - existing_application.reviewed_at).days < 7:
             messages.warning(request, "您的申请最近被拒绝，请在7天后重试。")
+        else: # 超过7天，可以重新申请
+            existing_application.delete() # 删除旧的被拒绝申请以便创建新的
+            GroupApplication.objects.create(user=request.user, group=group, status='pending')
+            messages.success(request, f"已向 {group.name} 提交加入申请，请等待管理员审核。")
+            return redirect('group_membership_edit')
         return redirect('group_membership_edit')
+
 
     # 创建新的申请
     GroupApplication.objects.create(user=request.user, group=group, status='pending')

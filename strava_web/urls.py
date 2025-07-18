@@ -31,11 +31,11 @@ urlpatterns = [
     ), name='password_change'),
     path('profile/group_membership/', views.group_membership_edit, name='group_membership_edit'), # 个人的组修改页面
 
-    # 组群 Dashboard (待实现)
+    path('groups/edit/', views.group_membership_edit, name='group_membership_edit'),
     path('groups/<int:group_id>/dashboard/', views.group_dashboard, name='group_dashboard'),
     path('groups/<int:group_id>/manage_members/', views.group_manage_members, name='group_manage_members'),
     path('groups/<int:group_id>/apply/', views.apply_for_group, name='apply_for_group'),
     path('application/<int:application_id>/review/', views.review_group_application, name='review_group_application'),
-    path('groups/join/<int:group_id>/', views.join_group, name='join_group'),
-    path('groups/leave/<int:group_id>/', views.leave_group, name='leave_group'),
+    path('groups/<int:group_id>/join/', views.join_group, name='join_group'),
+    path('groups/<int:group_id>/leave/', views.leave_group, name='leave_group'),
 ]
