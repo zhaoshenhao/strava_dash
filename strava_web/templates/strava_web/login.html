@@ -1,18 +1,19 @@
 {% extends "strava_web/base.html" %}
+{% load i18n %}
 
-{% block title %}Login{% endblock %}
+{% block title %}{% trans "Login" %}{% endblock %}
 
 {% block content %}
-    <h2>Login</h2>
-    <p>Choose your login method:</p>
+    <h2>{% trans "Login" %}</h2>
+    <p>{% trans "Choose your login method:" %}</p>
 
     <p>
-        <a href="{% url 'strava_login' %}" class="button-link" style="background-color: #fc4c02;">Login with Strava</a>
+        <a href="{% url 'strava_login' %}" class="button-link" style="background-color: #fc4c02;">{% trans "Login with Strava" %}</a>
     </p>
 
     <hr>
 
-    <h3>Or login with Email/Username</h3>
+    <h3>{% trans "Or login with Email/Username" %}</h3>
     <form method="post">
         {% csrf_token %}
         {% if form.non_field_errors %}
@@ -23,16 +24,16 @@
             </ul>
         {% endif %}
         <div class="form-group">
-            <label for="{{ form.username.id_for_label }}">Email or Username:</label>
+            <label for="{{ form.username.id_for_label }}">{% trans "Email or Username:" %}</label>
             {{ form.username }}
         </div>
         <div class="form-group">
-            <label for="{{ form.password.id_for_label }}">Password:</label>
+            <label for="{{ form.password.id_for_label }}">{% trans "Password:" %}</label>
             {{ form.password }}
         </div>
         <div class="form-group">
-            <button type="submit">Login</button>
+            <button type="submit">{% trans "Login" %}</button>
         </div>
     </form>
-    <p>Don't have an account? Use Strava SSO to <a href="{% url 'strava_login' %}">register</a>.</p>
+    <p>{% trans "Don't have an account? Use Strava SSO to " %}<a href="{% url 'strava_login' %}">{% trans "register" %}</a>.</p>
 {% endblock %}

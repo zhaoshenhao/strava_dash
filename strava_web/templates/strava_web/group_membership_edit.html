@@ -1,11 +1,11 @@
 {% extends 'strava_web/base.html' %}
-{% load static %} {# 如果你需要加载静态文件 #}
-
-{% block title %}管理我的群组{% endblock %}
+{% load i18n %}
+{% load static %}
+{% block title %}{% trans "管理我的群组" %}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h1>管理我的群组</h1>
+    <h1>{% trans "管理我的群组" %}</h1>
 
     {% if messages %}
         <ul class="messages list-unstyled">
@@ -18,18 +18,18 @@
     {# 所有群组列表 #}
     <div class="card mt-4">
         <div class="card-header">
-            <h2>所有群组</h2>
+            <h2>{% trans "所有群组" %}</h2>
         </div>
         <div class="card-body">
-            <form id="group-search-form" method="get" class="mb-3"> {# Added ID for JS #}
+            <form id="group-search-form" method="get" class="mb-3">
                 <div class="input-group">
-                    <input type="text" name="search" id="search-input" class="form-control" placeholder="搜索群组名或管理员" value="{{ search_query }}">
-                    {% if search_query %} {# Only show clear button if there's a search query #}
+                    <input type="text" name="search" id="search-input" class="form-control" placeholder='{% trans "搜索组群名或管理员" %}' value="{{ search_query }}">
+                    {% if search_query %}
                         <button type="button" class="btn btn-outline-secondary" id="clear-search-btn">
-                            <i class="bi bi-x-lg"></i> {# Bootstrap Icons for 'x' button #}
+                            <i class="bi bi-x-lg"></i>
                         </button>
                     {% endif %}
-                    <button class="btn btn-outline-secondary" type="submit">搜索</button>
+                    <button class="btn btn-outline-secondary" type="submit">{% trans "搜索" %}</button>
                 </div>
             </form>
 
@@ -38,31 +38,31 @@
                     <tr>
                         <th>
                             <a href="?sort_by=name&order={% if sort_by == 'name' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
-                                组名 {% if sort_by == 'name' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+                                {% trans "组名" %} {% if sort_by == 'name' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
                         <th>
                             <a href="?sort_by=group_type&order={% if sort_by == 'group_type' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
-                                组群类型 {% if sort_by == 'group_type' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+                                {% trans "组群类型" %} {% if sort_by == 'group_type' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
                         <th>
                             <a href="?sort_by=member_count&order={% if sort_by == 'member_count' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
-                                成员数 {% if sort_by == 'member_count' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+                                {% trans "成员数" %} {% if sort_by == 'member_count' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
                         <th>
                             <a href="?sort_by=admin&order={% if sort_by == 'admin' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
-                                管理员 {% if sort_by == 'admin' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+                                {% trans "管理员" %} {% if sort_by == 'admin' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
                         <th>
                             <a href="?sort_by=is_member&order={% if sort_by == 'is_member' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
-                                成员状态 {% if sort_by == 'is_member' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+                                {% trans "成员状态" %} {% if sort_by == 'is_member' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
-                        <th>申请状态</th> {# 仅用于封闭组 #}
-                        <th>操作</th>
+                        <th>{% trans "申请状态" %}</th>
+                        <th>{% trans "操作" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,7 +70,7 @@
                     <tr>
                         <td>
                             {% if item.is_member and item.group.has_dashboard %}
-                                <a href="{% url 'group_dashboard' item.group.id %}" target="_blank" class="text-decoration-none fw-bold"> {# Link on group name, open in new tab #}
+                                <a href="{% url 'group_dashboard' item.group.id %}" target="_blank" class="text-decoration-none fw-bold">
                                     {{ item.group.name }}
                                 </a>
                             {% else %}
@@ -79,9 +79,9 @@
                         </td>
                         <td>
                             {% if item.group.is_open %}
-                                <span class="badge bg-primary">开放</span>
+                                <span class="badge bg-primary">{% trans "开放" %}</span>
                             {% else %}
-                                <span class="badge bg-dark">封闭</span>
+                                <span class="badge bg-dark">{% trans "封闭" %}</span>
                             {% endif %}
                         </td>
                         <td>{{ item.member_count }}</td>
@@ -97,14 +97,14 @@
                                     {{ item.group.admin.username }}
                                 {% endif %}
                             {% else %}
-                                未指定
+                                {% trans "未指定" %}
                             {% endif %}
                         </td>
                         <td>
                             {% if item.is_member %}
-                                <span class="badge bg-success">是</span>
+                                <span class="badge bg-success">{% trans "是" %}</span>
                             {% else %}
-                                <span class="badge bg-secondary">否</span>
+                                <span class="badge bg-secondary">{% trans "否" %}</span>
                             {% endif %}
                         </td>
                         <td>
@@ -115,21 +115,20 @@
                         <td>
                             {% if item.action_url_name %}
                                 <form action="{% url item.action_url_name item.group.id %}" method="post" style="display:inline;"
-                                      {% if item.action_button_text == "退出" %}class="confirm-leave-form"{% endif %}>
+                                      {% if item.action_button_text == "退出" or item.action_button_text == "Quit" %}class="confirm-leave-form"{% endif %}>
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-sm {{ item.action_button_class }}" {% if item.action_button_disabled %}disabled{% endif %}>
                                         {{ item.action_button_text }}
                                     </button>
                                 </form>
                             {% else %}
-                                {# 无可用操作的默认显示 #}
                                 -
                             {% endif %}
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center">没有找到群组或符合搜索条件的群组。</td>
+                        <td colspan="7" class="text-center">{% trans "没有找到群组或符合搜索条件的群组。" %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -140,7 +139,7 @@
                 <ul class="pagination justify-content-center">
                     {% if groups_paginated.has_previous %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ groups_paginated.previous_page_number }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}">上一页</a>
+                            <a class="page-link" href="?page={{ groups_paginated.previous_page_number }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}">{% trans "上一页" %}</a>
                         </li>
                     {% endif %}
 
@@ -154,7 +153,7 @@
 
                     {% if groups_paginated.has_next %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ groups_paginated.next_page_number }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}">下一页</a>
+                            <a class="page-link" href="?page={{ groups_paginated.next_page_number }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}">{% trans "下一页" %}</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -172,7 +171,7 @@
                 const button = event.target.querySelector('button[type="submit"]');
                 if (button && button.textContent.trim() === "退出") {
                     const groupName = event.target.closest('tr').querySelector('td:first-child a, td:first-child').textContent.trim(); // 适应链接或文本
-                    const confirmMessage = `您确定要退出群组 "${groupName}" 吗？`;
+                    const confirmMessage = `{% trans "您确定要退出群组" %} "${groupName}"?`;
                     if (!confirm(confirmMessage)) {
                         event.preventDefault(); // 阻止表单提交
                     }

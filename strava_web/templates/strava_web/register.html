@@ -1,10 +1,9 @@
 {% extends "strava_web/base.html" %}
-
-{% block title %}Complete Registration{% endblock %}
-
+{% load i18n %}
+{% block title %}{% trans "Complete Registration" %}{% endblock %}
 {% block content %}
-    <h2>Complete Your Registration</h2>
-    <p>Welcome! Please provide your email and set a password to complete your account setup.</p>
+    <h2>{% trans "Complete Your Registration" %}</h2>
+    <p>{% trans "Welcome! Please provide your email and set a password to complete your account setup." %}</p>
     <form method="post">
         {% csrf_token %}
         {% for field in form %}
@@ -20,7 +19,7 @@
             </div>
         {% endfor %}
         <div class="form-group">
-            <button type="submit">Complete Registration</button>
+            <button type="submit">{% trans "Complete Registration" %}</button>
         </div>
     </form>
 {% endblock %}

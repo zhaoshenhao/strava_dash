@@ -1,7 +1,6 @@
 {% extends "strava_web/base.html" %}
-
-{% block title %}Welcome to Strava Dash{% endblock %}
-
+{% load i18n %}
+{% block title %}{% trans "Welcome to Strava Dash" %}{% endblock %}
 {% block content %}
     <style>
         .home-content {
@@ -44,13 +43,13 @@
     </style>
 
     <div class="home-content">
-        <h1>Welcome to Strava Dash!</h1>
-        <p>Your ultimate dashboard for Strava activity insights and group challenges.</p>
-        <p>Connect your Strava account to get started and explore your stats, races, and compete with friends.</p>
+        <h1>{% trans "Welcome to Strava Dash!" %}</h1>
+        <p>{% trans "Your ultimate dashboard for Strava activity insights and group challenges." %}</p>
+        <p>{% trans "Connect your Strava account to get started and explore your stats, races, and compete with friends." %}</p>
 
         <div class="login-buttons">
-            <a href="{% url 'strava_login' %}" class="strava-login">Login with Strava</a>
-            <a href="{% url 'login' %}" class="email-login">Login with Email</a>
+            <a href="{% url 'strava_login' %}" class="strava-login">{% trans "Login with Strava" %}</a>
+            <a href="{% url 'login' %}" class="email-login">{% trans "Login with Email" %}</a>
         </div>
     </div>
 {% endblock %}

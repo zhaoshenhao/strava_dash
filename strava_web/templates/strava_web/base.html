@@ -1,47 +1,46 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="zh-Hans"> {# Changed language to Chinese #}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Strava Dash{% endblock %}</title>
-
-    {# Bootstrap CSS #}
+    <title>{% block title %}{% trans "Strava Dash" %}{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     {# Custom CSS (if needed, placed after Bootstrap to override styles) #}
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light"> {# Replaced custom navbar with Bootstrap classes #}
-        <div class="container-fluid"> {# Use container-fluid for full width navbar #}
-            <a class="navbar-brand" href="{% url 'personal_dashboard' %}">Strava Dash</a> {# Use navbar-brand class #}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'personal_dashboard' %}">{% trans "Strava Dash" %}</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto"> {# Use navbar-nav and ms-auto for right alignment #}
+                <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <span class="nav-link">Hello, {{ user.get_full_name|default:user.username }}!</span> {# Use nav-link for consistent styling #}
+                            <span class="nav-link">{% trans "Hello" %}, {{ user.get_full_name|default:user.username }}!</span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'profile_edit' %}">Profile</a>
+                            <a class="nav-link" href="{% url 'profile_edit' %}">{% trans "Profile" %}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'group_membership_edit' %}">Groups</a>
+                            <a class="nav-link" href="{% url 'group_membership_edit' %}">{% trans "Groups" %}</a>
                         </li>
                         <li class="nav-item">
-                            <form action="{% url 'logout' %}" method="post" class="d-inline"> {# Use d-inline for inline display #}
+                            <form action="{% url 'logout' %}" method="post" class="d-inline">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-link nav-link text-danger">Logout</button> {# Use Bootstrap btn-link and text-danger classes #}
+                                <button type="submit" class="btn btn-link nav-link text-danger">{% trans "Logout" %}</button>
                             </form>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                            <a class="nav-link" href="{% url 'login' %}">{% trans "Login" %}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'strava_login' %}">Strava Login</a>
+                            <a class="nav-link" href="{% url 'strava_login' %}">{% trans "Strava Login" %}</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -49,13 +48,13 @@
         </div>
     </nav>
 
-    <div class="container mt-4"> {# Added mt-4 for top margin #}
+    <div class="container mt-4">
         {% if messages %}
-            <ul class="messages list-unstyled"> {# Use list-unstyled for no bullet points #}
+            <ul class="messages list-unstyled">
                 {% for message in messages %}
-                    <li{% if message.tags %} class="alert alert-{{ message.tags }} fade show"{% endif %} role="alert"> {# Use Bootstrap alert classes #}
+                    <li{% if message.tags %} class="alert alert-{{ message.tags }} fade show"{% endif %} role="alert">
                         {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> {# Add close button for alerts #}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </li>
                 {% endfor %}
             </ul>
@@ -63,11 +62,7 @@
         {% block content %}
         {% endblock %}
     </div>
-
-    {# Bootstrap JS Bundle with Popper #}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
-    {# Custom JavaScript (if needed, placed after Bootstrap JS) #}
     {% block extra_js %}{% endblock %}
 </body>
 </html>

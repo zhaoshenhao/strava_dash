@@ -1,17 +1,16 @@
 # strava_web/forms.py
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import Group
-from .models import GroupApplication
+from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
 class StravaUserRegistrationForm(forms.ModelForm):
     # 邮箱字段，在注册时是必填项
     email = forms.EmailField(required=True, label="Email Address")
-    password = forms.CharField(label="Password", widget=forms.PasswordInput, required=True)
-    password_confirm = forms.CharField(label="Confirm Password", widget=forms.PasswordInput, required=True)
+    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput, required=True)
+    password_confirm = forms.CharField(label=_("Confirm Password"), widget=forms.PasswordInput, required=True)
 
     class Meta:
         model = User
@@ -20,7 +19,7 @@ class StravaUserRegistrationForm(forms.ModelForm):
     def clean_email(self):
         email = self.cleaned_data['email']
         if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
-            raise forms.ValidationError("此邮箱已被注册，请使用其他邮箱。")
+            raise forms.ValidationError(_("This email address has been registered. Please use another email address."))
         return email
 
     def clean(self):
@@ -29,13 +28,10 @@ class StravaUserRegistrationForm(forms.ModelForm):
         password_confirm = cleaned_data.get("password_confirm")
 
         if password and password_confirm and password != password_confirm:
-            self.add_error('password_confirm', "两次输入的密码不一致。")
+            self.add_error('password_confirm', _("Password mismatched"))
         return cleaned_data
 
 class CustomUserProfileForm(forms.ModelForm):
-    """
-    用于用户修改个人信息（不包括密码和组）。
-    """
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email') # 允许用户修改名字和邮件
@@ -52,18 +48,15 @@ class CustomUserProfileForm(forms.ModelForm):
         email = self.cleaned_data['email']
         # 确保修改后的 email 不与现有其他用户的 email 冲突
         if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
-            raise forms.ValidationError("此邮箱已被注册，请使用其他邮箱。")
+            raise forms.ValidationError(_("This email address has been registered. Please use another email address."))
         return email
 
 class GroupMembershipForm(forms.Form):
-    """
-    用于用户管理其组的加入和退出。
-    """
     groups = forms.ModelMultipleChoiceField(
         queryset=Group.objects.filter(is_open=True, has_dashboard=True).exclude(name='admin'),
         widget=forms.CheckboxSelectMultiple,
         required=False,
-        label="选择您要加入或退出的组"
+        label=_("Please choose the group.")
     )
 
     def __init__(self, *args, **kwargs):

@@ -5,6 +5,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 from .models import CustomUser, Activity, GroupApplication
 from unfold.admin import ModelAdmin
+from django.utils import timezone
 
 # 自定义用户模型的 Admin
 @admin.register(CustomUser)

@@ -1,9 +1,10 @@
 {% extends "strava_web/base.html" %}
+{% load i18n %}
 
-{% block title %}Edit Profile{% endblock %}
+{% block title %}{% trans "Edit Profile" %}{% endblock %}
 
 {% block content %}
-    <h2>Edit Your Profile</h2>
+    <h2>{% trans "Edit Your Profile" %}</h2>
     <form method="post">
         {% csrf_token %}
         {% for field in form %}
@@ -11,7 +12,7 @@
                 <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
                 {{ field }}
                 {% if field.help_text %}
-                    <small>{{ field.help_text }}</small>
+                    <small>{{ field.help_text|safe }}</small>
                 {% endif %}
                 {% for error in field.errors %}
                     <p class="error">{{ error }}</p>
@@ -19,8 +20,8 @@
             </div>
         {% endfor %}
         <div class="form-group">
-            <button type="submit">Update Profile</button>
+            <button type="submit">{% trans "Update Profile" %}</button>
         </div>
     </form>
-    <p><a href="{% url 'password_change' %}" class="button-link" style="background-color: #6c757d;">Change Password</a></p>
+    <p><a href="{% url 'password_change' %}" class="button-link" style="background-color: #6c757d;">{% trans "Change Password" %}</a></p>
 {% endblock %}
