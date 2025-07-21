@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-20 15:04-0400\n"
+"POT-Creation-Date: 2025-07-20 21:48-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,24 +18,24 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\strava_web\forms.py:12
+#: .\strava_web\forms.py:11
 msgid "Password"
 msgstr ""
 
-#: .\strava_web\forms.py:13
+#: .\strava_web\forms.py:12
 msgid "Confirm Password"
 msgstr ""
 
-#: .\strava_web\forms.py:22 .\strava_web\forms.py:51
+#: .\strava_web\forms.py:21 .\strava_web\forms.py:50
 msgid ""
 "This email address has been registered. Please use another email address."
 msgstr ""
 
-#: .\strava_web\forms.py:31
+#: .\strava_web\forms.py:30
 msgid "Password mismatched"
 msgstr ""
 
-#: .\strava_web\forms.py:59
+#: .\strava_web\forms.py:58
 msgid "Please choose the group."
 msgstr ""
 
@@ -71,309 +71,318 @@ msgstr ""
 msgid "UTC timestamp when the Strava access token expires."
 msgstr ""
 
-#: .\strava_web\models.py:32
-msgid "Last Strava Sync"
+#: .\strava_web\models.py:29
+msgid "Email"
 msgstr ""
 
 #: .\strava_web\models.py:33
+msgid "Last Strava Sync"
+msgstr ""
+
+#: .\strava_web\models.py:34
 msgid "Last time user's Strava data was synced."
 msgstr ""
 
-#: .\strava_web\models.py:37
+#: .\strava_web\models.py:38
 msgid "4 Weeks Distance"
 msgstr ""
 
-#: .\strava_web\models.py:38
+#: .\strava_web\models.py:39
 msgid "4 Weeks Activity Count"
 msgstr ""
 
-#: .\strava_web\models.py:39
+#: .\strava_web\models.py:40
 msgid "4 Weeks MovingTime"
 msgstr ""
 
-#: .\strava_web\models.py:40
+#: .\strava_web\models.py:41
 msgid "4 Weeks Elapsed Time"
 msgstr ""
 
-#: .\strava_web\models.py:41
+#: .\strava_web\models.py:42
 msgid "4 Weeks Elevation Gain"
 msgstr ""
 
-#: .\strava_web\models.py:42
+#: .\strava_web\models.py:43
 msgid "4 Weeks Average Heart Rate"
 msgstr ""
 
-#: .\strava_web\models.py:43
+#: .\strava_web\models.py:44
 msgid "4 Weeks Max Heart Rate"
 msgstr ""
 
-#: .\strava_web\models.py:46
+#: .\strava_web\models.py:47
 msgid "Year To Date Distance"
 msgstr ""
 
-#: .\strava_web\models.py:47
+#: .\strava_web\models.py:48
 msgid "Year To Date Activity Count"
 msgstr ""
 
-#: .\strava_web\models.py:48
+#: .\strava_web\models.py:49
 msgid "Year To Date Movming Time"
 msgstr ""
 
-#: .\strava_web\models.py:49
+#: .\strava_web\models.py:50
 msgid "Year To Date Elapsed Time"
 msgstr ""
 
-#: .\strava_web\models.py:50
+#: .\strava_web\models.py:51
 msgid "Year To Date Elevation Gain"
 msgstr ""
 
-#: .\strava_web\models.py:53
+#: .\strava_web\models.py:54
 msgid "All Time Distance"
 msgstr ""
 
-#: .\strava_web\models.py:54
+#: .\strava_web\models.py:55
 msgid "All Time Activity Count"
 msgstr ""
 
-#: .\strava_web\models.py:55
+#: .\strava_web\models.py:56
 msgid "All Time Moving Time"
 msgstr ""
 
-#: .\strava_web\models.py:56
+#: .\strava_web\models.py:57
 msgid "All Time Elapsed Time"
 msgstr ""
 
-#: .\strava_web\models.py:57
+#: .\strava_web\models.py:58
 msgid "All Time Elevation Gain"
 msgstr ""
 
-#: .\strava_web\models.py:60
+#: .\strava_web\models.py:61
 msgid "Weekly Distance"
 msgstr ""
 
-#: .\strava_web\models.py:61
+#: .\strava_web\models.py:62
 msgid "Weekly Activity Count"
 msgstr ""
 
-#: .\strava_web\models.py:62
+#: .\strava_web\models.py:63
 msgid "Weekly Moving Time"
 msgstr ""
 
-#: .\strava_web\models.py:63
+#: .\strava_web\models.py:64
 msgid "Weekly Elapsed Time"
 msgstr ""
 
-#: .\strava_web\models.py:64
+#: .\strava_web\models.py:65
 msgid "Weekly Elevation Gain"
 msgstr ""
 
-#: .\strava_web\models.py:65
+#: .\strava_web\models.py:66
 msgid "Weekly Average Heart Rate"
 msgstr ""
 
-#: .\strava_web\models.py:66
+#: .\strava_web\models.py:67
 msgid "Weekly Max Heart Rate"
 msgstr ""
 
-#: .\strava_web\models.py:73
+#: .\strava_web\models.py:74
 msgid ""
 "The groups this user belongs to. A user will get all permissions granted to "
 "each of their groups."
 msgstr ""
 
-#: .\strava_web\models.py:75 .\strava_web\templates\strava_web\base.html:30
+#: .\strava_web\models.py:76 .\strava_web\templates\strava_web\base.html:30
 msgid "Groups"
 msgstr ""
 
-#: .\strava_web\models.py:79
+#: .\strava_web\models.py:80
 msgid "User"
 msgstr ""
 
-#: .\strava_web\models.py:80
+#: .\strava_web\models.py:81
 msgid "Users"
 msgstr ""
 
-#: .\strava_web\models.py:83
+#: .\strava_web\models.py:84
 msgid "Can sync Strava data"
 msgstr ""
 
-#: .\strava_web\models.py:84
+#: .\strava_web\models.py:85
 msgid "Can view Strava reports"
 msgstr ""
 
-#: .\strava_web\models.py:124
+#: .\strava_web\models.py:125
 msgid "Allow Free Join"
 msgstr ""
 
-#: .\strava_web\models.py:125
+#: .\strava_web\models.py:126
 msgid "If checked, users can freely join this group."
 msgstr ""
 
-#: .\strava_web\models.py:126
+#: .\strava_web\models.py:127
 msgid "Has Dashboard"
 msgstr ""
 
-#: .\strava_web\models.py:127
+#: .\strava_web\models.py:128
 msgid "If checked, this group has a dedicated data dashboard."
 msgstr ""
 
-#: .\strava_web\models.py:137
+#: .\strava_web\models.py:138
 msgid "Group Admin"
 msgstr ""
 
-#: .\strava_web\models.py:138
+#: .\strava_web\models.py:139
 msgid "The designated administrator for this group (if any)."
 msgstr ""
 
-#: .\strava_web\models.py:143
+#: .\strava_web\models.py:144
+#: .\strava_web\templates\strava_web\group_dashboard.html:14
 msgid "Group Description"
 msgstr ""
 
-#: .\strava_web\models.py:144
-msgid "Group description in detail. Max length 500 chars.)"
-msgstr ""
-
-#: .\strava_web\models.py:150
-msgid "Group Announcement"
+#: .\strava_web\models.py:145
+msgid "Group description in detail. Max length 500 chars."
 msgstr ""
 
 #: .\strava_web\models.py:151
+msgid "Group Announcement"
+msgstr ""
+
+#: .\strava_web\models.py:152
 msgid "Group announcement. Max length 1000 chars"
 msgstr ""
 
-#: .\strava_web\models.py:157
+#: .\strava_web\models.py:158
+#: .\strava_web\templates\strava_web\group_manage_members.html:20
+#: .\strava_web\views.py:264
 msgid "Pending"
 msgstr ""
 
-#: .\strava_web\models.py:158
+#: .\strava_web\models.py:159
 msgid "Approved"
 msgstr ""
 
-#: .\strava_web\models.py:159
+#: .\strava_web\models.py:160
 msgid "Rejected"
 msgstr ""
 
-#: .\strava_web\models.py:162
+#: .\strava_web\models.py:163
+#: .\strava_web\templates\strava_web\group_manage_members.html:27
 msgid "Requestor"
 msgstr ""
 
-#: .\strava_web\models.py:163 .\strava_web\models.py:172
+#: .\strava_web\models.py:164 .\strava_web\models.py:173
 msgid "Application"
 msgstr ""
 
-#: .\strava_web\models.py:164 .\strava_web\models.py:176
+#: .\strava_web\models.py:165 .\strava_web\models.py:177
 msgid "Status"
 msgstr ""
 
-#: .\strava_web\models.py:165
+#: .\strava_web\models.py:166
+#: .\strava_web\templates\strava_web\group_manage_members.html:28
 msgid "Applied At"
 msgstr ""
 
-#: .\strava_web\models.py:166
+#: .\strava_web\models.py:167
 msgid "Reviewd At"
 msgstr ""
 
-#: .\strava_web\models.py:167
+#: .\strava_web\models.py:168
 msgid "Approver"
 msgstr ""
 
-#: .\strava_web\models.py:173
+#: .\strava_web\models.py:174
 msgid "Applications"
 msgstr ""
 
-#: .\strava_web\models.py:176
+#: .\strava_web\models.py:177
 msgid "Request to join"
 msgstr ""
 
-#: .\strava_web\models.py:181
+#: .\strava_web\models.py:182
 msgid "Strava Activity ID"
 msgstr ""
 
-#: .\strava_web\models.py:183
+#: .\strava_web\models.py:184
 msgid "Activity Name"
 msgstr ""
 
-#: .\strava_web\models.py:184
+#: .\strava_web\models.py:185
 msgid "Activity Type"
 msgstr ""
 
-#: .\strava_web\models.py:185
+#: .\strava_web\models.py:186
 msgid "Workout Type"
 msgstr ""
 
-#: .\strava_web\models.py:187
+#: .\strava_web\models.py:188
 msgid "Distance (meters)"
 msgstr ""
 
-#: .\strava_web\models.py:188
+#: .\strava_web\models.py:189
 msgid "Moving Time (seconds)"
 msgstr ""
 
-#: .\strava_web\models.py:189
+#: .\strava_web\models.py:190
 msgid "Elapsed Time (seconds)"
 msgstr ""
 
-#: .\strava_web\models.py:190
+#: .\strava_web\models.py:191
 msgid "Elevation Gain (meters)"
 msgstr ""
 
-#: .\strava_web\models.py:192
+#: .\strava_web\models.py:193
 msgid "Start Date (UTC)"
 msgstr ""
 
-#: .\strava_web\models.py:193
+#: .\strava_web\models.py:194
 msgid "Start Date (Local)"
 msgstr ""
 
-#: .\strava_web\models.py:194
+#: .\strava_web\models.py:195
 msgid "Timezone"
 msgstr ""
 
-#: .\strava_web\models.py:196
+#: .\strava_web\models.py:197
 msgid "Average Speed (m/s)"
 msgstr ""
 
-#: .\strava_web\models.py:197
+#: .\strava_web\models.py:198
 msgid "Max Speed (m/s)"
 msgstr ""
 
-#: .\strava_web\models.py:199
+#: .\strava_web\models.py:200
 msgid "Average Heartrate (bpm)"
 msgstr ""
 
-#: .\strava_web\models.py:200
+#: .\strava_web\models.py:201
 msgid "Max Heartrate (bpm)"
 msgstr ""
 
-#: .\strava_web\models.py:201
+#: .\strava_web\models.py:202
 msgid "Average Cadence (steps/min)"
 msgstr ""
 
-#: .\strava_web\models.py:203
+#: .\strava_web\models.py:204
 msgid "Has Heartrate Data"
 msgstr ""
 
-#: .\strava_web\models.py:204
+#: .\strava_web\models.py:205
 msgid "Has Power Data"
 msgstr ""
 
-#: .\strava_web\models.py:207
+#: .\strava_web\models.py:208
 msgid "Is Race"
 msgstr ""
 
-#: .\strava_web\models.py:209
+#: .\strava_web\models.py:210
 msgid "Created At"
 msgstr ""
 
-#: .\strava_web\models.py:210
+#: .\strava_web\models.py:211
 msgid "Updated AT"
 msgstr ""
 
-#: .\strava_web\models.py:214
+#: .\strava_web\models.py:215
 msgid "Activity"
 msgstr ""
 
-#: .\strava_web\models.py:215
+#: .\strava_web\models.py:216
 msgid "Activities"
 msgstr ""
 
@@ -390,18 +399,18 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\base.html:35
+#: .\strava_web\templates\strava_web\base.html:55
 msgid "Logout"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\base.html:40
+#: .\strava_web\templates\strava_web\base.html:60
 #: .\strava_web\templates\strava_web\login.html:4
 #: .\strava_web\templates\strava_web\login.html:7
 #: .\strava_web\templates\strava_web\login.html:35
 msgid "Login"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\base.html:43
+#: .\strava_web\templates\strava_web\base.html:63
 msgid "Strava Login"
 msgstr ""
 
@@ -415,10 +424,14 @@ msgid "Join Type:"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_dashboard.html:6
+#: .\strava_web\templates\strava_web\group_membership_edit.html:82
+#: .\strava_web\views.py:290
 msgid "Open"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_dashboard.html:6
+#: .\strava_web\templates\strava_web\group_membership_edit.html:84
+#: .\strava_web\views.py:290
 msgid "Closed"
 msgstr ""
 
@@ -442,12 +455,8 @@ msgstr ""
 msgid "Announcement"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:14
-msgid "群组描述"
-msgstr ""
-
 #: .\strava_web\templates\strava_web\group_dashboard.html:18
-msgid "该群组暂无描述。"
+msgid "No Description."
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_dashboard.html:21
@@ -464,128 +473,104 @@ msgid "Members"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_manage_members.html:8
-msgid "返回群组仪表板"
-msgstr ""
-
-#: .\strava_web\templates\strava_web\group_manage_members.html:20
-msgid "待处理的加入申请"
-msgstr ""
-
-#: .\strava_web\templates\strava_web\group_manage_members.html:27
-msgid "申请人"
-msgstr ""
-
-#: .\strava_web\templates\strava_web\group_manage_members.html:28
-msgid "申请时间"
+msgid "Return to Group Dashboard"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_manage_members.html:29
-msgid "状态"
+msgid "Staus"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_manage_members.html:30
 #: .\strava_web\templates\strava_web\group_membership_edit.html:65
-msgid "操作"
+msgid "Action"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_manage_members.html:42
-msgid "批准"
+msgid "Approve"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_manage_members.html:46
-#: .\strava_web\views.py:269
-msgid "拒绝"
+#: .\strava_web\views.py:271
+msgid "Reject"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_manage_members.html:54
-msgid "目前没有待处理的加入申请。"
+msgid "No pending request."
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_manage_members.html:61
-msgid "当前群组成员"
+msgid "Group Memebers"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:78
-msgid "该群组目前没有成员。"
+#: .\strava_web\templates\strava_web\group_manage_members.html:77
+msgid "No members in this group."
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_membership_edit.html:4
 #: .\strava_web\templates\strava_web\group_membership_edit.html:8
-msgid "管理我的群组"
+msgid "Manage My Group(s)"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_membership_edit.html:21
-msgid "所有群组"
+msgid "All Group(s)"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_membership_edit.html:26
-msgid "搜索组群名或管理员"
+msgid "Search group or administrator name"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_membership_edit.html:32
-msgid "搜索"
+msgid "Search"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_membership_edit.html:41
-msgid "组名"
+msgid "Group"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_membership_edit.html:46
-msgid "组群类型"
+msgid "Type"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_membership_edit.html:51
-msgid "成员数"
+msgid "Member(s)"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_membership_edit.html:56
-msgid "管理员"
+msgid "Administrator"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_membership_edit.html:61
-msgid "成员状态"
+msgid "Membership"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_membership_edit.html:64
-msgid "申请状态"
-msgstr ""
-
-#: .\strava_web\templates\strava_web\group_membership_edit.html:82
-#: .\strava_web\views.py:288
-msgid "开放"
-msgstr ""
-
-#: .\strava_web\templates\strava_web\group_membership_edit.html:84
-#: .\strava_web\views.py:288
-msgid "封闭"
-msgstr ""
-
-#: .\strava_web\templates\strava_web\group_membership_edit.html:100
-msgid "未指定"
+msgid "Request Status"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_membership_edit.html:105
-msgid "是"
+#: .\strava_web\templates\strava_web\personal_dashboard.html:15
+msgid "Yes"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_membership_edit.html:107
-msgid "否"
+#: .\strava_web\templates\strava_web\personal_dashboard.html:15
+msgid "No"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_membership_edit.html:131
-msgid "没有找到群组或符合搜索条件的群组。"
+msgid "Nothing found!"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_membership_edit.html:142
-msgid "上一页"
+#: .\strava_web\templates\strava_web\group_membership_edit.html:141
+msgid "Prev."
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_membership_edit.html:156
-msgid "下一页"
+#: .\strava_web\templates\strava_web\group_membership_edit.html:155
+msgid "Next"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_membership_edit.html:174
-msgid "您确定要退出群组"
+#: .\strava_web\templates\strava_web\group_membership_edit.html:173
+msgid "Are you sure to leave"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\home.html:3
@@ -680,14 +665,6 @@ msgstr ""
 
 #: .\strava_web\templates\strava_web\personal_dashboard.html:15
 msgid "Strava Connected:"
-msgstr ""
-
-#: .\strava_web\templates\strava_web\personal_dashboard.html:15
-msgid "Yes"
-msgstr ""
-
-#: .\strava_web\templates\strava_web\personal_dashboard.html:15
-msgid "No"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\personal_dashboard.html:16
@@ -845,106 +822,156 @@ msgid ""
 "account setup."
 msgstr ""
 
-#: .\strava_web\views.py:248
-msgid "退出"
+#: .\strava_web\views.py:62
+msgid "CSRF validation failed"
 msgstr ""
 
-#: .\strava_web\views.py:253
-msgid "加入"
+#: .\strava_web\views.py:67
+#, python-format
+msgid "Strava authorization failed: %(error)s"
 msgstr ""
 
-#: .\strava_web\views.py:261
-msgid "等待批准"
+#: .\strava_web\views.py:71
+msgid "Strava Auth code not received."
 msgstr ""
 
-#: .\strava_web\views.py:262
-msgid "等待"
+#: .\strava_web\views.py:136
+#, python-format
+msgid ""
+"Welcome to Strava Dash, %(username)s! Please complete your registration."
 msgstr ""
 
-#: .\strava_web\views.py:268
-msgid "已拒绝 (7天内不可重申)"
+#: .\strava_web\views.py:139
+#, python-format
+msgid "Welcome back, %(username)s!"
 msgstr ""
 
-#: .\strava_web\views.py:273
-msgid "已拒绝 (可重新申请)"
+#: .\strava_web\views.py:142
+msgid "Strava login failed, please try again."
 msgstr ""
 
-#: .\strava_web\views.py:274 .\strava_web\views.py:281
-msgid "申请"
+#: .\strava_web\views.py:146
+#, python-format
+msgid "Connection to Strava failed: %(error_message)s"
 msgstr ""
 
-#: .\strava_web\views.py:280
-msgid "未申请"
+#: .\strava_web\views.py:149
+msgid "Strava data format error."
 msgstr ""
 
-#: .\strava_web\views.py:370
-msgid "您没有权限管理该组。"
+#: .\strava_web\views.py:152
+#, python-format
+msgid "Unknown error: %(error_message)s"
 msgstr ""
 
-#: .\strava_web\views.py:394
-msgid "这是一个开放群组，无需申请即可加入。"
+#: .\strava_web\views.py:161 .\strava_web\views.py:173
+msgid "Registration completed."
 msgstr ""
 
-#: .\strava_web\views.py:398
-msgid "您已经是该群组的成员。"
+#: .\strava_web\views.py:178 .\strava_web\views.py:212
+msgid "Please correct the error in the form."
 msgstr ""
 
-#: .\strava_web\views.py:405
-msgid "您已经提交了申请，请等待管理员审核。"
+#: .\strava_web\views.py:209
+msgid "You profile has been updated."
 msgstr ""
 
-#: .\strava_web\views.py:408
-msgid "您的申请最近被拒绝，请在7天后重试。"
+#: .\strava_web\views.py:250
+msgid "Leave"
 msgstr ""
 
-#: .\strava_web\views.py:419
-#, python-brace-format
-msgid "已向 %{group_name} 提交加入申请，请等待管理员审核。"
+#: .\strava_web\views.py:255 .\strava_web\views.py:276
+#: .\strava_web\views.py:283
+msgid "Join"
 msgstr ""
 
-#: .\strava_web\views.py:432
-msgid "您没有权限审核此申请。"
+#: .\strava_web\views.py:263
+msgid "Pending Approval"
 msgstr ""
 
-#: .\strava_web\views.py:438
-msgid "该申请已处理过。"
+#: .\strava_web\views.py:270
+msgid "Rejected (can re-apply after 7 days)"
 msgstr ""
 
-#: .\strava_web\views.py:447
-#, python-brace-format
-msgid "已批准 %{uname} 加入 %{gname}。"
+#: .\strava_web\views.py:275
+msgid "Rejected (Can reapply)"
 msgstr ""
 
-#: .\strava_web\views.py:453
-#, python-brace-format
-msgid "已拒绝 %{uname} 加入 %{gname}。"
+#: .\strava_web\views.py:282
+msgid "Not applied for"
+msgstr ""
+
+#: .\strava_web\views.py:372
+msgid "You do not have permission to manage this group."
+msgstr ""
+
+#: .\strava_web\views.py:396
+msgid "This is an open group and no application is required to join."
+msgstr ""
+
+#: .\strava_web\views.py:400
+msgid "You are already a member of this group."
+msgstr ""
+
+#: .\strava_web\views.py:407
+msgid ""
+"You have submitted your application, please wait for the administrator to "
+"review it."
+msgstr ""
+
+#: .\strava_web\views.py:410
+msgid "Your application was recently rejected, please try again in 7 days."
+msgstr ""
+
+#: .\strava_web\views.py:414 .\strava_web\views.py:421
+#, python-format
+msgid ""
+"Application to join %(group_name)s submitted, please wait for admin review."
+msgstr ""
+
+#: .\strava_web\views.py:434
+msgid "You do not have permission to review this request."
+msgstr ""
+
+#: .\strava_web\views.py:440
+msgid "The application has been processed."
+msgstr ""
+
+#: .\strava_web\views.py:449
+#, python-format
+msgid "Approved %(username)s to join %(group_name)s."
 msgstr ""
 
 #: .\strava_web\views.py:455
-msgid "无效的操作。"
+#, python-format
+msgid "Rejected %(username)s from joining %(group_name)s."
 msgstr ""
 
-#: .\strava_web\views.py:465
-#, python-brace-format
-msgid "您已加入组: %{gname}。"
+#: .\strava_web\views.py:457
+msgid "Invalid operation."
 msgstr ""
 
 #: .\strava_web\views.py:467
-#, python-brace-format
-msgid "您已在该组中: %{gname}"
+#, python-format
+msgid "You have joined the group: %(gname)s."
 msgstr ""
 
 #: .\strava_web\views.py:469
-#, python-brace-format
-msgid "组 %{gname} 不允许自由加入。"
+#, python-format
+msgid "You are already in this group:%(gname)s."
 msgstr ""
 
-#: .\strava_web\views.py:477
-#, python-brace-format
-msgid "您已离开组: %{gname}"
+#: .\strava_web\views.py:471
+#, python-format
+msgid "Group %(gname)s is not open."
 msgstr ""
 
 #: .\strava_web\views.py:479
-#, python-brace-format
-msgid "您不属于该组: %{gname}"
+#, python-format
+msgid "You have left the group: %(gname)s"
+msgstr ""
+
+#: .\strava_web\views.py:481
+#, python-format
+msgid "You do not belong to this group: %(gname)s"
 msgstr ""

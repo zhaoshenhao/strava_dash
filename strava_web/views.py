@@ -59,16 +59,16 @@ def strava_callback(request):
 
     # 验证 CSRF state
     if state != request.session.get('strava_oauth_state'):
-        messages.error(request, "CSRF 验证失败。")
+        messages.error(request, _("CSRF validation failed"))
         return HttpResponseRedirect(reverse('login'))
     del request.session['strava_oauth_state'] # 使用后删除
 
     if error:
-        messages.error(request, f"Strava 授权失败: {error}")
+        messages.error(request, _("Strava authorization failed: %(error)s") % {'error': error})
         return HttpResponseRedirect(reverse('login'))
 
     if not code:
-        messages.error(request, "未收到 Strava 授权码。")
+        messages.error(request, _("Strava Auth code not received."))
         return HttpResponseRedirect(reverse('login'))
 
     client_id = settings.STRAVA_CLIENT_ID
@@ -132,23 +132,24 @@ def strava_callback(request):
         if authenticated_user:
             login(request, authenticated_user)
             if created:
-                messages.success(request, f"欢迎加入 Strava Dash，{user.get_full_name() or user.username}！请完善您的注册信息。")
+                messages.success(request, f"Welcome to Strava Dash，{user.get_full_name() or user.username}！Please complete your registration.")
+                messages.success(request, _("Welcome to Strava Dash, %(username)s! Please complete your registration.") % {'username': user.get_full_name() or user.username})
                 return HttpResponseRedirect(reverse('register')) # 新用户跳转到完善信息页
             else:
-                messages.success(request, f"欢迎回来，{user.get_full_name() or user.username}！")
+                messages.success(request, _("Welcome back, %(username)s!") % {'username': user.get_full_name() or user.username})
                 return HttpResponseRedirect(reverse('personal_dashboard')) # 登录成功重定向
         else:
-            messages.error(request, "Strava 登录失败，请重试。")
+            messages.error(request, _("Strava login failed, please try again."))
             return HttpResponseRedirect(reverse('login'))
 
     except requests.exceptions.RequestException as e:
-        messages.error(request, f"与 Strava 通信失败: {e}")
+        messages.error(request, _("Connection to Strava failed: %(error_message)s") % {'error_message': e})
         return HttpResponseRedirect(reverse('login'))
     except json.JSONDecodeError:
-        messages.error(request, "Strava 响应格式错误。")
+        messages.error(request, _("Strava data format error."))
         return HttpResponseRedirect(reverse('login'))
     except Exception as e:
-        messages.error(request, f"登录过程中发生未知错误: {e}")
+        messages.error(request, _("Unknown error: %(error_message)s") % {'error_message': e})
         return HttpResponseRedirect(reverse('login'))
 
 @login_required
@@ -157,7 +158,7 @@ def register_user(request):
     新用户 Strava SSO 注册后，完善邮件和密码信息。
     """
     if request.user.has_usable_password() and request.user.email:
-        messages.info(request, "您的注册信息已完善。")
+        messages.info(request, _("Registration completed."))
         return redirect('personal_dashboard')
 
     if request.method == 'POST':
@@ -169,12 +170,12 @@ def register_user(request):
                 user.set_password(password)
             user.is_active = True # 确保账户激活
             user.save()
-            messages.success(request, "注册信息已完善！")
+            messages.success(request, _("Registration completed."))
             # 重新登录以更新 session 中的用户认证状态
             login(request, user, backend='django.contrib.auth.backends.ModelBackend') 
             return redirect('personal_dashboard')
         else:
-            messages.error(request, "请修正表单中的错误。")
+            messages.error(request, _("Please correct the error in the form."))
     else:
         form = StravaUserRegistrationForm(instance=request.user) # 预填充 Strava 提供的名字等
 
@@ -187,6 +188,7 @@ def personal_dashboard(request):
     """
     显示个人 Dashboard，包含个人信息和加入的组。
     """
+    print(f"Current language code in view: {request.LANGUAGE_CODE}")
     # 可以从 request.user 获取个人信息
     user_groups = request.user.groups.all()
     context = {
@@ -204,10 +206,10 @@ def profile_edit(request):
         form = CustomUserProfileForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, "您的个人信息已更新。")
+            messages.success(request, _("You profile has been updated."))
             return redirect('personal_dashboard')
         else:
-            messages.error(request, "请修正表单中的错误。")
+            messages.error(request, _("Please correct the error in the form."))
     else:
         form = CustomUserProfileForm(instance=request.user)
 
@@ -245,12 +247,12 @@ def group_membership_edit(request):
 
         if is_member:
             # 如果是成员，显示“退出”按钮
-            action_button_text = _("退出")
+            action_button_text = _("Leave")
             action_button_class = "btn-danger"
             action_url_name = "leave_group" # 这是一个新的/修改后的URL，需要JS确认
         elif group.is_open:
             # 如果是开放组且不是成员，显示“加入”按钮
-            action_button_text = _("加入")
+            action_button_text = _("Join")
             action_button_class = "btn-success"
             action_url_name = "join_group"
         else:
@@ -258,34 +260,34 @@ def group_membership_edit(request):
             try:
                 application = GroupApplication.objects.get(user=request.user, group=group)
                 if application.status == 'pending':
-                    application_status_display = _("等待批准")
-                    action_button_text = _("等待")
+                    application_status_display = _("Pending Approval")
+                    action_button_text = _("Pending")
                     action_button_class = "btn-warning"
                     action_button_disabled = True
                 elif application.status == 'rejected':
                     # 检查是否在拒绝后7天内
                     if application.reviewed_at and (timezone.now() - application.reviewed_at).days < 7:
-                        application_status_display = _("已拒绝 (7天内不可重申)")
-                        action_button_text = _("拒绝")
+                        application_status_display = _("Rejected (can re-apply after 7 days)")
+                        action_button_text = _("Reject")
                         action_button_class = "btn-secondary"
                         action_button_disabled = True
                     else:
-                        application_status_display = _("已拒绝 (可重新申请)")
-                        action_button_text = _("申请") # 超过7天可重新申请
+                        application_status_display = _("Rejected (Can reapply)")
+                        action_button_text = _("Join") # 超过7天可重新申请
                         action_button_class = "btn-primary"
                         is_application_form = True # 标记为申请表单
                         action_url_name = "apply_for_group"
             except GroupApplication.DoesNotExist:
                 # 未申请
-                application_status_display = _("未申请")
-                action_button_text = _("申请")
+                application_status_display = _("Not applied for")
+                action_button_text = _("Join")
                 action_button_class = "btn-primary"
                 is_application_form = True # 标记为申请表单
                 action_url_name = "apply_for_group"
 
         groups_data.append({
             'group': group,
-            'group_type': _("开放") if group.is_open else _("封闭"),
+            'group_type': _("Open") if group.is_open else _("Closed"),
             'is_member': is_member,
             'member_count': group.member_count,
             'application_status_display': application_status_display,
@@ -367,7 +369,7 @@ def group_manage_members(request, group_id):
 
     # 检查当前用户是否是该群组的管理员
     if group.admin != request.user:
-        messages.error(request, _("您没有权限管理该组。"))
+        messages.error(request, _("You do not have permission to manage this group."))
         return redirect('group_dashboard', group_id=group.id)
 
     # 获取所有群组成员
@@ -391,32 +393,32 @@ def apply_for_group(request, group_id):
     group = get_object_or_404(Group, id=group_id)
 
     if group.is_open:
-        messages.error(request, _("这是一个开放群组，无需申请即可加入。"))
+        messages.error(request, _("This is an open group and no application is required to join."))
         return redirect('group_membership_edit')
 
     if request.user.groups.filter(id=group.id).exists():
-        messages.info(request, _("您已经是该群组的成员。"))
+        messages.info(request, _("You are already a member of this group."))
         return redirect('group_membership_edit')
 
     # 检查是否有待处理或被拒绝但未过期的申请
     existing_application = GroupApplication.objects.filter(user=request.user, group=group).first()
     if existing_application:
         if existing_application.status == 'pending':
-            messages.info(request, _("您已经提交了申请，请等待管理员审核。"))
+            messages.info(request, _("You have submitted your application, please wait for the administrator to review it."))
         elif existing_application.status == 'rejected' and \
              existing_application.reviewed_at and (timezone.now() - existing_application.reviewed_at).days < 7:
-            messages.warning(request, _("您的申请最近被拒绝，请在7天后重试。"))
+            messages.warning(request, _("Your application was recently rejected, please try again in 7 days."))
         else: # 超过7天，可以重新申请
             existing_application.delete() # 删除旧的被拒绝申请以便创建新的
             GroupApplication.objects.create(user=request.user, group=group, status='pending')
-            messages.success(request, f"已向 {group.name} 提交加入申请，请等待管理员审核。")
+            messages.success(request, _("Application to join %(group_name)s submitted, please wait for admin review.") % {'group_name': group.name})
             return redirect('group_membership_edit')
         return redirect('group_membership_edit')
 
 
     # 创建新的申请
     GroupApplication.objects.create(user=request.user, group=group, status='pending')
-    messages.success(request, _("已向 %{group_name} 提交加入申请，请等待管理员审核。") % {'group_name': group.name})
+    messages.success(request, _("Application to join %(group_name)s submitted, please wait for admin review.") % {'group_name': group.name})
     return redirect('group_membership_edit')
 
 
@@ -429,13 +431,13 @@ def review_group_application(request, application_id):
 
     # 检查当前用户是否是该群组的管理员
     if group.admin != request.user:
-        messages.error(request, _("您没有权限审核此申请。"))
+        messages.error(request, _("You do not have permission to review this request."))
         return redirect('group_dashboard', group_id=group.id)
 
     action = request.POST.get('action') # 'approve' 或 'reject'
 
     if application.status != 'pending':
-        messages.warning(request, _("该申请已处理过。"))
+        messages.warning(request, _("The application has been processed."))
         return redirect('group_manage_members', group_id=group.id)
 
     if action == 'approve':
@@ -444,15 +446,15 @@ def review_group_application(request, application_id):
         application.reviewer = request.user
         application.save()
         group.members.add(application.user) # 将用户添加到群组
-        messages.success(request, _("已批准 %{uname} 加入 %{gname}。") % {'uname': application.user.username, 'gname': group.name})
+        messages.success(request, _("Approved %(username)s to join %(group_name)s.") % {'username': application.user.username,'group_name': group.name})
     elif action == 'reject':
         application.status = 'rejected'
         application.reviewed_at = timezone.now()
         application.reviewer = request.user
         application.save()
-        messages.info(request, _("已拒绝 %{uname} 加入 %{gname}。") % {'uname': application.user.username, 'gname': group.name})
+        messages.info(request, _("Rejected %(username)s from joining %(group_name)s.") % {'username': application.user.username,'group_name': group.name})
     else:
-        messages.error(request, _("无效的操作。"))
+        messages.error(request, _("Invalid operation."))
 
     return redirect('group_manage_members', group_id=group.id)
 
@@ -462,11 +464,11 @@ def join_group(request, group_id):
     if group.is_open and group.has_dashboard and group.name != 'admin':
         if not request.user.groups.filter(id=group.id).exists():
             request.user.groups.add(group)
-            messages.success(request, _("您已加入组: %{gname}。") % {'gname': group.name})
+            messages.success(request, _("You have joined the group: %(gname)s.") % {'gname': group.name})
         else:
-            messages.info(request, _("您已在该组中: %{gname}") % {'gname': group.name})
+            messages.info(request, _("You are already in this group:%(gname)s.") % {'gname': group.name})
     else:
-        messages.error(request, _("组 %{gname} 不允许自由加入。") % {'gname': group.name})
+        messages.error(request, _("Group %(gname)s is not open.") % {'gname': group.name})
     return redirect('personal_dashboard') # 或重定向到组列表页面
 
 @login_required
@@ -474,9 +476,9 @@ def leave_group(request, group_id):
     group = get_object_or_404(Group, id=group_id)
     if request.user.groups.filter(id=group.id).exists():
         request.user.groups.remove(group)
-        messages.success(request, _("您已离开组: %{gname}") % {'gname': group.name})
+        messages.success(request, _("You have left the group: %(gname)s") % {'gname': group.name})
     else:
-        messages.info(request, _("您不属于该组: %{gname}") % {'gname': group.name})
+        messages.info(request, _("You do not belong to this group: %(gname)s") % {'gname': group.name})
     return redirect('personal_dashboard') # 或重定向到组列表页面
 
 def home(request):

@@ -25,7 +25,8 @@ class CustomUser(AbstractUser):
     # 用户在 Strava SSO 注册时输入的邮件地址（Django AbstractUser 默认已包含 email 字段）
     # 这里确保 email 字段可以为空，但如果通过 SSO 注册，我们要求必填
     # 如果你希望 email 始终唯一，则保持 unique=True
-    email = models.EmailField('email address', unique=True, blank=True) # 默认是 unique=True, blank=True
+    email = models.EmailField(unique=True, blank=True,
+                              verbose_name=_("Email")) # 默认是 unique=True, blank=True
 
     # 最近一次 Strava 数据同步时间，用于增量更新
     last_strava_sync = models.DateTimeField(null=True, blank=True,
@@ -141,7 +142,7 @@ Group.add_to_class('description', models.TextField(
     max_length=500,
     blank=True,
     verbose_name=_("Group Description"),
-    help_text=_("Group description in detail. Max length 500 chars.)"
+    help_text=_("Group description in detail. Max length 500 chars."
 )))
 # announcement 字段
 Group.add_to_class('announcement', models.TextField(

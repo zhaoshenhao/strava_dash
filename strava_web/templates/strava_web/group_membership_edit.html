@@ -1,11 +1,11 @@
 {% extends 'strava_web/base.html' %}
 {% load i18n %}
 {% load static %}
-{% block title %}{% trans "管理我的群组" %}{% endblock %}
+{% block title %}{% trans "Manage My Group(s)" %}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h1>{% trans "管理我的群组" %}</h1>
+    <h1>{% trans "Manage My Group(s)" %}</h1>
 
     {% if messages %}
         <ul class="messages list-unstyled">
@@ -15,21 +15,21 @@
         </ul>
     {% endif %}
 
-    {# 所有群组列表 #}
+    {# All group list #}
     <div class="card mt-4">
         <div class="card-header">
-            <h2>{% trans "所有群组" %}</h2>
+            <h2>{% trans "All Group(s)" %}</h2>
         </div>
         <div class="card-body">
             <form id="group-search-form" method="get" class="mb-3">
                 <div class="input-group">
-                    <input type="text" name="search" id="search-input" class="form-control" placeholder='{% trans "搜索组群名或管理员" %}' value="{{ search_query }}">
+                    <input type="text" name="search" id="search-input" class="form-control" placeholder='{% trans "Search group or administrator name" %}' value="{{ search_query }}">
                     {% if search_query %}
                         <button type="button" class="btn btn-outline-secondary" id="clear-search-btn">
                             <i class="bi bi-x-lg"></i>
                         </button>
                     {% endif %}
-                    <button class="btn btn-outline-secondary" type="submit">{% trans "搜索" %}</button>
+                    <button class="btn btn-outline-secondary" type="submit">{% trans "Search" %}</button>
                 </div>
             </form>
 
@@ -38,31 +38,31 @@
                     <tr>
                         <th>
                             <a href="?sort_by=name&order={% if sort_by == 'name' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
-                                {% trans "组名" %} {% if sort_by == 'name' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+                                {% trans "Group" %} {% if sort_by == 'name' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
                         <th>
                             <a href="?sort_by=group_type&order={% if sort_by == 'group_type' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
-                                {% trans "组群类型" %} {% if sort_by == 'group_type' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+                                {% trans "Type" %} {% if sort_by == 'group_type' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
                         <th>
                             <a href="?sort_by=member_count&order={% if sort_by == 'member_count' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
-                                {% trans "成员数" %} {% if sort_by == 'member_count' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+                                {% trans "Member(s)" %} {% if sort_by == 'member_count' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
                         <th>
                             <a href="?sort_by=admin&order={% if sort_by == 'admin' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
-                                {% trans "管理员" %} {% if sort_by == 'admin' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+                                {% trans "Administrator" %} {% if sort_by == 'admin' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
                         <th>
                             <a href="?sort_by=is_member&order={% if sort_by == 'is_member' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
-                                {% trans "成员状态" %} {% if sort_by == 'is_member' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+                                {% trans "Membership" %} {% if sort_by == 'is_member' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
-                        <th>{% trans "申请状态" %}</th>
-                        <th>{% trans "操作" %}</th>
+                        <th>{% trans "Request Status" %}</th>
+                        <th>{% trans "Action" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -79,9 +79,9 @@
                         </td>
                         <td>
                             {% if item.group.is_open %}
-                                <span class="badge bg-primary">{% trans "开放" %}</span>
+                                <span class="badge bg-primary">{% trans "Open" %}</span>
                             {% else %}
-                                <span class="badge bg-dark">{% trans "封闭" %}</span>
+                                <span class="badge bg-dark">{% trans "Closed" %}</span>
                             {% endif %}
                         </td>
                         <td>{{ item.member_count }}</td>
@@ -97,14 +97,14 @@
                                     {{ item.group.admin.username }}
                                 {% endif %}
                             {% else %}
-                                {% trans "未指定" %}
+                                -
                             {% endif %}
                         </td>
                         <td>
                             {% if item.is_member %}
-                                <span class="badge bg-success">{% trans "是" %}</span>
+                                <span class="badge bg-success">{% trans "Yes" %}</span>
                             {% else %}
-                                <span class="badge bg-secondary">{% trans "否" %}</span>
+                                <span class="badge bg-secondary">{% trans "No" %}</span>
                             {% endif %}
                         </td>
                         <td>
@@ -128,18 +128,17 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center">{% trans "没有找到群组或符合搜索条件的群组。" %}</td>
+                        <td colspan="7" class="text-center">{% trans "Nothing found!" %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
 
-            {# 分页导航 #}
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center">
                     {% if groups_paginated.has_previous %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ groups_paginated.previous_page_number }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}">{% trans "上一页" %}</a>
+                            <a class="page-link" href="?page={{ groups_paginated.previous_page_number }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}">{% trans "Prev." %}</a>
                         </li>
                     {% endif %}
 
@@ -153,7 +152,7 @@
 
                     {% if groups_paginated.has_next %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ groups_paginated.next_page_number }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}">{% trans "下一页" %}</a>
+                            <a class="page-link" href="?page={{ groups_paginated.next_page_number }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}">{% trans "Next" %}</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -171,7 +170,7 @@
                 const button = event.target.querySelector('button[type="submit"]');
                 if (button && button.textContent.trim() === "退出") {
                     const groupName = event.target.closest('tr').querySelector('td:first-child a, td:first-child').textContent.trim(); // 适应链接或文本
-                    const confirmMessage = `{% trans "您确定要退出群组" %} "${groupName}"?`;
+                    const confirmMessage = `{% trans "Are you sure to leave" %} "${groupName}"?`;
                     if (!confirm(confirmMessage)) {
                         event.preventDefault(); // 阻止表单提交
                     }

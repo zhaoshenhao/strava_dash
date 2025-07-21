@@ -21,6 +21,7 @@ from django.views.generic.base import RedirectView # 用于根路径重定向
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('i18n/', include('django.conf.urls.i18n')),
     #path('', RedirectView.as_view(url='/dashboard/', permanent=False)), # 根路径重定向到仪表盘
     path('', include('strava_web.urls')), # 包含你的应用路由
 ]

@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container mt-4">
     <h1>{{ group.name }}: {% trans "Members" %}</h1>
-    <p><a href="{% url 'group_dashboard' group.id %}">{% trans "返回群组仪表板" %}</a></p>
+    <p><a href="{% url 'group_dashboard' group.id %}">{% trans "Return to Group Dashboard" %}</a></p>
 
     {% if messages %}
         <ul class="messages list-unstyled">
@@ -17,17 +17,17 @@
 
     <div class="card mb-4">
         <div class="card-header">
-            <h2>{% trans "待处理的加入申请" %}</h2>
+            <h2>{% trans "Pending" %}</h2>
         </div>
         <div class="card-body">
             {% if pending_applications %}
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>{% trans "申请人" %}</th>
-                        <th>{% trans "申请时间" %}</th>
-                        <th>{% trans "状态" %}</th>
-                        <th>{% trans "操作" %}</th>
+                        <th>{% trans "Requestor" %}</th>
+                        <th>{% trans "Applied At" %}</th>
+                        <th>{% trans "Staus" %}</th>
+                        <th>{% trans "Action" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,11 +39,11 @@
                         <td>
                             <form action="{% url 'review_group_application' application.id %}" method="post" style="display:inline;">
                                 {% csrf_token %}
-                                <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">{% trans "批准" %}</button>
+                                <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">{% trans "Approve" %}</button>
                             </form>
                             <form action="{% url 'review_group_application' application.id %}" method="post" style="display:inline; margin-left: 5px;">
                                 {% csrf_token %}
-                                <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">{% trans "拒绝" %}</button>
+                                <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">{% trans "Reject" %}</button>
                             </form>
                         </td>
                     </tr>
@@ -51,14 +51,14 @@
                 </tbody>
             </table>
             {% else %}
-            <p>{% trans "目前没有待处理的加入申请。" %}</p>
+            <p>{% trans "No pending request." %}</p>
             {% endif %}
         </div>
     </div>
 
     <div class="card">
         <div class="card-header">
-            <h2>{% trans "当前群组成员" %}</h2>
+            <h2>{% trans "Group Memebers" %}</h2>
         </div>
         <div class="card-body">
             {% if group_members %}
@@ -66,16 +66,15 @@
                 {% for member in group_members %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     {{ member.username }}
-                    {# 这里可以添加移除成员的按钮，需要额外的视图和逻辑 #}
                     {# <form action="{% url 'remove_group_member' group.id member.id %}" method="post" style="display:inline;"> #}
                     {#     {% csrf_token %} #}
-                    {#     <button type="submit" class="btn btn-danger btn-sm">{% trans "移除" %}</button> #}
+                    {#     <button type="submit" class="btn btn-danger btn-sm">{% trans "Remove" %}</button> #}
                     {# </form> #}
                 </li>
                 {% endfor %}
             </ul>
             {% else %}
-            <p>{% trans "该群组目前没有成员。" %}</p>
+            <p>{% trans "No members in this group." %}</p>
             {% endif %}
         </div>
     </div>

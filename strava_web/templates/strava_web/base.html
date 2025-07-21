@@ -1,6 +1,6 @@
 {% load i18n %}
 <!DOCTYPE html>
-<html lang="zh-Hans"> {# Changed language to Chinese #}
+<html lang="en"> {# Changed language to Chinese #}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,6 +28,26 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'group_membership_edit' %}">{% trans "Groups" %}</a>
+                        </li>
+                        {# Language Switcher Dropdown #}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if request.LANGUAGE_CODE == 'zh-hans' %}中文{% else %}English{% endif %}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                                <li>
+                                    <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+                                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                                        <button type="submit" name="language" value="en" class="dropdown-item {% if request.LANGUAGE_CODE == 'en' %}active{% endif %}">English</button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+                                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                                        <button type="submit" name="language" value="zh-hans" class="dropdown-item {% if request.LANGUAGE_CODE == 'zh-hans' %}active{% endif %}">中文</button>
+                                    </form>
+                                </li>
+                            </ul>
                         </li>
                         <li class="nav-item">
                             <form action="{% url 'logout' %}" method="post" class="d-inline">

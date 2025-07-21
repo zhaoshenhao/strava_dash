@@ -7,7 +7,6 @@ from django.utils.translation import gettext_lazy as _
 User = get_user_model()
 
 class StravaUserRegistrationForm(forms.ModelForm):
-    # 邮箱字段，在注册时是必填项
     email = forms.EmailField(required=True, label="Email Address")
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput, required=True)
     password_confirm = forms.CharField(label=_("Confirm Password"), widget=forms.PasswordInput, required=True)
