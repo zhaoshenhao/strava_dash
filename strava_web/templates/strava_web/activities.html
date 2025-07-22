@@ -1,0 +1,173 @@
+{% extends 'strava_web/base.html' %}
+{% load i18n %}
+{% load strava_filters %}
+{% load tz %}
+{% block title %}{% trans "Your Activities" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{% trans "Your Activities" %}</h1>
+
+    {# Filter Form #}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">{% trans "Filter Activities" %}</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                {# Date Filters #}
+                <div class="col-md-3">
+                    <label for="id_year" class="form-label">{% trans "Year" %}:</label>
+                    <select class="form-select" id="id_year" name="year">
+                        <option value="">{% trans "All Years" %}</option>
+                        {% for y in available_years %} {# available_years passed from view #}
+                            <option value="{{ y }}" {% if selected_year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="id_month" class="form-label">{% trans "Month" %}:</label>
+                    <select class="form-select" id="id_month" name="month">
+                        <option value="">{% trans "All Months" %}</option>
+                        {% for m_num, m_name in available_months %} {# available_months: [(1, 'January'), ...] #}
+                            <option value="{{ m_num }}" {% if selected_month == m_num|stringformat:"s" %}selected{% endif %}>{% trans m_name %}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="id_week" class="form-label">{% trans "Week" %}:</label>
+                    <select class="form-select" id="id_week" name="week">
+                        <option value="">{% trans "All Weeks" %}</option>
+                        {% for w in available_weeks %} {# available_weeks: [1, 2, ..., 52] #}
+                            <option value="{{ w }}" {% if selected_week == w|stringformat:"s" %}selected{% endif %}>{% trans "Week" %} {{ w }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                {# Distance Filters #}
+                <div class="col-md-3">
+                    <label for="id_distance" class="form-label">{% trans "Distance" %}:</label>
+                    <select class="form-select" id="id_distance" name="distance">
+                        <option value="">{% trans "All Distances" %}</option>
+                        <option value="0-5k" {% if selected_distance == '0-5k' %}selected{% endif %}>0-5 km</option>
+                        <option value="5-10k" {% if selected_distance == '5-10k' %}selected{% endif %}>5-10 km</option>
+                        <option value="10-15k" {% if selected_distance == '10-15k' %}selected{% endif %}>10-15 km</option>
+                        <option value="15-20k" {% if selected_distance == '15-20k' %}selected{% endif %}>15-20 km</option>
+                        <option value="20-25k" {% if selected_distance == '20-25k' %}selected{% endif %}>20-25 km</option>
+                        <option value="25-30k" {% if selected_distance == '25-30k' %}selected{% endif %}>25-30 km</option>
+                        <option value="30-35k" {% if selected_distance == '30-35k' %}selected{% endif %}>30-35 km</option>
+                        <option value="35-40k" {% if selected_distance == '35-40k' %}selected{% endif %}>35-40 km</option>
+                        <option value="40-45k" {% if selected_distance == '40-45k' %}selected{% endif %}>40-45 km</option>
+                        <option value="45-50k" {% if selected_distance == '45-50k' %}selected{% endif %}>45-50 km</option>
+                        <option value="50-100k" {% if selected_distance == '50-100k' %}selected{% endif %}>50-100k</option>
+                        <option value="100k_plus" {% if selected_distance == '100k_plus' %}selected{% endif %}>>100 km</option>
+                    </select>
+                </div>
+
+                {# Is Race Filter #}
+                <div class="col-md-auto">
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" id="id_is_race" name="is_race" value="true" {% if selected_is_race == 'true' %}checked{% endif %}>
+                        <label class="form-check-label" for="id_is_race">
+                            {% trans "Is Race" %}
+                        </label>
+                    </div>
+                </div>
+
+                {# Submit and Clear Buttons #}
+                <div class="col-md-auto">
+                    <button type="submit" class="btn btn-primary">{% trans "Apply Filters" %}</button>
+                </div>
+                <div class="col-md-auto">
+                    <a href="{% url 'activities' %}" class="btn btn-secondary">{% trans "Clear Filters" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {# Activities List #}
+    {% if page_obj %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>{% trans "Date" %}</th>
+                        <th>{% trans "Activity Name" %}</th>
+                        <th>{% trans "Distance" %} km</th>
+                        <th>{% trans "Distance" %} mile</th>
+                        <th>{% trans "Elapsed Time" %}</th>
+                        <th>{% trans "Elevation Gain" %} m</th>
+                        <th>{% trans "Average Pace" %} km</th>
+                        <th>{% trans "Average Pace" %} mile</th>
+                        <th>{% trans "Average Heart Rate" %}</th>
+                        <th>{% trans "Average Cadence" %}</th>
+                        <th>{% trans "Race" %}</th>
+                        <th>{% trans "View on Strava" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for activity in page_obj %}
+                    <tr>
+                        <td>
+                            {% if activity.start_date_local %}
+                                {% localtime off %}
+                                    {{ activity.start_date_local|date:"Y-m-d H:i" }}
+                                {% endlocaltime %}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>{{ activity.name }}</td>
+                        <td>{{ activity.distance|div:1000|floatformat:2|default_if_none:"0.00" }}</td>
+                        <td>{{ activity.distance|div:1609.34|floatformat:2|default_if_none:"0.00" }}</td>
+                        <td>{{ activity.elapsed_time|default:0|duration:0 }}</td>
+                        <td>{{ activity.elevation_gain|floatformat:0|default_if_none:"0" }}</td>
+                        <td>{{ activity.average_speed|default:0|speed_km_pace }}</td>
+                        <td>{{ activity.average_speed|default:0|speed_mile_pace }}</td>
+                        <td>{{ activity.average_heartrate|floatformat:0|default_if_none:"0" }}</td>
+                        <td>{{ activity.average_cadence|div:0.5|floatformat:0  }}</td>
+                        <td>{% if activity.is_race %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
+                        <td>
+                            {% if activity.strava_id %}
+                                <a href="https://www.strava.com/activities/{{ activity.strava_id }}" target="_blank" class="btn btn-sm btn-info">
+                                    <i class="bi bi-link-45deg"></i> {% trans "View" %}
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {# Pagination #}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "First" %}</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Previous" %}</a></li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Next" %}</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Last" %}</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            {% trans "No activities found matching your criteria." %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

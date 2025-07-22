@@ -25,8 +25,19 @@
             <tr><td>{% trans "Moving Time" %}</td><td>{{ user.weekly_run_moving_time }} {% trans "s" %}</td><td>{{ user.weekly_run_moving_time|default:0|duration:1 }}</td></tr>
             <tr><td>{% trans "Elapsed Time" %}</td><td>{{ user.weekly_run_elapsed_time }} {% trans "s" %}</td><td>{{ user.weekly_run_elapsed_time|default:0|duration:1 }}</td></tr>
             <tr><td>{% trans "Elevation Gain" %}</td><td colspan="2">{{ user.weekly_run_elevation_gain|default:0|floatformat:0 }} {% trans "m" %}</td></tr>
-            <tr><td>{% trans "Average Pace" %}</td><td>{{ user.weekly_run_distance|default:0|km_pace:user.weekly_run_moving_time }}/{% trans "km" %}</td><td>{{ user.weekly_run_distance|default:0|mile_pace:user.weekly_run_moving_time }}/{% trans "mile" %}</td></tr>
-            <tr><td>{% trans "Heart Rate" %}</td><td>{% if user.weekly_avg_heartrate %}{{ user.weekly_avg_heartrate|default:0|floatformat:0 }} {% trans "bpm" %}{% else %}-{% endif %}</td><td>{% if user.weekly_max_heartrate %}{{ user.weekly_max_heartrate|default:0|floatformat:0 }} {% trans "bpm (max)" %}{% else %}-{% endif %}</td></tr>
+            <tr><td>{% trans "Average Pace" %}</td><td>{{ user.weekly_run_distance|default:0|km_pace:user.weekly_run_moving_time }} m/km</td><td>{{ user.weekly_run_distance|default:0|mile_pace:user.weekly_run_moving_time }} m/mile</td></tr>
+            <tr><td>{% trans "Average Heart Rate" %}</td><td>{% if user.weekly_avg_heartrate %}{{ user.weekly_avg_heartrate|default:0|floatformat:0 }} {% trans "bpm" %}{% else %}-{% endif %}</td><td>{% if user.weekly_max_heartrate %}{{ user.weekly_max_heartrate|default:0|floatformat:0 }} {% trans "bpm (max)" %}{% else %}-{% endif %}</td></tr>
+        </table>
+
+        <h4>{% trans "4 Weeks (4 Weeks Totals)" %}</h4>
+        <table>
+            <tr><td>{% trans "Run Count" %}</td><td colspan="2">{{ user.recent_run_count|default:0 }}</td></tr>
+            <tr><td>{% trans "Distance" %}</td><td>{{ user.recent_run_distance|default:0|div:1000|floatformat:2 }} {% trans "km" %}</td><td>{{ user.recent_run_distance|default:0|div:1609.34|floatformat:2 }} {% trans "mile" %}</td></tr>
+            <tr><td>{% trans "Moving Time" %}</td><td>{{ user.recent_run_moving_time }} {% trans "s" %}</td><td>{{ user.recent_run_moving_time|default:0|duration:1 }}</td></tr>
+            <tr><td>{% trans "Elapsed Time" %}</td><td>{{ user.recent_run_elapsed_time }} {% trans "s" %}</td><td>{{ user.recent_run_elapsed_time|default:0|duration:1 }}</td></tr>
+            <tr><td>{% trans "Elevation Gain" %}</td><td colspan="2">{{ user.recent_run_elevation_gain|default:0|floatformat:0 }} {% trans "m" %}</td></tr>
+            <tr><td>{% trans "Average Pace" %}</td><td>{{ user.recent_run_distance|default:0|km_pace:user.recent_run_moving_time }} m/km</td><td>{{ user.recent_run_distance|default:0|mile_pace:user.recent_run_moving_time }} m/mile</td></tr>
+            <tr><td>{% trans "Average Heart Rate" %}</td><td>{% if user.recent_avg_heartrate %}{{ user.recent_avg_heartrate|default:0|floatformat:0 }} {% trans "bpm" %}{% else %}-{% endif %}</td><td>{% if user.recent_max_heartrate %}{{ user.recent_max_heartrate|default:0|floatformat:0 }} {% trans "bpm (max)" %}{% else %}-{% endif %}</td></tr>
         </table>
 
         <h4>{% trans "Year To Date (YTD Totals)" %}</h4>

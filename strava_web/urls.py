@@ -22,6 +22,8 @@ urlpatterns = [
 
     # 用户个人 Dashboard
     path('dashboard/', views.personal_dashboard, name='personal_dashboard'),
+    path('activities/', views.activities, name='activities'),
+    path('races/', views.races, name='races'),
 
     # 用户信息修改页面
     path('profile/edit/', views.profile_edit, name='profile_edit'),

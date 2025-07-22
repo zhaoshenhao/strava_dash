@@ -26,9 +26,20 @@ def calculate_pace(total_distance_meters, total_time_seconds, is_metric):
     else:
         unit_distance_meters = 1609.34  # 1英里 = 1609.34米
     pace_seconds_per_unit = (total_time_seconds / total_distance_meters) * unit_distance_meters
-    minutes = int(pace_seconds_per_unit // 60)
-    seconds = int(pace_seconds_per_unit % 60)
-    return f"{minutes}:{seconds:02d}"
+    return second_to_pace(pace_seconds_per_unit)
+
+def second_to_pace(seconds):
+    minutes = int(seconds // 60)
+    seconds = int(seconds % 60)
+    return f"{minutes:02d}:{seconds:02d}"
+
+def speed_pace(speed, is_metric):
+    if is_metric:
+        unit_distance_meters = 1000  # 1公里 = 1000米
+    else:
+        unit_distance_meters = 1609.34  # 1英里 = 1609.34米
+    pace_seconds_per_unit = unit_distance_meters / speed
+    return second_to_pace(pace_seconds_per_unit)
 
 def convert_seconds_to_dhms(total_seconds):
     if not isinstance(total_seconds, (int, float)) or total_seconds < 0:

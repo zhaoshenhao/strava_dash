@@ -15,7 +15,7 @@ from django.db import transaction
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import LogoutView
 from .forms import StravaUserRegistrationForm, CustomUserProfileForm
-from .models import GroupApplication
+from .models import GroupApplication, Activity
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count, Q
 from django.utils.translation import gettext_lazy as _
@@ -488,3 +488,115 @@ class CustomLogoutView(LogoutView):
     next_page = 'home' # 登出后重定向到名为 'home' 的 URL
 
 
+@login_required
+def activities(request):
+    """
+    Displays a list of the current user's Strava activities with filtering and pagination.
+    """
+    user_activities = Activity.objects.filter(user=request.user)
+
+    # --- Filtering Logic ---
+    # 1. Date Filters (Year, Month, Week)
+    selected_year = request.GET.get('year')
+    selected_month = request.GET.get('month')
+    selected_week = request.GET.get('week')
+
+    if selected_year:
+        user_activities = user_activities.filter(start_date_local__year=selected_year)
+    if selected_month:
+        user_activities = user_activities.filter(start_date_local__month=selected_month)
+    if selected_week:
+        # Note: '__week' filter might vary slightly based on database,
+        # ensure it works correctly with your chosen DB (e.g., SQLite, PostgreSQL, MySQL)
+        # For cross-DB compatibility, sometimes filtering by date range is more robust
+        user_activities = user_activities.filter(start_date_local__week=selected_week)
+
+    # Generate available years, months, weeks for dropdowns
+    available_years = Activity.objects.filter(user=request.user) \
+                                   .values_list('start_date_local__year', flat=True) \
+                                   .distinct().order_by('-start_date_local__year')
+    # Generate list of (month_number, month_name) for dropdown
+    # Using gettext to translate month names if i18n is active
+    available_months = [
+        ('1', _('January')), ('2', _('February')), ('3', _('March')), ('4', _('April')),
+        ('5', _('May')), ('6', _('June')), ('7', _('July')), ('8', _('August')),
+        ('9', _('September')), ('10', _('October')), ('11', _('November')), ('12', _('December')),
+    ]
+    available_weeks = list(range(1, 53)) # Weeks 1-52
+
+    # 2. Distance Filters (using values in meters as per UserActivity model)
+    selected_distance = request.GET.get('distance')
+    # Define distance thresholds in METERS
+    DIST_5K = 5000 # 5 km
+    DIST_10K = 10000 # 10 km
+    DIST_15K = 15000 # 15 km
+    DIST_20K = 20000 # 20 km
+    DIST_25K = 25000 # 25 km
+    DIST_30K = 30000 # 30 km
+    DIST_35K = 35000 # 35 km
+    DIST_40K = 40000 # 40 km
+    DIST_45K = 45000 # 45 km
+    DIST_50K = 50000 # 50 km
+    DIST_100K = 100000 # 100 km
+
+    if selected_distance:
+        if selected_distance == '0-5k':
+            user_activities = user_activities.filter(distance__gte=0, distance__lt=DIST_5K)
+        elif selected_distance == '5-10k':
+            user_activities = user_activities.filter(distance__gte=DIST_5K, distance__lt=DIST_10K)
+        elif selected_distance == '10-15k':
+            user_activities = user_activities.filter(distance__gte=DIST_10K, distance__lt=DIST_15K)
+        elif selected_distance == '15-20k':
+            user_activities = user_activities.filter(distance__gte=DIST_15K, distance__lt=DIST_20K)
+        elif selected_distance == '20-25k':
+            user_activities = user_activities.filter(distance__gte=DIST_20K, distance__lt=DIST_25K)
+        elif selected_distance == '25-30k':
+            user_activities = user_activities.filter(distance__gte=DIST_25K, distance__lt=DIST_30K)
+        elif selected_distance == '30-35k':
+            user_activities = user_activities.filter(distance__gte=DIST_30K, distance__lt=DIST_35K)
+        elif selected_distance == '35-40k':
+            user_activities = user_activities.filter(distance__gte=DIST_35K, distance__lt=DIST_40K)
+        elif selected_distance == '40-45k':
+            user_activities = user_activities.filter(distance__gte=DIST_40K, distance__lt=DIST_45K)
+        elif selected_distance == '45-50k':
+            user_activities = user_activities.filter(distance__gte=DIST_45K, distance__lt=DIST_50K)
+        elif selected_distance == '50-100k':
+            user_activities = user_activities.filter(distance__gte=DIST_50K, distance__lt=DIST_100K)
+        elif selected_distance == '100k_plus':
+            user_activities = user_activities.filter(distance__gte=DIST_100K)
+
+    # 3. Is Race Filter
+    selected_is_race = request.GET.get('is_race')
+    if selected_is_race == 'true':
+        user_activities = user_activities.filter(is_race=True)
+
+    # Default ordering: most recent first (from start_date_local)
+    user_activities = user_activities.order_by('-start_date_local')
+
+    # --- Pagination Logic ---
+    paginator = Paginator(user_activities, 20)  # Show 20 activities per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'available_years': available_years,
+        'available_months': available_months,
+        'available_weeks': available_weeks,
+        'selected_year': selected_year,
+        'selected_month': selected_month,
+        'selected_week': selected_week,
+        'selected_distance': selected_distance,
+        'selected_is_race': selected_is_race,
+    }
+    return render(request, 'strava_web/activities.html', context)
+
+@login_required
+def races(request):
+    """
+    Displays a blank page for user's race activities.
+    """
+    # In the future, you would fetch and filter race activities here,
+    # similar to how activities_page fetches all activities.
+    context = {}
+    return render(request, 'strava_web/races.html', context)
