@@ -489,9 +489,11 @@ class CustomLogoutView(LogoutView):
 
 
 @login_required
-def activities(request):
+@login_required
+def activities(request): # 函数名已恢复为 `activities`
     """
-    Displays a list of the current user's Strava activities with filtering and pagination.
+    Displays a list of the current user's Strava activities with filtering,
+    pagination, and sorting.
     """
     user_activities = Activity.objects.filter(user=request.user)
 
@@ -524,7 +526,7 @@ def activities(request):
     ]
     available_weeks = list(range(1, 53)) # Weeks 1-52
 
-    # 2. Distance Filters (using values in meters as per UserActivity model)
+    # 2. Distance Filters (using values in meters as per Activity model) - 已恢复为你原始代码的逻辑
     selected_distance = request.GET.get('distance')
     # Define distance thresholds in METERS
     DIST_5K = 5000 # 5 km
@@ -570,14 +572,32 @@ def activities(request):
     if selected_is_race == 'true':
         user_activities = user_activities.filter(is_race=True)
 
-    # Default ordering: most recent first (from start_date_local)
-    user_activities = user_activities.order_by('-start_date_local')
+
+    selected_sort_by = request.GET.get('sort_by', 'start_date_local') # 默认按日期排序
+    selected_order = request.GET.get('order', 'desc') # 默认降序
+
+    if selected_order == 'desc':
+        user_activities = user_activities.order_by(f'-{selected_sort_by}')
+    else:
+        user_activities = user_activities.order_by(selected_sort_by)
 
     # --- Pagination Logic ---
-    paginator = Paginator(user_activities, 20)  # Show 20 activities per page
+    paginator = Paginator(user_activities, 20)  # 每页显示 20 条活动
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    
+    sortable_fields = [
+        ('start_date_local', _('Date')),
+        ('name', _('Name')),
+        ('distance', _('Distance')),
+        ('elapsed_time', _('Elapsed Time')),
+        ('elevation_gain', _('Elevation Gain')),
+        ('average_speed', _('Avg. Pace')),
+        ('average_heartrate', _('Avg. HR')),
+        ('average_cadence', _('Ave. Cadence'))
+    ]
 
+    
     context = {
         'page_obj': page_obj,
         'available_years': available_years,
@@ -588,6 +608,9 @@ def activities(request):
         'selected_week': selected_week,
         'selected_distance': selected_distance,
         'selected_is_race': selected_is_race,
+        'selected_sort_by': selected_sort_by,
+        'selected_order': selected_order,
+        'sortable_fields': sortable_fields,
     }
     return render(request, 'strava_web/activities.html', context)
 
@@ -600,3 +623,23 @@ def races(request):
     # similar to how activities_page fetches all activities.
     context = {}
     return render(request, 'strava_web/races.html', context)
+
+@login_required
+def groups(request):
+    """
+    Displays a blank page for group management.
+    """
+    # In the future, you would fetch and filter race activities here,
+    # similar to how activities_page fetches all activities.
+    context = {}
+    return render(request, 'strava_web/groups.html', context)
+
+@login_required
+def users(request):
+    """
+    Displays a blank page for group management.
+    """
+    # In the future, you would fetch and filter race activities here,
+    # similar to how activities_page fetches all activities.
+    context = {}
+    return render(request, 'strava_web/users.html', context)

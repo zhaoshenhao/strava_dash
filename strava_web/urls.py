@@ -33,6 +33,9 @@ urlpatterns = [
     ), name='password_change'),
     path('profile/group_membership/', views.group_membership_edit, name='group_membership_edit'), # 个人的组修改页面
 
+    path('users/', views.users, name='users'),
+    
+    path('groups/', views.groups, name='groups'),
     path('groups/edit/', views.group_membership_edit, name='group_membership_edit'),
     path('groups/<int:group_id>/dashboard/', views.group_dashboard, name='group_dashboard'),
     path('groups/<int:group_id>/manage_members/', views.group_manage_members, name='group_manage_members'),

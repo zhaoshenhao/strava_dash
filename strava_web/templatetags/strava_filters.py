@@ -41,3 +41,4 @@ def speed_km_pace(speed):
 @register.filter
 def speed_mile_pace(speed):
     return speed_pace(speed, False)
+

@@ -74,8 +74,8 @@
                                     {% trans "Admin" %}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarAdminDropdown">
-                                    <li><a class="dropdown-item" href="{% url 'group_manage_members' %}">{% trans "Group Management" %}</a></li> {# Assuming this is the correct URL name #}
-                                    <li><a class="dropdown-item" href="{% url 'member_management_page' %}">{% trans "Member Management" %}</a></li> {# New: member_management_page #}
+                                    <li><a class="dropdown-item" href="{% url 'groups' %}">{% trans "Group Management" %}</a></li> {# Assuming this is the correct URL name #}
+                                    <li><a class="dropdown-item" href="{% url 'users' %}">{% trans "User Management" %}</a></li> {# New: member_management_page #}
                                 </ul>
                             </li>
                         {% endif %}
