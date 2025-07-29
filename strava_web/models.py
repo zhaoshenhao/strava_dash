@@ -66,6 +66,15 @@ class CustomUser(AbstractUser):
     weekly_avg_heartrate = models.FloatField(default=0.0, verbose_name=_('Weekly Average Heart Rate'))
     weekly_max_heartrate = models.FloatField(default=0.0, verbose_name=_('Weekly Max Heart Rate'))
     
+    use_metric = models.BooleanField(default=True, verbose_name=_("Use Metric System"))
+    birth_year = models.IntegerField(null=True, blank=True, verbose_name=_("Birth Year"))
+
+    GENDER_CHOICES = [
+        ('M', _('Male')),
+        ('F', _('Female')),
+    ]
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True, verbose_name=_("Gender"))
+
     groups = models.ManyToManyField(
         Group,
         related_name='members', # related_name 仍然指向 Group 的成员
@@ -188,6 +197,7 @@ class Activity(models.Model):
     distance = models.FloatField(verbose_name=_("Distance (meters)"))
     moving_time = models.IntegerField(verbose_name=_("Moving Time (seconds)"))
     elapsed_time = models.IntegerField(verbose_name=_("Elapsed Time (seconds)"))
+    chip_time = models.IntegerField(default=0, verbose_name=_("Chip Time (seconds)"))
     elevation_gain = models.FloatField(verbose_name=_("Elevation Gain (meters)"))
 
     start_date = models.DateTimeField(verbose_name=_("Start Date (UTC)"))
@@ -209,11 +219,31 @@ class Activity(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated AT"))
+    RACE_DISTANCE_CHOINCE = [
+        ("1km", _("1 km")),
+        ("1mi", _("1 mile")),
+        ("5km", _("5 km")),
+        ("5mi", _("5 mile")),
+        ("10km", _("10 km")),
+        ("15km", _("15 km")),
+        ("10mi", _("10 mile")),
+        ("HM", _("Half Marathon")),
+        ("30km", _("30 km")),
+        ("FM", _("Marathon")),
+        ("50km", _("50 km")),
+        ("100km", _("100 km")), 
+        ("150km", _("150 km")), 
+        ("100mi", _("100 mile")),
+        ("Other", _("Other")),
+    ]
+    race_distance = models.CharField(max_length=50, choices=RACE_DISTANCE_CHOINCE, null=True, blank=True, verbose_name=_("Race Distance"))
 
     class Meta:
-        ordering = ['-start_date'] # 默认按日期倒序
+        ordering = ['-start_date_local'] # 默认按日期倒序
+        unique_together = ('user', 'strava_id')
         verbose_name = _("Activity")
         verbose_name_plural = _("Activities")
 
     def __str__(self):
         return f"{self.user.username}'s {self.activity_type} on {self.start_date_local.strftime('%Y-%m-%d')} - {self.name}"
+    
