@@ -5,21 +5,21 @@ from datetime import timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.conf import settings
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth import login, authenticate, get_user_model
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib import messages
 from django.utils import timezone
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.admin.views.decorators import staff_member_required
 from django.db import transaction
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import LogoutView
-from .forms import StravaUserRegistrationForm, CustomUserProfileForm
+from .forms import StravaUserRegistrationForm, CustomUserProfileForm, ActivityEditForm 
 from .models import GroupApplication, Activity
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count, Q
 from django.utils.translation import gettext_lazy as _
-
 
 User = get_user_model()
 
@@ -220,6 +220,7 @@ def profile_edit(request):
 def group_membership_edit(request):
     """
     用户可以查看所有开放和封闭的组，并进行加入/申请/退出操作。
+    增加按组群类型和是否是成员的搜索。
     """
     # 获取所有有 Dashboard 的组，排除 'admin' 组
     all_groups_queryset = Group.objects.filter(has_dashboard=True).exclude(name='admin') \
@@ -230,10 +231,20 @@ def group_membership_edit(request):
     if search_query:
         all_groups_queryset = all_groups_queryset.filter(
             Q(name__icontains=search_query) |
-            Q(admin__username__icontains=search_query)
+            Q(admin__username__icontains=search_query) |
+            Q(admin__first_name__icontains=search_query) |
+            Q(admin__last_name__icontains=search_query)
         )
 
-    # 准备数据以包含群组类型、成员状态和申请状态
+    # 1. 按组群类型过滤
+    group_type_filter = request.GET.get('group_type_filter', '')
+    if group_type_filter:
+        if group_type_filter == 'open':
+            all_groups_queryset = all_groups_queryset.filter(is_open=True)
+        elif group_type_filter == 'closed':
+            all_groups_queryset = all_groups_queryset.filter(is_open=False)
+
+    # 准备数据以包含群组类型、成员状态和申请状态（在过滤之前，因为is_member是针对当前用户）
     groups_data = []
     for group in all_groups_queryset:
         is_member = request.user.groups.filter(id=group.id).exists()
@@ -297,9 +308,15 @@ def group_membership_edit(request):
             'action_url_name': action_url_name,
             'is_application_form': is_application_form,
         })
-
-    # 排序功能
-    sort_by = request.GET.get('sort_by', 'name') # 默认按组名排序
+    
+    # 2. 按是否是成员过滤
+    is_member_filter = request.GET.get('is_member_filter', '')
+    if is_member_filter:
+        if is_member_filter == 'yes':
+            groups_data = [item for item in groups_data if item['is_member']]
+        elif is_member_filter == 'no':
+            groups_data = [item for item in groups_data if not item['is_member']]
+    sort_by = request.GET.get('sort_by', 'is_member') # 默认按是否是成员排序
     order = request.GET.get('order', 'asc') # 默认升序
 
     def get_sort_key(item):
@@ -310,10 +327,8 @@ def group_membership_edit(request):
         elif sort_by == 'admin':
             return item['group'].admin.username if item['group'].admin else ''
         elif sort_by == 'group_type':
-            # 开放在前，封闭在后
             return (0 if item['group'].is_open else 1, item['group'].name)
         elif sort_by == 'is_member':
-            # 成员在前，非成员在后
             return (0 if item['is_member'] else 1, item['group'].name)
         return item['group'].name # 默认
 
@@ -321,7 +336,7 @@ def group_membership_edit(request):
 
     # 分页
     page = request.GET.get('page', 1)
-    paginator = Paginator(groups_data, 10) # 每页10个
+    paginator = Paginator(groups_data, 20) # 每页20个
     try:
         groups_paginated = paginator.page(page)
     except PageNotAnInteger:
@@ -332,12 +347,12 @@ def group_membership_edit(request):
     context = {
         'groups_paginated': groups_paginated,
         'search_query': search_query,
+        'group_type_filter': group_type_filter, # 传递新的过滤参数
+        'is_member_filter': is_member_filter,   # 传递新的过滤参数
         'sort_by': sort_by,
         'order': order,
     }
     return render(request, 'strava_web/group_membership_edit.html', context)
-
-
 
 # 组群 Dashboard 占位符
 @login_required
@@ -362,8 +377,7 @@ def group_dashboard(request, group_id):
     return render(request, 'strava_web/group_dashboard.html', context)
 
 # 群组管理页面（仅管理员可见）
-@login_required
-@login_required
+@staff_member_required
 def group_manage_members(request, group_id):
     group = get_object_or_404(Group, id=group_id)
 
@@ -423,7 +437,7 @@ def apply_for_group(request, group_id):
 
 
 # 新增：群组管理员审核申请
-@login_required
+@staff_member_required
 @require_http_methods(["POST"])
 def review_group_application(request, application_id):
     application = get_object_or_404(GroupApplication, id=application_id)
@@ -469,7 +483,7 @@ def join_group(request, group_id):
             messages.info(request, _("You are already in this group:%(gname)s.") % {'gname': group.name})
     else:
         messages.error(request, _("Group %(gname)s is not open.") % {'gname': group.name})
-    return redirect('personal_dashboard') # 或重定向到组列表页面
+    return redirect('group_membership_edit') # 或重定向到组列表页面
 
 @login_required
 def leave_group(request, group_id):
@@ -479,7 +493,7 @@ def leave_group(request, group_id):
         messages.success(request, _("You have left the group: %(gname)s") % {'gname': group.name})
     else:
         messages.info(request, _("You do not belong to this group: %(gname)s") % {'gname': group.name})
-    return redirect('personal_dashboard') # 或重定向到组列表页面
+    return redirect('group_membership_edit') # 或重定向到组列表页面
 
 def home(request):
     return render(request, 'strava_web/home.html')
@@ -487,8 +501,6 @@ def home(request):
 class CustomLogoutView(LogoutView):
     next_page = 'home' # 登出后重定向到名为 'home' 的 URL
 
-
-@login_required
 @login_required
 def activities(request): # 函数名已恢复为 `activities`
     """
@@ -588,16 +600,15 @@ def activities(request): # 函数名已恢复为 `activities`
     
     sortable_fields = [
         ('start_date_local', _('Date')),
-        ('name', _('Name')),
-        ('distance', _('Distance')),
+        ('name', _('Activity Name')),
+        ('distance', _('Distance (km)') if request.user.use_metric else _('Distance (mile)')),
         ('elapsed_time', _('Elapsed Time')),
-        ('elevation_gain', _('Elevation Gain')),
-        ('average_speed', _('Avg. Pace')),
+        ('elevation_gain', _('Elevation Gain (m)') if request.user.use_metric else _('Elevation Gain (feet)')),
+        ('average_speed', _('Avg. Pace (min/km)') if request.user.use_metric else _('Avg. Pace (min/mile)')),
         ('average_heartrate', _('Avg. HR')),
         ('average_cadence', _('Ave. Cadence'))
     ]
 
-    
     context = {
         'page_obj': page_obj,
         'available_years': available_years,
@@ -611,6 +622,7 @@ def activities(request): # 函数名已恢复为 `activities`
         'selected_sort_by': selected_sort_by,
         'selected_order': selected_order,
         'sortable_fields': sortable_fields,
+        'use_metric': request.user.use_metric,
     }
     return render(request, 'strava_web/activities.html', context)
 
@@ -624,7 +636,7 @@ def races(request):
     context = {}
     return render(request, 'strava_web/races.html', context)
 
-@login_required
+@user_passes_test(lambda user: user.is_superuser)
 def groups(request):
     """
     Displays a blank page for group management.
@@ -634,7 +646,7 @@ def groups(request):
     context = {}
     return render(request, 'strava_web/groups.html', context)
 
-@login_required
+@user_passes_test(lambda user: user.is_superuser)
 def users(request):
     """
     Displays a blank page for group management.
@@ -643,3 +655,37 @@ def users(request):
     # similar to how activities_page fetches all activities.
     context = {}
     return render(request, 'strava_web/users.html', context)
+
+@login_required
+@require_POST # 只允许 POST 请求
+def update_activity_ajax(request, activity_id):
+    activity = get_object_or_404(Activity, id=activity_id, user=request.user)
+    form = ActivityEditForm(request.POST, instance=activity)
+
+    if form.is_valid():
+        # 处理 chip_time 逻辑：如果 is_race 为 True 且 chip_time 为空或 0，则使用 elapsed_time
+        if form.cleaned_data['is_race'] and (form.cleaned_data['chip_time'] is None or form.cleaned_data['chip_time'] == 0):
+            form.instance.chip_time = activity.elapsed_time # 使用原始活动的 elapsed_time
+        activity = form.save() # 保存到数据库
+
+        # 返回更新后的数据，用于前端刷新行
+        return JsonResponse({
+            'success': True,
+            'message': _("Activity updated successfully!"),
+            'activity_data': {
+                'id': activity.id,
+                'name': activity.name,
+                'distance': activity.distance,
+                'elapsed_time': activity.elapsed_time,
+                'is_race': activity.is_race,
+                'chip_time': activity.chip_time,
+                'race_distance': activity.race_distance,
+                'strava_id': activity.strava_id,
+                'start_date_local': activity.start_date_local,
+                'strava_url': f"https://www.strava.com/activities/{activity.strava_id}"
+            }
+        })
+    else:
+        # 返回表单错误
+        errors = form.errors.as_json()
+        return JsonResponse({'success': False, 'errors': errors}, status=400)

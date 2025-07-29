@@ -45,6 +45,34 @@ def refresh_strava_token(user_instance):
     except requests.exceptions.RequestException as e:
         raise Exception(f"Failed to refresh Strava token: {e}")
 
+def guess_race_distance(distance_meters):
+    if 800 <= distance_meters <= 1000:
+        return "1km"
+    elif 4700 <= distance_meters <= 5300:
+        return "5km"
+    elif 9600 <= distance_meters <= 10400:
+        return "10km"
+    elif 14500 <= distance_meters <= 15500:
+        return "15km"
+    elif 15500 <= distance_meters <= 16500:
+        return "10mi"
+    elif 20600 <= distance_meters <= 21600:
+        return "HM"
+    elif 29500 <= distance_meters <= 30500:
+        return "30km"
+    elif 41800 <= distance_meters <= 42900:
+        return "FM"
+    elif 49000 <= distance_meters <= 51000:
+        return "50km"
+    elif 98000 <= distance_meters <= 102000:
+        return "100km"
+    elif 147000 <= distance_meters <= 153000:
+        return "150km"
+    elif 156000 <= distance_meters <= 164900:
+        return "100mi"
+    else:
+        return "Other" # Or handle other cases as needed
+
 #@transaction.atomic # 确保数据同步的原子性
 def sync_strava_data_for_user(user_instance, days):
     """
@@ -118,10 +146,12 @@ def sync_strava_data_for_user(user_instance, days):
                 break
 
             for activity_summary in activities_data:
-                # 仅处理跑步活动，并检查是否是比赛 (workout_type == 1)
                 if activity_summary.get('type') == 'Run':
                     has_change = True
-                    # 保存或更新活动到数据库
+                    is_race = (activity_summary.get('workout_type') == 1)
+                    chip_time = activity_summary.get('moving_time', 0) if is_race else 0
+                    race_distance = guess_race_distance(activity_summary.get('distance', 0)) if is_race else None
+                    
                     Activity.objects.update_or_create(
                         user=user_instance,
                         strava_id=activity_summary.get('id'),
@@ -132,6 +162,8 @@ def sync_strava_data_for_user(user_instance, days):
                             'distance': activity_summary.get('distance', 0),
                             'moving_time': activity_summary.get('moving_time', 0),
                             'elapsed_time': activity_summary.get('elapsed_time', 0),
+                            'chip_time': chip_time,
+                            'race_distance': race_distance,
                             'elevation_gain': activity_summary.get('total_elevation_gain', 0),
                             'start_date': activity_summary.get('start_date'),
                             'start_date_local': activity_summary.get('start_date_local'),
@@ -143,7 +175,7 @@ def sync_strava_data_for_user(user_instance, days):
                             'average_cadence': activity_summary.get('average_cadence'),
                             'has_heartrate': activity_summary.get('has_heartrate', False),
                             'has_power': activity_summary.get('has_power', False),
-                            'is_race': activity_summary.get('workout_type') == 1, # 比赛
+                            'is_race': is_race, 
                         }
                     )
                     print(f"Processed run activity: {activity_summary.get('start_date')} (ID: {activity_summary['id']})")

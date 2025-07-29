@@ -5,32 +5,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% trans "Strava Dash" %}{% endblock %}</title>
+    {% load static %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    {# Custom CSS (if needed, placed after Bootstrap to override styles) #}
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"> {# ADDED: Roboto font for consistent look #}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
     {% block extra_css %}{% endblock %}
     <style>
-        /* Optional: Custom styles to adjust dropdown menu alignment if needed */
         .dropdown-menu {
             left: auto;
             right: 0;
         }
-        /* Adjust button link styles to better integrate with Bootstrap nav */
-        .btn-link.nav-link.text-danger {
-            padding-left: var(--bs-navbar-nav-link-padding-x);
-            padding-right: var(--bs-navbar-nav-link-padding-x);
-            color: var(--bs-navbar-color); /* Inherit default nav link color */
-        }
-        .btn-link.nav-link.text-danger:hover {
-            color: var(--bs-navbar-hover-color); /* Inherit default nav link hover color */
-            text-decoration: underline;
+        .toast-container {
+            position: fixed;
+            top: 1rem; /* 距离顶部 */
+            right: 1rem; /* 距离右侧 */
+            z-index: 1080; /* 确保在其他内容之上 */
         }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'home' %}">{% trans "Home" %}</a>
+            <a class="btn btn-link nav-link text-danger" href="{% url 'home' %}">{% trans "Home" %}</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -39,50 +36,46 @@
                     {% if user.is_authenticated %}
                         {# Logged in user menu #}
                         <li class="nav-item">
-                            <span class="nav-link">{% trans "Hello" %} {{ user.get_full_name|default:user.username }}</span>
+                            <span class="nav-link text-danger">{% trans "Hello" %} {{ user.get_full_name|default:user.username }}</span>
                         </li>
-
-                        {# Your Stats Dropdown #}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarStatsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle text-primary" href="#" id="navbarStatsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {% trans "Your Stats" %}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarStatsDropdown">
-                                <li><a class="dropdown-item" href="{% url 'personal_dashboard' %}">{% trans "Stats" %}</a></li>
-                                <li><a class="dropdown-item" href="{% url 'activities' %}">{% trans "Activities" %}</a></li> {# New: activities_page #}
-                                <li><a class="dropdown-item" href="{% url 'races' %}">{% trans "Races" %}</a></li> {# New: races_page #}
+                                <li><a class="dropdown-item text-primary" href="{% url 'personal_dashboard' %}">{% trans "Stats" %}</a></li>
+                                <li><a class="dropdown-item text-primary" href="{% url 'activities' %}">{% trans "Activities" %}</a></li>
+                                <li><a class="dropdown-item text-primary" href="{% url 'races' %}">{% trans "Races" %}</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'group_membership_edit' %}">{% trans "Your Groups" %}</a></li>
+                                <li><a class="dropdown-item text-primary" href="{% url 'group_membership_edit' %}">{% trans "Your Groups" %}</a></li>
                             </ul>
                         </li>
-
-                        {# Your Profile Dropdown #}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle text-primary" href="#" id="navbarProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {% trans "Your Profile" %}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarProfileDropdown">
-                                <li><a class="dropdown-item" href="{% url 'profile_edit' %}">{% trans "Profile" %}</a></li>
-                                <li><a class="dropdown-item" href="{% url 'password_change' %}">{% trans "Password" %}</a></li>
+                                <li><a class="dropdown-item text-primary" href="{% url 'profile_edit' %}">{% trans "Profile" %}</a></li>
+                                <li><a class="dropdown-item text-primary" href="{% url 'password_change' %}">{% trans "Password" %}</a></li>
                             </ul>
                         </li>
 
                         {# Admin Dropdown - Only for staff/admin users #}
                         {% if user.is_staff or user.is_superuser %}
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarAdminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle text-primary" href="#" id="navbarAdminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     {% trans "Admin" %}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarAdminDropdown">
-                                    <li><a class="dropdown-item" href="{% url 'groups' %}">{% trans "Group Management" %}</a></li> {# Assuming this is the correct URL name #}
-                                    <li><a class="dropdown-item" href="{% url 'users' %}">{% trans "User Management" %}</a></li> {# New: member_management_page #}
+                                    <li><a class="dropdown-item text-primary" href="{% url 'groups' %}">{% trans "Group Management" %}</a></li> {# Assuming this is the correct URL name #}
+                                    <li><a class="dropdown-item text-primary" href="{% url 'users' %}">{% trans "User Management" %}</a></li> {# New: member_management_page #}
                                 </ul>
                             </li>
                         {% endif %}
 
                         {# Language Switcher Dropdown #}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarLanguageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle text-primary" href="#" id="navbarLanguageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {% if request.LANGUAGE_CODE == 'zh-hans' %}中文{% else %}English{% endif %}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarLanguageDropdown">
@@ -100,8 +93,6 @@
                                 </li>
                             </ul>
                         </li>
-
-                        {# Logout Button #}
                         <li class="nav-item">
                             <form action="{% url 'logout' %}" method="post" class="d-inline">
                                 {% csrf_token %}
@@ -146,21 +137,37 @@
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="toast-container">
         {% if messages %}
-            <ul class="messages list-unstyled">
-                {% for message in messages %}
-                    <li{% if message.tags %} class="alert alert-{{ message.tags }} fade show"{% endif %} role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </li>
-                {% endfor %}
-            </ul>
+            {% for message in messages %}
+                <div class="toast align-items-center text-white bg-{{ message.tags }} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            {{ message }}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            {% endfor %}
         {% endif %}
+    </div>
+    <div class="container mt-4">
         {% block content %}
         {% endblock %}
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="{% static 'scripts.js' %}"></script>
+    <script>
+        // Initialize all toasts
+        document.addEventListener('DOMContentLoaded', function() {
+            const toastElList = [].slice.call(document.querySelectorAll('.toast'))
+            const toastList = toastElList.map(function(toastEl) {
+                // Set autohide to true and delay for 5 seconds (5000ms)
+                return new bootstrap.Toast(toastEl, { autohide: true, delay: 5000 })
+            })
+            toastList.forEach(toast => toast.show()); // Show all messages
+        });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

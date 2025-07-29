@@ -17,6 +17,13 @@ def div(value, arg):
 
 @register.filter
 def duration(value, withDay):
+    if value <= 0:
+        if withDay == 1:
+            return "- --:--:--"
+        elif withDay == 2:
+            return "--:--"
+        else:
+            return  "--:--:--"
     d1, h1, m1, s1 = convert_seconds_to_dhms(value)
     if withDay == 1:
         return f"{d1}d {h1:02d}:{m1:02d}:{s1:02d}"

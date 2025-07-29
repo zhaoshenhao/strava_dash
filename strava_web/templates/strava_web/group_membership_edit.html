@@ -1,32 +1,38 @@
 {% extends 'strava_web/base.html' %}
 {% load i18n %}
 {% load static %}
-{% block title %}{% trans "Manage My Group(s)" %}{% endblock %}
-
+{% block title %}{% trans "Manage Your Group(s)" %}{% endblock %}
 {% block content %}
 <div class="container mt-4">
-    <h1>{% trans "Manage My Group(s)" %}</h1>
-
-    {% if messages %}
-        <ul class="messages list-unstyled">
-            {% for message in messages %}
-                <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    {# All group list #}
     <div class="card mt-4">
-        <div class="card-header">
-            <h2>{% trans "All Group(s)" %}</h2>
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">{% trans "Manage Your Group(s)" %}</h5>
         </div>
         <div class="card-body">
             <form id="group-search-form" method="get" class="mb-3">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="group-type-filter" class="form-label visually-hidden">{% trans "Filter by Group Type" %}</label>
+                        <select class="form-select" id="group-type-filter" name="group_type_filter">
+                            <option value="">{% trans "All Group Types" %}</option>
+                            <option value="open" {% if group_type_filter == "open" %}selected{% endif %}>{% trans "Open Group" %}</option>
+                            <option value="closed" {% if group_type_filter == "closed" %}selected{% endif %}>{% trans "Closed Group" %}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="is-member-filter" class="form-label visually-hidden">{% trans "Filter by Membership" %}</label>
+                        <select class="form-select" id="is-member-filter" name="is_member_filter">
+                            <option value="">{% trans "All Membership Status" %}</option>
+                            <option value="yes" {% if is_member_filter == "yes" %}selected{% endif %}>{% trans "Member Of" %}</option>
+                            <option value="no" {% if is_member_filter == "no" %}selected{% endif %}>{% trans "Not Member Of" %}</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="input-group">
                     <input type="text" name="search" id="search-input" class="form-control" placeholder='{% trans "Search group or administrator name" %}' value="{{ search_query }}">
-                    {% if search_query %}
+                    {% if search_query or group_type_filter or is_member_filter %}
                         <button type="button" class="btn btn-outline-secondary" id="clear-search-btn">
-                            <i class="bi bi-x-lg"></i>
+                            <i class="bi bi-x-lg"></i> {# Bootstrap Icons close icon #}
                         </button>
                     {% endif %}
                     <button class="btn btn-outline-secondary" type="submit">{% trans "Search" %}</button>
@@ -37,27 +43,27 @@
                 <thead>
                     <tr>
                         <th>
-                            <a href="?sort_by=name&order={% if sort_by == 'name' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
+                            <a href="?sort_by=name&order={% if sort_by == 'name' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}&page={{ groups_paginated.number }}">
                                 {% trans "Group" %} {% if sort_by == 'name' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
                         <th>
-                            <a href="?sort_by=group_type&order={% if sort_by == 'group_type' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
+                            <a href="?sort_by=group_type&order={% if sort_by == 'group_type' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}&page={{ groups_paginated.number }}">
                                 {% trans "Type" %} {% if sort_by == 'group_type' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
                         <th>
-                            <a href="?sort_by=member_count&order={% if sort_by == 'member_count' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
+                            <a href="?sort_by=member_count&order={% if sort_by == 'member_count' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}&page={{ groups_paginated.number }}">
                                 {% trans "Member(s)" %} {% if sort_by == 'member_count' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
                         <th>
-                            <a href="?sort_by=admin&order={% if sort_by == 'admin' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
+                            <a href="?sort_by=admin&order={% if sort_by == 'admin' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}&page={{ groups_paginated.number }}">
                                 {% trans "Administrator" %} {% if sort_by == 'admin' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
                         <th>
-                            <a href="?sort_by=is_member&order={% if sort_by == 'is_member' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&page={{ groups_paginated.number }}">
+                            <a href="?sort_by=is_member&order={% if sort_by == 'is_member' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}&page={{ groups_paginated.number }}">
                                 {% trans "Membership" %} {% if sort_by == 'is_member' %}{% if order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
                             </a>
                         </th>
@@ -133,26 +139,23 @@
                     {% endfor %}
                 </tbody>
             </table>
-
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center">
                     {% if groups_paginated.has_previous %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ groups_paginated.previous_page_number }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}">{% trans "Prev." %}</a>
+                            <a class="page-link" href="?page={{ groups_paginated.previous_page_number }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}">{% trans "Prev." %}</a>
                         </li>
                     {% endif %}
-
                     {% for i in groups_paginated.paginator.page_range %}
                         {% if groups_paginated.number == i %}
                             <li class="page-item active"><span class="page-link">{{ i }}</span></li>
                         {% else %}
-                            <li class="page-item"><a class="page-link" href="?page={{ i }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}">{{ i }}</a></li>
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}">{{ i }}</a></li>
                         {% endif %}
                     {% endfor %}
-
                     {% if groups_paginated.has_next %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ groups_paginated.next_page_number }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}">{% trans "Next" %}</a>
+                            <a class="page-link" href="?page={{ groups_paginated.next_page_number }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}">{% trans "Next" %}</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -168,8 +171,9 @@
         document.querySelectorAll('.confirm-leave-form').forEach(form => {
             form.addEventListener('submit', function(event) {
                 const button = event.target.querySelector('button[type="submit"]');
-                if (button && button.textContent.trim() === "退出") {
-                    const groupName = event.target.closest('tr').querySelector('td:first-child a, td:first-child').textContent.trim(); // 适应链接或文本
+                if (button && (button.textContent.trim() === `{% trans "Leave" %}`)) { // Changed to handle both Chinese and English "Leave"
+                    const groupNameElement = event.target.closest('tr').querySelector('td:first-child a, td:first-child');
+                    const groupName = groupNameElement ? groupNameElement.textContent.trim() : '{% trans "this group" %}'; // fallback
                     const confirmMessage = `{% trans "Are you sure to leave" %} "${groupName}"?`;
                     if (!confirm(confirmMessage)) {
                         event.preventDefault(); // 阻止表单提交
@@ -178,16 +182,19 @@
             });
         });
 
-        // 搜索框清除按钮功能
+        // 搜索框和筛选清除按钮功能
         const searchInput = document.getElementById('search-input');
+        const groupTypeFilter = document.getElementById('group-type-filter');
+        const isMemberFilter = document.getElementById('is-member-filter');
         const clearSearchBtn = document.getElementById('clear-search-btn');
         const groupSearchForm = document.getElementById('group-search-form');
 
-        if (clearSearchBtn && searchInput && groupSearchForm) {
+        if (clearSearchBtn && groupSearchForm) {
             clearSearchBtn.addEventListener('click', function() {
                 searchInput.value = ''; // 清空搜索框内容
-                // 提交表单以刷新页面，移除搜索参数
-                groupSearchForm.submit();
+                groupTypeFilter.value = ''; // 清空组群类型筛选
+                isMemberFilter.value = ''; // 清空成员筛选
+                groupSearchForm.submit(); // 提交表单以刷新页面，移除所有搜索和筛选参数
             });
         }
     });

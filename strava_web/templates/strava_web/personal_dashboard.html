@@ -2,81 +2,223 @@
 {% load i18n %}
 {% load strava_filters %}
 
-{% block title %}{% trans "My Dashboard" %}{% endblock %}
+{% block title %}{% trans "Your Dashboard" %}{% endblock %}
 
 {% block content %}
-    <h2>{% trans "Welcome, " %}{{ user.get_full_name|default:user.username }}!</h2>
-    <p>{% trans "This is your personal dashboard." %}</p>
-    <h3>{% trans "Your Information:" %}</h3>
-    <ul>
-        <li>{% trans "Username:" %} {{ user.username }}</li>
-        <li>{% trans "Email:" %} {{ user.email|default:user.username }}</li>
-        <li>{% trans "Name:" %} {{ user.first_name|default:"" }} {{ user.last_name|default:"" }}</li>
-        <li>{% trans "Strava Connected:" %} {% if user.is_strava_connected %}{% trans "Yes" %} (ID: {{ user.strava_id }}){% else %}{% trans "No" %}{% endif %}</li>
-        <li>{% trans "Last Strava Sync:" %} {% if user.last_strava_sync %}{{ user.last_strava_sync|date:"Y-m-d H:i" }}{% else %}{% trans "Never" %}{% endif %}</li>
-    </ul>
+    <div class="container mt-4">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="h5 mb-0">{% trans "Your Information" %}</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <tbody>
+                            <tr>
+                                <td class="fixed-col-width">{% trans "Username:" %}</td>
+                                <td><strong>{{ user.username }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="fixed-col-width">{% trans "Email:" %}</td>
+                                <td><strong>{{ user.email|default:user.username }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="fixed-col-width">{% trans "Name:" %}</td>
+                                <td><strong>{{ user.first_name|default:"" }} {{ user.last_name|default:"" }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="fixed-col-width">{% trans "Strava Connected:" %}</td>
+                                <td>
+                                    {% if user.is_strava_connected %}
+                                        <span class="badge bg-success">{% trans "Yes" %}</span> (ID: {{ user.strava_id }})
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">{% trans "No" %}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fixed-col-width">{% trans "Last Strava Sync:" %}</td>
+                                <td><strong>{% if user.last_strava_sync %}{{ user.last_strava_sync|date:"Y-m-d H:i" }}{% else %}{% trans "Never" %}{% endif %}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% if user.is_strava_connected %}
+            <h5 class="mt-5 mb-3">{% trans "Your Strava Run Statistics:" %}</h5>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="h6 mb-0">{% trans "This Week (Weekly Totals)" %}</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <tbody>
+                                <tr><td class="fixed-col-width">{% trans "Run Count" %}</td><td>{{ user.weekly_run_count|default:0 }}</td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Distance" %}</td><td>
+                                    {% if user.use_metric %}
+                                        {{ user.weekly_run_distance|default:0|div:1000|floatformat:2 }} {% trans "km" %}
+                                    {% else %}
+                                        {{ user.weekly_run_distance|default:0|div:1609.34|floatformat:2 }} {% trans "mile" %}
+                                    {% endif %}
+                                    </td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Moving Time" %}</td><td>{{ user.weekly_run_moving_time|default:0|duration:1 }}</td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Elapsed Time" %}</td><td>{{ user.weekly_run_elapsed_time|default:0|duration:1 }}</td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Elevation Gain" %}</td><td>
+                                    {% if user.use_metric %}
+                                        {{ user.weekly_run_elevation_gain|default:0|floatformat:0 }} {% trans "m" %}
+                                    {% else %}
+                                        {{ user.weekly_run_elevation_gain|default:0|div:0.3048|floatformat:0 }} {% trans "feet" %}
+                                    {% endif %}
+                                </td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Average Pace" %}</td><td>
+                                    {% if user.use_metric %}
+                                        {{ user.weekly_run_distance|default:0|km_pace:user.weekly_run_moving_time }} m/km
+                                    {% else %}
+                                        {{ user.weekly_run_distance|default:0|mile_pace:user.weekly_run_moving_time }} m/mile
+                                    {% endif %}
+                                </td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Average Heart Rate" %}</td><td>{% if user.weekly_avg_heartrate %}{{ user.weekly_avg_heartrate|default:0|floatformat:0 }} {% trans "bpm" %}{% else %}-{% endif %}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-    {% if user.is_strava_connected %}
-        <h3>{% trans "Your Strava Run Statistics:" %}</h3>
-        <h4>{% trans "This Week (Weekly Totals)" %}</h4>
-        <table>
-            <tr><td>{% trans "Run Count" %}</td><td colspan="2">{{ user.weekly_run_count|default:0 }}</td></tr>
-            <tr><td>{% trans "Distance" %}</td><td>{{ user.weekly_run_distance|default:0|div:1000|floatformat:2 }} {% trans "km" %}</td><td>{{ user.weekly_run_distance|default:0|div:1609.34|floatformat:2 }} {% trans "mile" %}</td></tr>
-            <tr><td>{% trans "Moving Time" %}</td><td>{{ user.weekly_run_moving_time }} {% trans "s" %}</td><td>{{ user.weekly_run_moving_time|default:0|duration:1 }}</td></tr>
-            <tr><td>{% trans "Elapsed Time" %}</td><td>{{ user.weekly_run_elapsed_time }} {% trans "s" %}</td><td>{{ user.weekly_run_elapsed_time|default:0|duration:1 }}</td></tr>
-            <tr><td>{% trans "Elevation Gain" %}</td><td colspan="2">{{ user.weekly_run_elevation_gain|default:0|floatformat:0 }} {% trans "m" %}</td></tr>
-            <tr><td>{% trans "Average Pace" %}</td><td>{{ user.weekly_run_distance|default:0|km_pace:user.weekly_run_moving_time }} m/km</td><td>{{ user.weekly_run_distance|default:0|mile_pace:user.weekly_run_moving_time }} m/mile</td></tr>
-            <tr><td>{% trans "Average Heart Rate" %}</td><td>{% if user.weekly_avg_heartrate %}{{ user.weekly_avg_heartrate|default:0|floatformat:0 }} {% trans "bpm" %}{% else %}-{% endif %}</td><td>{% if user.weekly_max_heartrate %}{{ user.weekly_max_heartrate|default:0|floatformat:0 }} {% trans "bpm (max)" %}{% else %}-{% endif %}</td></tr>
-        </table>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="h6 mb-0">{% trans "4 Weeks (4 Weeks Totals)" %}</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <tbody>
+                                <tr><td class="fixed-col-width">{% trans "Run Count" %}</td><td>{{ user.recent_run_count|default:0 }}</td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Distance" %}</td><td>
+                                    {% if user.use_metric %}
+                                        {{ user.recent_run_distance|default:0|div:1000|floatformat:2 }} {% trans "km" %}
+                                    {% else %}
+                                        {{ user.recent_run_distance|default:0|div:1609.34|floatformat:2 }} {% trans "mile" %}
+                                    {% endif %}
+                                </td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Moving Time" %}</td><td>{{ user.recent_run_moving_time|default:0|duration:1 }}</td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Elapsed Time" %}</td><td>{{ user.recent_run_elapsed_time|default:0|duration:1 }}</td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Elevation Gain" %}</td><td>
+                                    {% if user.use_metric %}
+                                        {{ user.recent_run_elevation_gain|default:0|floatformat:0 }} {% trans "m" %}
+                                    {% else %}
+                                        {{ user.recent_run_elevation_gain|default:0|div:0.3048|floatformat:0 }} {% trans "feet" %}
+                                    {% endif %}
+                                </td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Average Pace" %}</td><td>
+                                    {% if user.use_metric %}
+                                        {{ user.recent_run_distance|default:0|km_pace:user.recent_run_moving_time }} m/km
+                                    {% else %}
+                                        {{ user.recent_run_distance|default:0|mile_pace:user.recent_run_moving_time }} m/mile
+                                    {% endif %}
+                                </td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Average Heart Rate" %}</td><td>{% if user.recent_avg_heartrate %}{{ user.recent_avg_heartrate|default:0|floatformat:0 }} {% trans "bpm" %}{% else %}-{% endif %}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-        <h4>{% trans "4 Weeks (4 Weeks Totals)" %}</h4>
-        <table>
-            <tr><td>{% trans "Run Count" %}</td><td colspan="2">{{ user.recent_run_count|default:0 }}</td></tr>
-            <tr><td>{% trans "Distance" %}</td><td>{{ user.recent_run_distance|default:0|div:1000|floatformat:2 }} {% trans "km" %}</td><td>{{ user.recent_run_distance|default:0|div:1609.34|floatformat:2 }} {% trans "mile" %}</td></tr>
-            <tr><td>{% trans "Moving Time" %}</td><td>{{ user.recent_run_moving_time }} {% trans "s" %}</td><td>{{ user.recent_run_moving_time|default:0|duration:1 }}</td></tr>
-            <tr><td>{% trans "Elapsed Time" %}</td><td>{{ user.recent_run_elapsed_time }} {% trans "s" %}</td><td>{{ user.recent_run_elapsed_time|default:0|duration:1 }}</td></tr>
-            <tr><td>{% trans "Elevation Gain" %}</td><td colspan="2">{{ user.recent_run_elevation_gain|default:0|floatformat:0 }} {% trans "m" %}</td></tr>
-            <tr><td>{% trans "Average Pace" %}</td><td>{{ user.recent_run_distance|default:0|km_pace:user.recent_run_moving_time }} m/km</td><td>{{ user.recent_run_distance|default:0|mile_pace:user.recent_run_moving_time }} m/mile</td></tr>
-            <tr><td>{% trans "Average Heart Rate" %}</td><td>{% if user.recent_avg_heartrate %}{{ user.recent_avg_heartrate|default:0|floatformat:0 }} {% trans "bpm" %}{% else %}-{% endif %}</td><td>{% if user.recent_max_heartrate %}{{ user.recent_max_heartrate|default:0|floatformat:0 }} {% trans "bpm (max)" %}{% else %}-{% endif %}</td></tr>
-        </table>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="h6 mb-0">{% trans "Year To Date (YTD Totals)" %}</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <tbody>
+                                <tr><td class="fixed-col-width">{% trans "Run Count" %}</td><td>{{ user.ytd_run_count|default:0 }}</td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Distance" %}</td><td>
+                                    {% if user.use_metric %}
+                                        {{ user.ytd_run_distance|default:0|div:1000|floatformat:2 }} {% trans "km" %}
+                                    {% else %}
+                                        {{ user.ytd_run_distance|default:0|div:1609.34|floatformat:2 }} {% trans "mile" %}
+                                    {% endif %}
+                                </td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Moving Time" %}</td><td>{{ user.ytd_run_moving_time|default:0|duration:1 }}</td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Elapsed Time" %}</td><td>{{ user.ytd_run_elapsed_time|default:0|duration:1 }}</td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Elevation Gain" %}</td><td>
+                                    {% if user.use_metric %}
+                                        {{ user.ytd_run_elevation_gain|default:0|floatformat:0 }} {% trans "m" %}
+                                    {% else %}
+                                        {{ user.ytd_run_elevation_gain|default:0|div:0.3048|floatformat:0 }} {% trans "feet" %}
+                                    {% endif %}
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-        <h4>{% trans "Year To Date (YTD Totals)" %}</h4>
-        <table>
-            <tr><td>{% trans "Run Count" %}</td><td colspan="2">{{ user.ytd_run_count|default:0 }}</td></tr>
-            <tr><td>{% trans "Distance" %}</td><td>{{ user.ytd_run_distance|default:0|div:1000|floatformat:2 }} {% trans "km" %}</td><td>{{ user.ytd_run_distance|default:0|div:1609.34|floatformat:2 }} {% trans "mile" %}</td></tr>
-            <tr><td>{% trans "Moving Time" %}</td><td>{{ user.ytd_run_moving_time }} {% trans "s" %}</td><td>{{ user.ytd_run_moving_time|default:0|duration:1 }}</td></tr>
-            <tr><td>{% trans "Elapsed Time" %}</td><td>{{ user.ytd_run_elapsed_time }} {% trans "s" %}</td><td>{{ user.ytd_run_elapsed_time|default:0|duration:1 }}</td></tr>
-            <tr><td>{% trans "Elevation Gain" %}</td><td colspan="2">{{ user.ytd_run_elevation_gain|default:0|floatformat:0 }} {% trans "m" %}</td></tr>
-        </table>
-
-        <h4>{% trans "All Time Totals" %}</h4>
-        <table>
-            <tr><td>{% trans "Run Count" %}</td><td colspan="2">{{ user.all_time_run_count|default:0 }}</td></tr>
-            <tr><td>{% trans "Distance" %}</td><td>{{ user.all_time_run_distance|default:0|div:1000|floatformat:2 }} {% trans "km" %}</td><td>{{ user.all_time_run_distance|default:0|div:1609.34|floatformat:2 }} {% trans "mile" %}</td></tr>
-            <tr><td>{% trans "Moving Time" %}</td><td>{{ user.all_time_run_moving_time }} {% trans "s" %}</td><td>{{ user.all_time_run_moving_time|default:0|duration:1 }}</td></tr>
-            <tr><td>{% trans "Elapsed Time" %}</td><td>{{ user.all_time_run_elapsed_time }} {% trans "s" %}</td><td>{{ user.all_time_run_elapsed_time|default:0|duration:1 }}</td></tr>
-            <tr><td>{% trans "Elevation Gain" %}</td><td colspan="2">{{ user.all_time_run_elevation_gain|default:0|floatformat:0 }} {% trans "m" %}</td></tr>
-        </table>
-        <p><a href="{% url 'group_membership_edit' %}" class="button-link">{% trans "Manage Group Memberships" %}</a></p>
-    {% else %}
-        <p>{% trans "Connect your Strava account to see your personal statistics and activities!" %}</p>
-        <p><a href="{% url 'strava_login' %}" class="button-link" style="background-color: #fc4c02;">{% trans "Connect Strava Account" %}</a></p>
-    {% endif %}
-
-    <h3>{% trans "Your Groups:" %}</h3>
-    {% if user_groups %}
-        <ul>
-            {% for group in user_groups %}
-                <li>
-                    {{ group.name }} 
-                    {% if group.has_dashboard %}
-                        <a href="{% url 'group_dashboard' group.id %}" style="margin-left: 10px;">{% trans "View Dashboard" %}</a>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>{% trans "You are not a member of any groups yet." %}</p>
-        <p><a href="{% url 'discover_groups' %}" class="button-link">{% trans "Discover Groups" %}</a></p>
-    {% endif %}
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="h6 mb-0">{% trans "All Time Totals" %}</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <tbody>
+                                <tr><td class="fixed-col-width">{% trans "Run Count" %}</td><td>{{ user.all_time_run_count|default:0 }}</td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Distance" %}</td><td>
+                                    {% if user.use_metric %}
+                                        {{ user.all_time_run_distance|default:0|div:1000|floatformat:2 }} {% trans "km" %}
+                                    {% else %}
+                                        {{ user.all_time_run_distance|default:0|div:1609.34|floatformat:2 }} {% trans "mile" %}
+                                    {% endif %}
+                                </td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Moving Time" %}</td><td>{{ user.all_time_run_moving_time|default:0|duration:1 }}</td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Elapsed Time" %}</td><td>{{ user.all_time_run_elapsed_time|default:0|duration:1 }}</td></tr>
+                                <tr><td class="fixed-col-width">{% trans "Elevation Gain" %}</td><td>
+                                    {% if user.use_metric %}
+                                        {{ user.all_time_run_elevation_gain|default:0|floatformat:0 }} {% trans "m" %}
+                                    {% else %}
+                                        {{ user.all_time_run_elevation_gain|default:0|div:0.3048|floatformat:0 }} {% trans "feet" %}
+                                    {% endif %}
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="text-center mt-4">
+                <a href="{% url 'group_membership_edit' %}" class="btn btn-outline-primary">{% trans "Manage Group Memberships" %}</a>
+            </p>
+        {% else %}
+            <p class="alert alert-info mt-4">{% trans "Connect your Strava account to see your personal statistics and activities!" %}</p>
+            <p class="text-center">
+                <a href="{% url 'strava_login' %}" class="strava-login">{% trans "Connect Strava Account" %}</a>
+            </p>
+        {% endif %}
+        <div class="card mb-4 mt-5 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h6 class="h6 mb-0">{% trans "Your Groups" %}</h6>
+            </div>
+            <div class="card-body">
+                {% if user_groups %}
+                    <ul class="list-group list-group-flush">
+                        {% for group in user_groups %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ group.name }}
+                                {% if group.has_dashboard %}
+                                    <a href="{% url 'group_dashboard' group.id %}" class="btn btn-sm btn-outline-secondary">{% trans "View Dashboard" %}</a>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="alert alert-secondary">{% trans "You are not a member of any groups yet." %}</p>
+                    <p class="text-center">
+                        <a href="{% url 'discover_groups' %}" class="btn btn-outline-info btn-lg">{% trans "Discover Groups" %}</a>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

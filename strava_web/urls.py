@@ -23,6 +23,7 @@ urlpatterns = [
     # 用户个人 Dashboard
     path('dashboard/', views.personal_dashboard, name='personal_dashboard'),
     path('activities/', views.activities, name='activities'),
+    path('activities/update/<int:activity_id>/', views.update_activity_ajax, name='update_activity_ajax'),
     path('races/', views.races, name='races'),
 
     # 用户信息修改页面

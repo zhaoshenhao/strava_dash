@@ -1,160 +1,42 @@
-/* ========================================= */
-/* Strava Dash 自定义样式表 - 仅导航栏       */
-/* 主色: 蓝色 (用于导航栏文本)                */
-/* 辅色: Strava 橙色 (#FC4C02)            */
-/* 导航栏背景: 浅色 (白色)                    */
-/* ========================================= */
-
-/* 1. 定义 CSS 变量 (在 :root 选择器中定义全局变量) */
-:root {
-    /* 主色调 (蓝色) */
-    --primary-blue: #007bff;          /* 标准蓝色 */
-    --primary-blue-dark: #0056b3;     /* 较深的蓝色，用于悬停等 */
-    --primary-blue-light: #e6f2ff;    /* 浅蓝色，用于悬停背景等 */
-
-    /* 辅色调 (Strava 橙色) */
-    --strava-orange: #FC4C02;         /* Strava 官方橙色 */
-    --strava-orange-dark: #e34502;    /* 较深的橙色，用于悬停等 */
-
-    /* 中性色调 */
-    --text-dark: #343a40;             /* 深色文本 */
-    --text-light: #f8f9fa;            /* 浅色文本 (通常用于深色背景) */
-    --bg-white: #ffffff;              /* 白色背景 */
-    --border-color: #dee2e6;          /* 边框颜色 */
-    --shadow-color: rgba(0, 0, 0, 0.08); /* 阴影颜色 */
+.fixed-col-width {
+    width: 40% !important;     /* 固定宽度为 40% */
+    white-space: nowrap !important; /* 防止文字换行 */
 }
-
-/* ========================================= */
-/* 导航栏样式调整 (背景浅色，文字蓝色/橙色)     */
-/* ========================================= */
-
-/* 导航栏整体背景色：覆盖 Bootstrap 的 .bg-light */
-.navbar {
-    background-color: var(--bg-white) !important; /* 强制背景为白色 */
-    box-shadow: 0 2px 4px var(--shadow-color); /* 添加轻微阴影 */
-    border-bottom: 1px solid var(--border-color); /* 增加底部边框以增强分隔感 */
+/* home.html 页面样式 */
+.home-content {
+    text-align: center;
+    padding: 50px 20px;
 }
-
-/* 导航栏品牌名称 (例如 "Strava Dash") */
-.navbar-brand {
-    color: var(--primary-blue) !important; /* 品牌名称为蓝色 */
-    font-weight: normal; /* **改回正常字体** */
-    transition: color 0.2s ease-in-out; /* 添加过渡效果 */
+.home-content h1 {
+    color: #fc4c02;
+    font-size: 3em;
+    margin-bottom: 20px;
 }
-
-.navbar-brand:hover {
-    color: var(--primary-blue-dark) !important; /* 品牌名称悬停时变为深蓝色 */
+.home-content p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+    color: #555;
 }
-
-/* 所有常规导航链接 (nav-link) 的默认样式 */
-.navbar-nav .nav-link {
-    color: var(--primary-blue) !important; /* 默认链接文本为蓝色 */
-    font-weight: normal; /* **改回正常字体** */
-    transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
-    padding: var(--bs-navbar-nav-link-padding-y, 0.5rem) var(--bs-navbar-nav-link-padding-x, 0.5rem);
+.login-buttons a {
+    display: inline-block;
+    padding: 12px 25px;
+    margin: 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
 }
-
-/* 导航链接悬停效果 */
-.navbar-nav .nav-link:hover {
-    color: var(--primary-blue-dark) !important; /* 悬停时变为深蓝色 */
-    background-color: var(--primary-blue-light); /* 悬停时背景略浅蓝 */
-    border-radius: 0.25rem; /* 悬停时应用圆角 */
+.login-buttons .strava-login {
+    background-color: #fc4c02;
+    color: white;
 }
-
-/* 活跃状态的导航链接 (如果有 Bootstrap 'active' 类) */
-.navbar-nav .nav-link.active {
-    background-color: var(--primary-blue-light); /* 活跃链接背景略浅蓝 */
-    border-radius: 0.25rem; /* 活跃链接增加圆角 */
-    color: var(--primary-blue) !important; /* 活跃链接文本保持蓝色 */
+.login-buttons .strava-login:hover {
+    background-color: #e64400;
 }
-
-/* 欢迎文本 (例如 "Welcome, username") */
-.navbar-text {
-    color: var(--text-dark) !important; /* 欢迎语使用深色文本 */
-    font-weight: normal; /* 欢迎语保持正常字体 */
+.login-buttons .email-login {
+    background-color: #007bff;
+    color: white;
 }
-
-/* 导航栏折叠按钮 (Hamburger icon) 颜色调整 */
-/* 强制汉堡图标为深灰色，以确保在浅色背景下可见 */
-.navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23343a40' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important; /* 强制汉堡图标为深灰色 */
-}
-
-.navbar-toggler {
-    border-color: rgba(0, 0, 0, 0.1) !important; /* 边框为浅黑色 */
-}
-
-
-/* --- 特定菜单项的样式调整 (保持粗体和橙色) --- */
-
-/* "首页" 链接 (位于 .navbar-nav.me-auto 下的第一个 li.nav-item 里的 a.nav-link) */
-.navbar-nav.me-auto > .nav-item:first-child > .nav-link {
-    color: var(--strava-orange) !important; /* Home 链接为橙色 */
-    font-weight: bold; /* **保持粗体** */
-}
-
-.navbar-nav.me-auto > .nav-item:first-child > .nav-link:hover {
-    color: var(--strava-orange-dark) !important; /* Home 悬停时橙色变深 */
-    background-color: var(--primary-blue-light) !important; /* Home 悬停背景仍为浅蓝 */
-}
-
-/* "退出" 按钮 (位于 .navbar-nav.ms-auto 下的包含 form 的 li.nav-item 里的 button) */
-/* 注意：根据 base.html 结构，Logout 按钮是 ms-auto 列表中第二个 nav-item */
-.navbar-nav.ms-auto > .nav-item:nth-child(2) form > .btn.btn-link.nav-link.text-danger {
-    color: var(--strava-orange) !important; /* Logout 按钮为橙色 */
-    font-weight: bold; /* **保持粗体** */
-    background-color: transparent !important; /* 确保背景透明 */
-    border: none !important; /* 移除任何默认边框 */
-    /* 保持与 nav-link 相似的 padding */
-    padding: var(--bs-navbar-nav-link-padding-y, 0.5rem) var(--bs-navbar-nav-link-padding-x, 0.5rem);
-}
-
-.navbar-nav.ms-auto > .nav-item:nth-child(2) form > .btn.btn-link.nav-link.text-danger:hover {
-    color: var(--strava-orange-dark) !important; /* 悬停时橙色变深 */
-    background-color: var(--primary-blue-light) !important; /* 悬停背景仍为浅蓝 */
-    border-radius: 0.25rem !important; /* 悬停圆角 */
-}
-
-/* 语言下拉菜单 (nav-item dropdown) 及其内部元素 */
-.navbar-nav .dropdown-toggle {
-    color: var(--primary-blue) !important; /* 下拉切换器文本为蓝色 */
-    font-weight: normal; /* **改回正常字体** */
-}
-
-.navbar-nav .dropdown-toggle:hover {
-    color: var(--primary-blue-dark) !important; /* 悬停时深蓝色 */
-}
-
-.navbar-nav .dropdown-menu {
-    background-color: var(--bg-white) !important; /* 下拉菜单背景白色 */
-    border: 1px solid var(--border-color) !important; /* 边框 */
-    box-shadow: 0 4px 8px var(--shadow-color); /* 轻微阴影 */
-}
-
-.navbar-nav .dropdown-item {
-    color: var(--text-dark) !important; /* 下拉菜单项文本为深色 */
-    font-weight: normal; /* 下拉项保持正常字体 */
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-}
-
-.navbar-nav .dropdown-item:hover,
-.navbar-nav .dropdown-item:focus {
-    background-color: var(--primary-blue-light) !important; /* 悬停时背景变为浅蓝色 */
-    color: var(--primary-blue) !important; /* 悬停时文本变为蓝色 */
-}
-
-.navbar-nav .dropdown-item.active {
-    background-color: var(--primary-blue-light) !important; /* 活跃项背景为浅蓝色 */
-    color: var(--primary-blue) !important; /* 活跃项文本为蓝色 */
-}
-
-/* 确保非登录状态下的 Login 和 Strava Login/Register 链接也是蓝色和正常字体 */
-.navbar-nav.ms-auto > .nav-item > .nav-link {
-    color: var(--primary-blue) !important;
-    font-weight: normal; /* **改回正常字体** */
-}
-
-.navbar-nav.ms-auto > .nav-item > .nav-link:hover {
-    color: var(--primary-blue-dark) !important;
-    background-color: var(--primary-blue-light);
+.login-buttons .email-login:hover {
+    background-color: #0056b3;
 }

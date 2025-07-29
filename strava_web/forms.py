@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
+from .models import Activity
 
 User = get_user_model()
 
@@ -13,7 +14,7 @@ class StravaUserRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email') # 用户名默认由 Strava ID 生成，不可修改
+        fields = ('first_name', 'last_name', 'email', 'use_metric', 'birth_year', 'gender') # 用户名默认由 Strava ID 生成，不可修改
 
     def clean_email(self):
         email = self.cleaned_data['email']
@@ -33,23 +34,28 @@ class StravaUserRegistrationForm(forms.ModelForm):
 class CustomUserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email') # 允许用户修改名字和邮件
+        fields = ['first_name', 'last_name', 'email']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # 用户名和 Strava ID 不允许通过此表单修改
-        if 'username' in self.fields:
-            self.fields['username'].widget = forms.HiddenInput()
-        if 'strava_id' in self.fields:
-            self.fields['strava_id'].widget = forms.HiddenInput()
+        # 遍历表单中的所有字段，为它们的部件添加 Bootstrap 的 'form-control' 类
+        for field_name, field in self.fields.items():
+            # 排除特定类型的 widget，因为 'form-control' 类可能不适用于它们
+            # 例如：CheckboxInput, RadioSelect, ClearableFileInput
+            if not isinstance(field.widget, (forms.CheckboxInput, forms.RadioSelect, forms.ClearableFileInput)):
+                # 检查是否已经有 class 属性，如果有则追加，否则直接设置
+                current_classes = field.widget.attrs.get('class', '')
+                if current_classes:
+                    field.widget.attrs['class'] = current_classes + ' form-control'
+                else:
+                    field.widget.attrs['class'] = 'form-control'
 
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        # 确保修改后的 email 不与现有其他用户的 email 冲突
-        if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
-            raise forms.ValidationError(_("This email address has been registered. Please use another email address."))
-        return email
-
+            # 可选：为特定字段添加 placeholder 属性
+            # if field_name == 'first_name':
+            #     field.widget.attrs['placeholder'] = _("Enter your first name")
+            # if field_name == 'email':
+            #     field.widget.attrs['placeholder'] = _("Enter your email address")
+            
 class GroupMembershipForm(forms.Form):
     groups = forms.ModelMultipleChoiceField(
         queryset=Group.objects.filter(is_open=True, has_dashboard=True).exclude(name='admin'),
@@ -76,3 +82,37 @@ class GroupMembershipForm(forms.Form):
 #         widgets = {
 #             'status': forms.RadioSelect, # 示例：使用单选按钮选择状态
 #         }
+
+class ActivityEditForm(forms.ModelForm):
+    class Meta:
+        model = Activity
+        # 只包含允许在模态窗口中修改的字段
+        fields = ['is_race', 'chip_time', 'race_distance', 'name']
+        labels = {
+            'is_race': _("Is this a Race?"),
+            'chip_time': _("Chip Time"),
+            'race_distance': _("Race Distance"),
+            'name': _('Activity Name')
+        }
+        help_texts = {
+            'chip_time': _("Your official race finish time in seconds. Leave blank or 0 to use Elapsed Time."),
+            'race_distance': _("Official distance of the race."),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if not isinstance(field.widget, forms.CheckboxInput): # 排除 Checkbox
+                current_classes = field.widget.attrs.get('class', '')
+                if current_classes:
+                    field.widget.attrs['class'] = current_classes + ' form-control'
+                else:
+                    field.widget.attrs['class'] = 'form-control'
+            # Checkbox 需要不同的样式，或者不需要 form-control
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs['class'] = 'form-check-input' # Bootstrap 样式
+                field.label_suffix = '' # 移除复选框标签的冒号
+
+        if self.instance and not self.instance.is_race:
+            self.fields['chip_time'].widget.attrs['disabled'] = True
+            self.fields['race_distance'].widget.attrs['disabled'] = True

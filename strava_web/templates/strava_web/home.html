@@ -2,46 +2,6 @@
 {% load i18n %}
 {% block title %}{% trans "Welcome to Strava Dash" %}{% endblock %}
 {% block content %}
-    <style>
-        .home-content {
-            text-align: center;
-            padding: 50px 20px;
-        }
-        .home-content h1 {
-            color: #fc4c02;
-            font-size: 3em;
-            margin-bottom: 20px;
-        }
-        .home-content p {
-            font-size: 1.2em;
-            margin-bottom: 30px;
-            color: #555;
-        }
-        .login-buttons a {
-            display: inline-block;
-            padding: 12px 25px;
-            margin: 10px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-        .login-buttons .strava-login {
-            background-color: #fc4c02;
-            color: white;
-        }
-        .login-buttons .strava-login:hover {
-            background-color: #e64400;
-        }
-        .login-buttons .email-login {
-            background-color: #007bff;
-            color: white;
-        }
-        .login-buttons .email-login:hover {
-            background-color: #0056b3;
-        }
-    </style>
-
     <div class="home-content">
         <h1>{% trans "Welcome to Strava Dash!" %}</h1>
         <p>{% trans "Your ultimate dashboard for Strava activity insights and group challenges." %}</p>

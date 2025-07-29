@@ -143,6 +143,13 @@ LOCALE_PATHS = [
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'strava_web/static'),
+]
+# STATIC_ROOT 是 collectstatic 命令收集所有静态文件（来自所有应用和 STATICFILES_DIRS）
+# 并放置到的目标目录。这个目录通常用于生产部署，不应在开发时手动修改。
+# python manage.py collectstatic
+#STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -163,4 +170,5 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend', # Django 默认的用户名/密码认证
 ]
 
-LOGIN_REDIRECT_URL = '/dashboard/'
+LOGIN_REDIRECT_URL = '/home/'
+LOGIN_URL = '/login/'

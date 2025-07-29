@@ -3,17 +3,12 @@
 {% load strava_filters %}
 {% load url_tags %}
 {% load tz %}
-
 {% block title %}{% trans "Your Activities" %}{% endblock %}
-
 {% block content %}
 <div class="container mt-4">
-    <h1>{% trans "Your Activities" %}</h1>
-
-    {# Filter Form #}
     <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">{% trans "Filter Activities" %}</h5>
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">{% trans "Your Activities" %}</h5>
         </div>
         <div class="card-body">
             <form method="get" class="row g-3 align-items-end">
@@ -82,8 +77,6 @@
                         </label>
                     </div>
                 </div>
-
-                {# Submit and Clear Buttons #}
                 <div class="col-md-auto">
                     <button type="submit" class="btn btn-primary">{% trans "Apply Filters" %}</button>
                 </div>
@@ -93,14 +86,11 @@
             </form>
         </div>
     </div>
-
-    {# Activities List #}
     {% if page_obj %}
         <div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-                        {# 新增: 可排序的表头 #}
                         {% for field_key, display_name in sortable_fields %}
                         {% with request.GET as GET %}
                         {% spaceless %}
@@ -125,12 +115,13 @@
                         {% endwith %}
                         {% endfor %}
                         <th>{% trans "Race" %}</th>
+                        <th>{% trans "Update" %}</th>
                         <th>{% trans "View on Strava" %}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for activity in page_obj %}
-                    <tr>
+                    <tr id="activity-row-{{ activity.id }}">
                         <td>
                             {% if activity.start_date_local %}
                                 {% localtime off %}
@@ -140,18 +131,58 @@
                                 N/A
                             {% endif %}
                         </td>
-                        <td>{{ activity.name }}</td>
-                        <td>{{ activity.distance|div:1000|floatformat:2|default_if_none:"0.00" }}</td>
-                        <td>{{ activity.elapsed_time|default:0|duration:0 }}</td>
-                        <td>{{ activity.elevation_gain|default_if_none:0|floatformat:0 }}</td>
-                        <td>{{ activity.average_speed|default:0|speed_km_pace }}</td>
+                        <td class="activity-name">{{ activity.name }}</td>
+                        <td>
+                            {% if use_metric %}
+                                {{ activity.distance|div:1000|floatformat:2|default_if_none:"0.00" }}
+                            {% else %}
+                                {{ activity.distance|div:1609.34|floatformat:2|default_if_none:"0.00" }}
+                            {% endif %}
+                        </td>
+                        <td class="elapsed-time-cell" title='{% trans "Chip Time" %}: {{ activity.chip_time|default:0|duration:0 }}'>
+                            {{ activity.elapsed_time|default:0|duration:0 }}
+                        </td>
+                        <td>
+                            {% if use_metric %}
+                                {{ activity.elevation_gain|default_if_none:0|floatformat:0 }}
+                            {% else %}
+                                {{ activity.elevation_gain|default_if_none:0|div:0.3048|floatformat:0 }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if use_metric %}
+                                {{ activity.average_speed|default:0|speed_km_pace }}
+                            {% else %}
+                                {{ activity.average_speed|default:0|speed_mile_pace }}
+                            {% endif %}
+                        </td>
                         <td>{{ activity.average_heartrate|default_if_none:'0'|floatformat:0 }}</td>
                         <td>{{ activity.average_cadence|div:0.5|floatformat:0|default_if_none:"-" }}</td>
-                        <td>{% if activity.is_race %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
+                        <td class="activity-is-race" data-is-race="{{ activity.is_race|lower }}">
+                            {% if activity.is_race %}
+                                <span class="badge bg-success">{% trans "Yes" %}</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">{% trans "No" %}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-info edit-activity-btn"
+                                    data-bs-toggle="modal" data-bs-target="#editActivityModal"
+                                    data-activity-id="{{ activity.id }}"
+                                    data-activity-name="{{ activity.name }}"
+                                    data-activity-date="{% localtime off %}{{ activity.start_date_local|date:'Y-m-d H:i' }}{% endlocaltime %}"
+                                    data-activity-distance="{{ activity.distance }}"
+                                    data-activity-elapsed-time="{{ activity.elapsed_time }}"
+                                    data-activity-is-race="{{ activity.is_race|lower }}"
+                                    data-activity-chip-time="{{ activity.chip_time|default:activity.elapsed_time }}"
+                                    data-activity-race-distance="{{ activity.race_distance|default:'' }}">
+                                <i class="bi bi-vector-pen"></i>
+                            </button>
+                        </td>
                         <td>
                             {% if activity.strava_id %}
                                 <a href="https://www.strava.com/activities/{{ activity.strava_id }}" target="_blank" class="btn btn-sm btn-info">
-                                    <i class="bi bi-link-45deg"></i> {% trans "View" %}
+                                    <i class="bi bi-link-45deg"></i>
                                 </a>
                             {% else %}
                                 -
@@ -191,4 +222,311 @@
         </div>
     {% endif %}
 </div>
+{# START: 活动编辑模态窗口 (Modal) #}
+<div class="modal fade" id="editActivityModal" tabindex="-1" aria-labelledby="editActivityModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="editActivityModalLabel">{% trans "Edit Activity" %} <span id="modal-activity-name"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editActivityForm" method="post" data-update-url="{% url 'update_activity_ajax' 0 %}">
+                    {% csrf_token %}
+                    <input type="hidden" id="modal-activity-id" name="activity_id">
+
+                    <div class="mb-3">
+                        <label for="modal-date" class="form-label">{% trans "Date" %}:</label>
+                        <input type="text" class="form-control" id="modal-date" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal-activity-name-display" class="form-label">{% trans "Activity Name" %}:</label>
+                        <input type="text" class="form-control" id="modal-activity-name-display">
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal-distance" class="form-label">{% trans "Distance" %}:</label>
+                        <input type="text" class="form-control" id="modal-distance" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal-elapsed-time" class="form-label">{% trans "Elapsed Time" %}:</label>
+                        <input type="text" class="form-control" id="modal-elapsed-time" readonly>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="modal-is-race" name="is_race">
+                        <label class="form-check-label" for="modal-is-race">{% trans "Is Race?" %}</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="display-chip-time" class="form-label">{% trans "Chip Time" %}:</label>
+                        <input type="text" class="form-control" id="display-chip-time" placeholder="HH:MM:SS 或 MM:SS" pattern="^([0-9]{1,2}:)?[0-5]?[0-9]:[0-5][0-9]$">
+                        <div class="form-text text-muted">{% trans "Enter time in HH:MM:SS (e.g., 01:05:30) or MM:SS (e.g., 05:30) format." %}</div>
+                        <input type="hidden" id="modal-chip-time" name="chip_time">
+                        <div class="invalid-feedback">
+                            {% trans "Invalid time format. Please use HH:MM:SS or MM:SS." %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="modal-race-distance" class="form-label">{% trans "Race Distance" %}:</label>
+                        <select class="form-select" id="modal-race-distance" name="race_distance">
+                            <option value="">{% trans "Select distance" %}</option>
+                            {% for key, value in activity_race_distances %}
+                                <option value="{{ key }}">{{ value }}</option>
+                            {% endfor %}
+                            <option value="1km">{% trans "1 km" %}</option>
+                            <option value="1mi">{% trans "1 mile" %}</option>
+                            <option value="5km">{% trans "5 km" %}</option>
+                            <option value="5mi">{% trans "5 mile" %}</option>
+                            <option value="10km">{% trans "10 km" %}</option>
+                            <option value="15km">{% trans "15 km" %}</option>
+                            <option value="10mi">{% trans "10 mile" %}</option>
+                            <option value="HM">{% trans "Half Marathon" %}</option>
+                            <option value="30km">{% trans "30 km" %}</option>
+                            <option value="FM">{% trans "Marathon" %}</option>
+                            <option value="50km">{% trans "50 km" %}</option>
+                            <option value="100km">{% trans "100 km" %}</option>
+                            <option value="150km">{% trans "150 km" %}</option>
+                            <option value="100mi">{% trans "100 mile" %}</option>
+                            <option value="Other">{% trans "Other" %}</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-footer d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-primary" id="saveActivityChangesBtn">{% trans "Update" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{# END: 活动编辑模态窗口 #}
+{% endblock %}
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editActivityModal = document.getElementById('editActivityModal');
+            const editActivityForm = document.getElementById('editActivityForm');
+            const modalActivityId = document.getElementById('modal-activity-id');
+            const modalActivityNameDisplay = document.getElementById('modal-activity-name-display');
+            const modalDate = document.getElementById('modal-date');
+            const modalDistance = document.getElementById('modal-distance');
+            const modalElapsedTime = document.getElementById('modal-elapsed-time');
+            const modalIsRace = document.getElementById('modal-is-race');
+            const modalChipTime = document.getElementById('modal-chip-time');
+            const modalRaceDistance = document.getElementById('modal-race-distance');
+            const saveActivityChangesBtn = document.getElementById('saveActivityChangesBtn');
+
+            const displayChipTimeInput = document.getElementById('display-chip-time');
+            const modalChipTimeInput = document.getElementById('modal-chip-time');
+
+            // 填充模态窗口数据 #
+            editActivityModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget; // 触发模态窗口的按钮
+                const activityName = button.getAttribute('data-activity-name');
+                const activityElapsedTime = button.getAttribute('data-activity-elapsed-time');
+                const activityIsRace = button.getAttribute('data-activity-is-race') === 'true';
+                const activityChipTime = button.getAttribute('data-activity-chip-time');
+                const activityRaceDistance = button.getAttribute('data-activity-race-distance');
+                const chipTime = parseInt(activityChipTime);
+
+                // 填充不可修改的字段
+                modalActivityId.value = button.getAttribute('data-activity-id');;
+                modalActivityNameDisplay.value = activityName;
+                modalDate.value = button.getAttribute('data-activity-date');
+                modalDistance.value = button.getAttribute('data-activity-distance');
+                modalElapsedTime.value = formatDuration(parseInt(activityElapsedTime));
+                document.getElementById('modal-activity-name').textContent = `(${activityName})`;
+
+                // 填充可修改的字段
+                modalIsRace.checked = activityIsRace;
+                modalChipTime.value = activityChipTime > 0 ? activityChipTime : ''; // 如果是0就显示空，让用户选择填elapsed time
+                modalRaceDistance.value = button.getAttribute('data-activity-race-distance'); // 直接设置值
+
+                // 根据 is_race 状态启用/禁用 Chip time 和 Race Distance
+                toggleRaceFields(activityIsRace);
+                // 使用 formatDuration 格式化秒数，并填充到用户可见的输入框 (格式 2 强制 HH:MM:SS)
+                displayChipTimeInput.value = chipTime > 0 ? formatDuration(chipTime, 2) : '';
+                modalChipTimeInput.value = chipTime; // 隐藏字段直接存储秒数
+                // 清除之前的验证状态
+                displayChipTimeInput.classList.remove('is-invalid');
+            });
+
+        // 监听用户输入事件，将 HH:MM:SS 转换为秒数并更新隐藏字段
+        displayChipTimeInput.addEventListener('blur', function() { // 使用 blur 事件，当失去焦点时触发
+            const hmsString = displayChipTimeInput.value.trim();
+            let seconds = 0;
+            let isValid = true;
+
+            if (hmsString !== '') {
+                seconds = hmsToSeconds(hmsString);
+                if (seconds === 0 && !/^([0-9]{1,2}:)?[0-5]?[0-9]:[0-5][0-9]$/.test(hmsString) && hmsString !== '0' && hmsString !== '00:00') {
+                    isValid = false;
+                }
+            }
+
+            if (!isValid) {
+                displayChipTimeInput.classList.add('is-invalid');
+                modalChipTimeInput.value = 0; // 无效输入，设置隐藏值为 0
+            } else {
+                displayChipTimeInput.classList.remove('is-invalid');
+                modalChipTimeInput.value = seconds; // 更新隐藏字段的值
+
+                if (hmsString !== '') { // 只有当用户有输入时才重新格式化
+                    displayChipTimeInput.value = formatDuration(seconds, 2);
+                }
+            }
+        });
+
+        // 监听表单提交前的验证
+        editActivityForm.addEventListener('submit', function(event) {
+            // 在提交前再次触发 blur 事件，确保最终的值是正确的
+            displayChipTimeInput.blur(); // 强制触发转换和验证
+
+            // 如果此时输入框仍然是无效状态，则阻止提交
+            if (displayChipTimeInput.classList.contains('is-invalid')) {
+                event.preventDefault();
+                showToast('Please correct the invalid time format.', 'danger'); // 提示用户
+            }
+            // If the format is valid, the submission will proceed
+        });
+
+            // 切换 Is Race 时的逻辑
+            modalIsRace.addEventListener('change', function() {
+                toggleRaceFields(this.checked);
+            });
+
+            function toggleRaceFields(isRace) {
+                modalChipTime.disabled = !isRace;
+                modalRaceDistance.disabled = !isRace;
+                displayChipTimeInput.disabled = !isRace;
+            }
+
+            // 提交表单数据 (通过 AJAX) #
+            editActivityForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // 阻止表单默认提交
+                saveActivityChangesBtn.disabled = true; // 禁用按钮防止重复提交
+                const activityId = modalActivityId.value;
+                const updateUrl = editActivityForm.dataset.updateUrl.replace('0', activityId);
+                const formData = new FormData();
+                formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+                formData.append('is_race', modalIsRace.checked);
+                formData.append('chip_time', modalChipTime.value);
+                formData.append('race_distance', modalRaceDistance.value);
+                formData.append('name', modalActivityNameDisplay.value);
+                fetch(updateUrl, {
+                    method: 'POST',
+                    body: formData // 直接使用 FormData
+                })
+                .then(response => {
+                    saveActivityChangesBtn.disabled = false; // 重新启用按钮
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        return response.json().then(errorData => { throw errorData; });
+                    }
+                })
+                .then(data => {
+                    if (data.success) {
+                        const modal = bootstrap.Modal.getInstance(editActivityModal);
+                        modal.hide();
+                        showToast(data.message, 'success');
+                        const activityRow = document.getElementById(`activity-row-${activityId}`);
+                        if (activityRow) {
+                            activityRow.querySelector('.activity-name').textContent = data.activity_data.name;
+                            const isRaceTd = activityRow.querySelector('.activity-is-race');
+                            isRaceTd.innerHTML = data.activity_data.is_race ? '<span class="badge bg-success">{% trans "Yes" %}</span>' : '<span class="badge bg-warning text-dark">{% trans "No" %}</span>';
+                            isRaceTd.dataset.isRace = data.activity_data.is_race;
+                            const targetTd = activityRow.querySelector(`.elapsed-time-cell`);
+                            //const targetTd = document.querySelector(`.elapsed-time-cell[data-activity-id="${activityId}"]`);
+                            const formattedChipTime = formatDuration(data.activity_data.chip_time, 2);
+                            if (targetTd) {
+                                targetTd.setAttribute('title', `{% trans "Chip Time" %}: ${formattedChipTime}`);
+                                console.log(formattedChipTime);
+                            } else {
+                                console.log('not found');
+                            }
+
+                            // 更新活动按钮的 data 属性，使其反映最新状态
+                            const updatedButton = activityRow.querySelector('.edit-activity-btn');
+                            if(updatedButton) {
+                                updatedButton.setAttribute('data-activity-name', data.activity_data.name);
+                                updatedButton.setAttribute('data-activity-is-race', data.activity_data.is_race);
+                                updatedButton.setAttribute('data-activity-chip-time', data.activity_data.chip_time);
+                                updatedButton.setAttribute('data-activity-race-distance', data.activity_data.race_distance);
+                            }
+                        }
+                    } else {
+                        // 显示错误消息
+                        showToast(data.message || '{% trans "An error occurred." %}', 'danger');
+                        // 如果有表单错误，显示在模态窗口中
+                        if (data.errors) {
+                            displayFormErrors(data.errors);
+                        }
+                    }
+                })
+                .catch(error => {
+                    saveActivityChangesBtn.disabled = false; // 重新启用按钮
+                    console.error('Error:', error);
+                    showToast('{% trans "Network error or unexpected response." %}', 'danger');
+                    if (error.errors) {
+                        displayFormErrors(error.errors);
+                    }
+                });
+            });
+
+            function showToast(message, type) {
+                const toastContainer = document.querySelector('.toast-container'); // 选择 base.html 中的 Toast 容器
+                if (!toastContainer) {
+                    console.warn("Toast container not found. Message won't be displayed:", message);
+                    return;
+                }
+                const toastHtml = `
+                    <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="15000">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>`;
+                const div = document.createElement('div');
+                div.innerHTML = toastHtml;
+                const newToastEl = div.firstElementChild;
+                toastContainer.appendChild(newToastEl);
+                const newToast = new bootstrap.Toast(newToastEl, { autohide: true, delay: 5000 });
+                newToast.show();
+                
+                newToastEl.addEventListener('hidden.bs.toast', function () {
+                    newToastEl.remove();
+                });
+            }
+
+            function displayFormErrors(errors) {
+                // 清除之前的错误
+                document.querySelectorAll('.modal-body .invalid-feedback').forEach(el => el.remove());
+                document.querySelectorAll('.modal-body .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+                const errorObj = JSON.parse(errors); // 解析后端返回的 JSON 错误字符串
+
+                for (const fieldName in errorObj) {
+                    if (errorObj.hasOwnProperty(fieldName)) {
+                        const fieldErrors = errorObj[fieldName];
+                        const inputElement = document.getElementById(`modal-${fieldName}`); // 假设字段ID格式为 modal-field_name
+                        if (inputElement) {
+                            inputElement.classList.add('is-invalid');
+                            const errorDiv = document.createElement('div');
+                            errorDiv.classList.add('invalid-feedback', 'd-block');
+                            errorDiv.textContent = fieldErrors[0].message; // 显示第一个错误
+                            inputElement.parentNode.appendChild(errorDiv);
+                        } else if (fieldName === '__all__') {
+                            // 处理非字段错误，例如在模态窗口顶部显示
+                            showToast(fieldErrors[0].message, 'danger');
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 {% endblock %}
