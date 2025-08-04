@@ -1,0 +1,7 @@
+{% load i18n %}
+<form action="{% url 'join_group' group.id %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-sm btn-success">
+        {% trans "Join" %}
+    </button>
+</form>

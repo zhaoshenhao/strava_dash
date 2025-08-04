@@ -1,5 +1,6 @@
 {% extends 'strava_web/base.html' %}
 {% load i18n %}
+{% load url_tags %}
 {% load static %}
 {% block title %}{% trans "Manage Your Group(s)" %}{% endblock %}
 {% block content %}
@@ -35,93 +36,94 @@
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
+                        {% for field_key, display_name in sortable_fields %}
+                        {% with request.GET as GET %}
+                        {% spaceless %}
                         <th>
-                            <a class="text-decoration-none text-dark" href="?sort_by=name&order={% if sort_by == 'name' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}&page={{ groups_paginated.number }}">
-                                {% trans "Group" %} {% if sort_by == 'name' %}{% if order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}
+                        {% if sort_order == 'asc' and sort_by == field_key|stringformat:"s"|lower %}
+                            <a href="?{% url_param_replace sort_by=field_key order='desc' %}"
+                                class="text-decoration-none text-dark">
+                                {{ display_name }}
+                                <i class="bi bi-arrow-up"></i>
                             </a>
-                        </th>
-                        <th>
-                            <a class="text-decoration-none text-dark" href="?sort_by=group_type&order={% if sort_by == 'group_type' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}&page={{ groups_paginated.number }}">
-                                {% trans "Type" %} {% if sort_by == 'group_type' %}{% if order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}
+                        {% else %}
+                            <a href="?{% url_param_replace sort_by=field_key order='asc' %}"
+                                class="text-decoration-none text-dark">
+                                {{ display_name }}
+                                {% if sort_by == field_key|stringformat:"s"|lower %}
+                                    <i class="bi bi-arrow-down"></i>
+                                {% endif %}
                             </a>
+                        {% endif %}
                         </th>
-                        <th>
-                            <a class="text-decoration-none text-dark" href="?sort_by=member_count&order={% if sort_by == 'member_count' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}&page={{ groups_paginated.number }}">
-                                {% trans "Member(s)" %} {% if sort_by == 'member_count' %}{% if order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}
-                            </a>
-                        </th>
-                        <th>
-                            <a class="text-decoration-none text-dark" href="?sort_by=admin&order={% if sort_by == 'admin' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}&page={{ groups_paginated.number }}">
-                                {% trans "Administrator" %} {% if sort_by == 'admin' %}{% if order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}
-                            </a>
-                        </th>
-                        <th>
-                            <a class="text-decoration-none text-dark" href="?sort_by=is_member&order={% if sort_by == 'is_member' and order == 'asc' %}desc{% else %}asc{% endif %}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}&page={{ groups_paginated.number }}">
-                                {% trans "Membership" %} {% if sort_by == 'is_member' %}{% if order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}
-                            </a>
-                        </th>
+                        {% endspaceless %}
+                        {% endwith %}
+                        {% endfor %}
                         <th>{% trans "Request Status" %}</th>
                         <th>{% trans "Action" %}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in groups_paginated %}
+                    {% for group in page_obj.object_list %}
                     <tr>
                         <td>
-                            {% if item.is_member and item.group.has_dashboard %}
-                                <a href="{% url 'group_dashboard' item.group.id %}" target="_blank" class="text-decoration-none fw-bold">
-                                    {{ item.group.name }}
+                            {% if group.is_member %}
+                                <a href="{% url 'group_dashboard' group.id %}" target="_blank" class="text-decoration-none fw-bold">
+                                    {{ group.name }}
                                 </a>
                             {% else %}
-                                {{ item.group.name }}
+                                {{ group.name }}
                             {% endif %}
                         </td>
                         <td>
-                            {% if item.group.is_open %}
+                            {% if group.is_open %}
                                 <span class="badge bg-primary">{% trans "Open" %}</span>
                             {% else %}
                                 <span class="badge bg-dark">{% trans "Closed" %}</span>
                             {% endif %}
                         </td>
-                        <td>{{ item.member_count }}</td>
                         <td>
-                            {% if item.group.admin %}
-                                {% if item.group.admin.first_name and item.group.admin.last_name %}
-                                    {{ item.group.admin.first_name }} {{ item.group.admin.last_name }}
-                                {% elif item.group.admin.first_name %}
-                                    {{ item.group.admin.first_name }}
-                                {% elif item.group.admin.last_name %}
-                                    {{ item.group.admin.last_name }}
+                            {% if group.admin %}
+                                {% if group.admin.first_name and group.admin.last_name %}
+                                    {{ group.admin.first_name }} {{ group.admin.last_name }}
+                                {% elif group.admin.first_name %}
+                                    {{ group.admin.first_name }}
+                                {% elif group.admin.last_name %}
+                                    {{ group.admin.last_name }}
                                 {% else %}
-                                    {{ item.group.admin.username }}
+                                    {{ group.admin.username }}
                                 {% endif %}
                             {% else %}
                                 -
                             {% endif %}
                         </td>
+                        <td>{{ group.member_count }}</td>
                         <td>
-                            {% if item.is_member %}
+                            {% if group.is_member %}
                                 <span class="badge bg-success">{% trans "Yes" %}</span>
                             {% else %}
                                 <span class="badge bg-secondary">{% trans "No" %}</span>
                             {% endif %}
                         </td>
                         <td>
-                            {% if not item.group.is_open and not item.is_member %}
-                                <span class="badge bg-info">{{ item.application_status_display }}</span>
+                            {% if not group.is_open and not group.is_member and group.last_application_status %}
+                                <span class="badge bg-info">{% trans group.last_application_status %}</span>
+                            {% else %}
+                                -
                             {% endif %}
                         </td>
                         <td>
-                            {% if item.action_url_name %}
-                                <form action="{% url item.action_url_name item.group.id %}" method="post" style="display:inline;"
-                                      {% if item.action_button_text == "退出" or item.action_button_text == "Quit" %}class="confirm-leave-form"{% endif %}>
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm {{ item.action_button_class }}" {% if item.action_button_disabled %}disabled{% endif %}>
-                                        {{ item.action_button_text }}
-                                    </button>
-                                </form>
+                            {% if group.is_member %}
+                                {% include "strava_web/group_leave_form.html" %}
+                            {% elif group.is_open %}
+                                {% include "strava_web/group_join_form.html" %}
                             {% else %}
-                                -
+                                {% include "strava_web/group_apply_form.html" %}
+                                {% if group.last_application_status == 'pending' %}
+                                    -
+                                {% elif group.last_application_status == 'rejected' %}
+                                    {% include "strava_web/group_apply_form.html" %}
+                                {% endif %}
                             {% endif %}
                         </td>
                     </tr>
@@ -132,27 +134,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
-                    {% if groups_paginated.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ groups_paginated.previous_page_number }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}">{% trans "Prev." %}</a>
-                        </li>
-                    {% endif %}
-                    {% for i in groups_paginated.paginator.page_range %}
-                        {% if groups_paginated.number == i %}
-                            <li class="page-item active"><span class="page-link">{{ i }}</span></li>
-                        {% else %}
-                            <li class="page-item"><a class="page-link" href="?page={{ i }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}">{{ i }}</a></li>
-                        {% endif %}
-                    {% endfor %}
-                    {% if groups_paginated.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ groups_paginated.next_page_number }}&sort_by={{ sort_by }}&order={{ order }}&search={{ search_query }}&group_type_filter={{ group_type_filter }}&is_member_filter={{ is_member_filter }}">{% trans "Next" %}</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
+            {% include "strava_web/pagination.html" %}
         </div>
     </div>
 </div>

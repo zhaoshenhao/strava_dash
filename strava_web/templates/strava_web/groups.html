@@ -1,12 +1,145 @@
 {% extends 'strava_web/base.html' %}
 {% load i18n %}
-
-{% block title %}{% trans "Groups" %}{% endblock %}
-
+{% load url_tags %}
+{% load static %}
+{% block title %}{% trans "Group Management" %}{% endblock %}
 {% block content %}
 <div class="container mt-4">
-    <h1>{% trans "Your Races" %}</h1>
-    <p>{% trans "This page will display Groups." %}</p>
-    {# Future: Add content to display Users here #}
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">{% trans "Group List" %}</h5>
+        </div>
+        <div class="card-body">
+            <form id="group-search-form" method="get" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="search-input" id="search-input" class="form-control" placeholder='{% trans "Search by Name, Description, Announcement, or Admin" %}' value="{{ search_query|default:'' }}">
+                    <label for="group-type-filter" class="form-label visually-hidden">{% trans "Filter by Group Type" %}</label>
+                    <select class="form-select form-control" id="group-type-filter" name="group_type_filter">
+                        <option value="">{% trans "All Group Types" %}</option>
+                        <option value="open" {% if group_type_filter == "open" %}selected{% endif %}>{% trans "Open Group" %}</option>
+                        <option value="closed" {% if group_type_filter == "closed" %}selected{% endif %}>{% trans "Closed Group" %}</option>
+                    </select>
+                    {% if search_query or group_type_filter or is_member_filter %}
+                        <button type="button" class="btn btn-outline-secondary" id="clear-search-btn">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    {% endif %}
+                    <button class="btn btn-primary" type="submit">{% trans "Search" %}</button>
+                </div>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            {% for field_key, display_name in sortable_fields %}
+                            {% with request.GET as GET %}
+                            {% spaceless %}
+                            <th>
+                            {% if sort_order == 'asc' and sort_by == field_key|stringformat:"s"|lower %}
+                                <a href="?{% url_param_replace sort_by=field_key order='desc' %}"
+                                   class="text-decoration-none text-dark">
+                                    {{ display_name }}
+                                    <i class="bi bi-arrow-up"></i>
+                                </a>
+                            {% else %}
+                                <a href="?{% url_param_replace sort_by=field_key order='asc' %}"
+                                   class="text-decoration-none text-dark">
+                                    {{ display_name }}
+                                    {% if sort_by == field_key|stringformat:"s"|lower %}
+                                        <i class="bi bi-arrow-down"></i>
+                                    {% endif %}
+                                </a>
+                            {% endif %}
+                            </th>
+                            {% endspaceless %}
+                            {% endwith %}
+                            {% endfor %}
+                            <th>{% trans "Announcement" %}</th>
+                            <th>{% trans "Description" %}</th>
+                            <th>{% trans "Manage" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for group in page_obj.object_list %}
+                        <tr>
+                            <td>{{ group.name }}</td>
+                            <td>
+                                {% if group.is_open %}
+                                    <span class="badge bg-success">{% trans "Open" %}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{% trans "Private" %}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if group.admin %}
+                                    {% if group.admin.first_name and group.admin.last_name %}
+                                        {{ group.admin.first_name }} {{ group.admin.last_name }}
+                                    {% else %}
+                                        {{ group.admin.username }}
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ group.member_count }}</td>
+                            <td>{{ group.request_count }}</td>
+                            <td>
+                                <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.announcement }}"></i>
+                            </td>
+                            <td>
+                                <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.description }}"></i>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                <a href="{% url 'group_edit' group.id %}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Edit Group' %}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="{% url 'group_manage_members' group.id %}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Manage Group Member' %}">
+                                    <i class="bi bi-people"></i>
+                                </a>
+                                {% if not group.is_open %}
+                                <a href="{% url 'group_manage_application' group.id %}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-placement="top" title="{% trans 'Manage Application' %}">
+                                    <i class="bi bi-person-add"></i>
+                                </a>
+                                {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9">{% trans "No groups found with a dashboard." %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% include "strava_web/pagination.html" %}
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 初始化 Bootstrap 的工具提示
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-input');
+        const groupTypeFilter = document.getElementById('group-type-filter');
+        const clearSearchBtn = document.getElementById('clear-search-btn');
+        const groupSearchForm = document.getElementById('group-search-form');
+
+        if (clearSearchBtn && groupSearchForm) {
+            clearSearchBtn.addEventListener('click', function() {
+                searchInput.value = ''; // 清空搜索框内容
+                groupTypeFilter.value = ''; // 清空组群类型筛选
+                groupSearchForm.submit(); // 提交表单以刷新页面，移除所有搜索和筛选参数
+            });
+        }
+    });
+</script>
 {% endblock %}

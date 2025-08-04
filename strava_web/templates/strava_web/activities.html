@@ -3,12 +3,24 @@
 {% load strava_filters %}
 {% load url_tags %}
 {% load tz %}
-{% block title %}{% trans "Your Activities" %}{% endblock %}
+{% block title %}
+    {% if is_race_page %}
+        {% trans "Your Races" %}
+    {% else %}
+        {% trans "Your Activities" %}
+    {% endif %}
+{% endblock %}
 {% block content %}
 <div class="container mt-4">
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">{% trans "Your Activities" %}</h5>
+            <h5 class="mb-0">
+            {% if is_race_page %}
+                {% trans "Your Races" %}
+            {% else %}
+                {% trans "Your Activities" %}
+            {% endif %}
+            </h5>
         </div>
         <div class="card-body">
             <form method="get" class="row g-3 align-items-end">
@@ -18,28 +30,23 @@
                 {% if selected_order %}
                     <input type="hidden" name="order" value="{{ selected_order }}">
                 {% endif %}
-
                 {# Date Filters #}
-                <div class="col-md-3">
-                    <label for="id_year" class="form-label">{% trans "Year" %}:</label>
+                <div class="input-group">
+                    <label for="id_year" class="form-label visually-hidden">{% trans "Year" %}:</label>
                     <select class="form-select" id="id_year" name="year">
                         <option value="">{% trans "All Years" %}</option>
                         {% for y in available_years %}
                             <option value="{{ y }}" {% if selected_year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
                         {% endfor %}
                     </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="id_month" class="form-label">{% trans "Month" %}:</label>
+                    <label for="id_month" class="form-label visually-hidden">{% trans "Month" %}:</label>
                     <select class="form-select" id="id_month" name="month">
                         <option value="">{% trans "All Months" %}</option>
                         {% for m_num, m_name in available_months %}
                             <option value="{{ m_num }}" {% if selected_month == m_num|stringformat:"s" %}selected{% endif %}>{% trans m_name %}</option>
                         {% endfor %}
                     </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="id_week" class="form-label">{% trans "Week" %}:</label>
+                    <label for="id_week" class="form-label visually-hidden">{% trans "Week" %}:</label>
                     <select class="form-select" id="id_week" name="week">
                         <option value="">{% trans "All Weeks" %}</option>
                         {% for w in available_weeks %}
@@ -47,10 +54,10 @@
                         {% endfor %}
                     </select>
                 </div>
-
-                {# Distance Filters #}
-                <div class="col-md-3">
-                    <label for="id_distance" class="form-label">{% trans "Distance" %}:</label>
+                <div class="input-group">
+                    <label for="search-input" class="form-label visually-hidden">{% trans "Filter by Activity Name" %}</label>
+                    <input type="text" name="search-input" id="search-input" class="form-control" placeholder='{% trans "Filter by Activity Name" %}' value="{{ search_query|default:'' }}">
+                    <label for="id_distance" class="form-label visually-hidden">{% trans "Distance" %}:</label>
                     <select class="form-select" id="id_distance" name="distance">
                         <option value="">{% trans "All Distances" %}</option>
                         <option value="0-5k" {% if selected_distance == '0-5k' %}selected{% endif %}>0-5 km</option>
@@ -66,22 +73,25 @@
                         <option value="50-100k" {% if selected_distance == '50-100k' %}selected{% endif %}>50-100 km</option>
                         <option value="100k_plus" {% if selected_distance == '100k_plus' %}selected{% endif %}>>100 km</option>
                     </select>
-                </div>
-
-                {# Is Race Filter #}
-                <div class="col-md-auto">
-                    <div class="form-check mt-3">
-                        <input class="form-check-input" type="checkbox" id="id_is_race" name="is_race" value="true" {% if selected_is_race == 'true' %}checked{% endif %}>
-                        <label class="form-check-label" for="id_is_race">
-                            {% trans "Is Race" %}
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-auto">
+                    {% if not is_race_page %}
+                        <label for="is-race-filter" class="form-label visually-hidden">{% trans "Is Race?" %}</label>
+                        <select class="form-select" id="is-race-filter" name="is_race_filter">
+                            <option value="">{% trans "Is Race?" %}</option>
+                            <option value="yes" {% if is_race_filter == 'yes' %}selected{% endif %}>{% trans "Yes" %}</option>
+                            <option value="no" {% if is_race_filter == 'no' %}selected{% endif %}>{% trans "No" %}</option>
+                        </select>
+                    {% endif %}
+                    {% if search_query or is_race_filter or id_year or id_month or id_week or id_distance %}
+                        {% if not is_race_page %}
+                            <a href="{% url 'activities' user_id %}" class="btn btn-secondary"><i class="bi bi-x-lg"></i></a>
+                        {% else %}
+                            <a href="{% url 'races' user_id %}" class="btn btn-secondary"><i class="bi bi-x-lg"></i></a>
+                        {% endif %}
+                    {% endif %}
                     <button type="submit" class="btn btn-primary">{% trans "Apply Filters" %}</button>
-                </div>
-                <div class="col-md-auto">
-                    <a href="{% url 'activities' %}" class="btn btn-secondary">{% trans "Clear Filters" %}</a>
+                    {% if is_race_page %}
+                        <a href="{% url 'activities' user_id %}" class="btn btn-primary">{% trans "Go To Your Activities" %}</a>
+                    {% endif %}
                 </div>
             </form>
         </div>
@@ -114,7 +124,6 @@
                         {% endspaceless %}
                         {% endwith %}
                         {% endfor %}
-                        <th>{% trans "Race" %}</th>
                         <th>{% trans "Update" %}</th>
                         <th>{% trans "View on Strava" %}</th>
                     </tr>
@@ -139,9 +148,15 @@
                                 {{ activity.distance|div:1609.34|floatformat:2|default_if_none:"0.00" }}
                             {% endif %}
                         </td>
-                        <td class="elapsed-time-cell" title='{% trans "Chip Time" %}: {{ activity.chip_time|default:0|duration:0 }}'>
-                            {{ activity.elapsed_time|default:0|duration:0 }}
-                        </td>
+                        {% if is_race_page %}
+                            <td class="elapsed-time-cell" title='{% trans "Elapsed Time" %}: {{ activity.elapsed_time|default:0|duration:0 }}'>
+                                {{ activity.chip_time|default:0|duration:0 }}
+                            </td>
+                        {% else %}
+                            <td class="elapsed-time-cell" title='{% trans "Chip Time" %}: {{ activity.chip_time|default:0|duration:0 }}'>
+                                {{ activity.elapsed_time|default:0|duration:0 }}
+                            </td>
+                        {% endif %}
                         <td>
                             {% if use_metric %}
                                 {{ activity.elevation_gain|default_if_none:0|floatformat:0 }}
@@ -158,13 +173,15 @@
                         </td>
                         <td>{{ activity.average_heartrate|default_if_none:'0'|floatformat:0 }}</td>
                         <td>{{ activity.average_cadence|div:0.5|floatformat:0|default_if_none:"-" }}</td>
-                        <td class="activity-is-race" data-is-race="{{ activity.is_race|lower }}">
-                            {% if activity.is_race %}
-                                <span class="badge bg-success">{% trans "Yes" %}</span>
-                            {% else %}
-                                <span class="badge bg-warning text-dark">{% trans "No" %}</span>
-                            {% endif %}
-                        </td>
+                        {% if not is_race_page %}
+                            <td class="activity-is-race" data-is-race="{{ activity.is_race|lower }}">
+                                {% if activity.is_race %}
+                                    <span class="badge bg-success">{% trans "Yes" %}</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">{% trans "No" %}</span>
+                                {% endif %}
+                            </td>
+                        {% endif %}
                         <td>
                             <button type="button" class="btn btn-sm btn-info edit-activity-btn"
                                     data-bs-toggle="modal" data-bs-target="#editActivityModal"
@@ -193,29 +210,7 @@
                 </tbody>
             </table>
         </div>
-
-        {# Pagination #}
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                {% if page_obj.has_previous %}
-                    <li class="page-item"><a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "First" %}</a></li>
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Previous" %}</a></li>
-                {% endif %}
-
-                {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                        <li class="page-item"><a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a></li>
-                    {% endif %}
-                {% endfor %}
-
-                {% if page_obj.has_next %}
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Next" %}</a></li>
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Last" %}</a></li>
-                {% endif %}
-            </ul>
-        </nav>
+        {% include "strava_web/pagination.html" %}
     {% else %}
         <div class="alert alert-info" role="alert">
             {% trans "No activities found matching your criteria." %}
@@ -253,7 +248,7 @@
                     </div>
 
                     <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="modal-is-race" name="is_race">
+                        <input class="form-check-input" type="checkbox" id="modal-is-race" name="is_race" {% if is_race_page %}disabled{% endif %}>
                         <label class="form-check-label" for="modal-is-race">{% trans "Is Race?" %}</label>
                     </div>
 
@@ -317,6 +312,7 @@
             const modalChipTime = document.getElementById('modal-chip-time');
             const modalRaceDistance = document.getElementById('modal-race-distance');
             const saveActivityChangesBtn = document.getElementById('saveActivityChangesBtn');
+            const race_page = "{{ is_race_page }}".toLowerCase();
 
             const displayChipTimeInput = document.getElementById('display-chip-time');
             const modalChipTimeInput = document.getElementById('modal-chip-time');
@@ -353,46 +349,44 @@
                 displayChipTimeInput.classList.remove('is-invalid');
             });
 
-        // 监听用户输入事件，将 HH:MM:SS 转换为秒数并更新隐藏字段
-        displayChipTimeInput.addEventListener('blur', function() { // 使用 blur 事件，当失去焦点时触发
-            const hmsString = displayChipTimeInput.value.trim();
-            let seconds = 0;
-            let isValid = true;
+            // 监听用户输入事件，将 HH:MM:SS 转换为秒数并更新隐藏字段
+            displayChipTimeInput.addEventListener('blur', function() { // 使用 blur 事件，当失去焦点时触发
+                const hmsString = displayChipTimeInput.value.trim();
+                let seconds = 0;
+                let isValid = true;
 
-            if (hmsString !== '') {
-                seconds = hmsToSeconds(hmsString);
-                if (seconds === 0 && !/^([0-9]{1,2}:)?[0-5]?[0-9]:[0-5][0-9]$/.test(hmsString) && hmsString !== '0' && hmsString !== '00:00') {
-                    isValid = false;
+                if (hmsString !== '') {
+                    seconds = hmsToSeconds(hmsString);
+                    if (seconds === 0 && !/^([0-9]{1,2}:)?[0-5]?[0-9]:[0-5][0-9]$/.test(hmsString) && hmsString !== '0' && hmsString !== '00:00') {
+                        isValid = false;
+                    }
                 }
-            }
 
-            if (!isValid) {
-                displayChipTimeInput.classList.add('is-invalid');
-                modalChipTimeInput.value = 0; // 无效输入，设置隐藏值为 0
-            } else {
-                displayChipTimeInput.classList.remove('is-invalid');
-                modalChipTimeInput.value = seconds; // 更新隐藏字段的值
+                if (!isValid) {
+                    displayChipTimeInput.classList.add('is-invalid');
+                    modalChipTimeInput.value = 0; // 无效输入，设置隐藏值为 0
+                } else {
+                    displayChipTimeInput.classList.remove('is-invalid');
+                    modalChipTimeInput.value = seconds; // 更新隐藏字段的值
 
-                if (hmsString !== '') { // 只有当用户有输入时才重新格式化
-                    displayChipTimeInput.value = formatDuration(seconds, 2);
+                    if (hmsString !== '') { // 只有当用户有输入时才重新格式化
+                        displayChipTimeInput.value = formatDuration(seconds, 2);
+                    }
                 }
-            }
-        });
+            });
 
-        // 监听表单提交前的验证
-        editActivityForm.addEventListener('submit', function(event) {
-            // 在提交前再次触发 blur 事件，确保最终的值是正确的
-            displayChipTimeInput.blur(); // 强制触发转换和验证
+            // 监听表单提交前的验证
+            editActivityForm.addEventListener('submit', function(event) {
+                // 在提交前再次触发 blur 事件，确保最终的值是正确的
+                displayChipTimeInput.blur(); // 强制触发转换和验证
 
-            // 如果此时输入框仍然是无效状态，则阻止提交
-            if (displayChipTimeInput.classList.contains('is-invalid')) {
-                event.preventDefault();
-                showToast('Please correct the invalid time format.', 'danger'); // 提示用户
-            }
-            // If the format is valid, the submission will proceed
-        });
-
-            // 切换 Is Race 时的逻辑
+                // 如果此时输入框仍然是无效状态，则阻止提交
+                if (displayChipTimeInput.classList.contains('is-invalid')) {
+                    event.preventDefault();
+                    showToast('Please correct the invalid time format.', 'danger'); // 提示用户
+                }
+                // If the format is valid, the submission will proceed
+            });
             modalIsRace.addEventListener('change', function() {
                 toggleRaceFields(this.checked);
             });
@@ -402,8 +396,6 @@
                 modalRaceDistance.disabled = !isRace;
                 displayChipTimeInput.disabled = !isRace;
             }
-
-            // 提交表单数据 (通过 AJAX) #
             editActivityForm.addEventListener('submit', function(event) {
                 event.preventDefault(); // 阻止表单默认提交
                 saveActivityChangesBtn.disabled = true; // 禁用按钮防止重复提交
@@ -435,20 +427,20 @@
                         const activityRow = document.getElementById(`activity-row-${activityId}`);
                         if (activityRow) {
                             activityRow.querySelector('.activity-name').textContent = data.activity_data.name;
-                            const isRaceTd = activityRow.querySelector('.activity-is-race');
-                            isRaceTd.innerHTML = data.activity_data.is_race ? '<span class="badge bg-success">{% trans "Yes" %}</span>' : '<span class="badge bg-warning text-dark">{% trans "No" %}</span>';
-                            isRaceTd.dataset.isRace = data.activity_data.is_race;
+                            if (race_page === 'false') {
+                                const isRaceTd = activityRow.querySelector('.activity-is-race');
+                                isRaceTd.innerHTML = data.activity_data.is_race ? '<span class="badge bg-success">{% trans "Yes" %}</span>' : '<span class="badge bg-warning text-dark">{% trans "No" %}</span>';
+                                isRaceTd.dataset.isRace = data.activity_data.is_race;
+                            }
                             const targetTd = activityRow.querySelector(`.elapsed-time-cell`);
-                            //const targetTd = document.querySelector(`.elapsed-time-cell[data-activity-id="${activityId}"]`);
                             const formattedChipTime = formatDuration(data.activity_data.chip_time, 2);
                             if (targetTd) {
-                                targetTd.setAttribute('title', `{% trans "Chip Time" %}: ${formattedChipTime}`);
-                                console.log(formattedChipTime);
-                            } else {
-                                console.log('not found');
+                                if (race_page === 'true')
+                                    targetTd.innerHTML = formattedChipTime;
+                                else
+                                    targetTd.setAttribute('title', `{% trans "Chip Time" %}: ${formattedChipTime}`);
                             }
 
-                            // 更新活动按钮的 data 属性，使其反映最新状态
                             const updatedButton = activityRow.querySelector('.edit-activity-btn');
                             if(updatedButton) {
                                 updatedButton.setAttribute('data-activity-name', data.activity_data.name);
@@ -458,9 +450,7 @@
                             }
                         }
                     } else {
-                        // 显示错误消息
                         showToast(data.message || '{% trans "An error occurred." %}', 'danger');
-                        // 如果有表单错误，显示在模态窗口中
                         if (data.errors) {
                             displayFormErrors(data.errors);
                         }
@@ -476,40 +466,10 @@
                 });
             });
 
-            function showToast(message, type) {
-                const toastContainer = document.querySelector('.toast-container'); // 选择 base.html 中的 Toast 容器
-                if (!toastContainer) {
-                    console.warn("Toast container not found. Message won't be displayed:", message);
-                    return;
-                }
-                const toastHtml = `
-                    <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="15000">
-                        <div class="d-flex">
-                            <div class="toast-body">
-                                ${message}
-                            </div>
-                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                        </div>
-                    </div>`;
-                const div = document.createElement('div');
-                div.innerHTML = toastHtml;
-                const newToastEl = div.firstElementChild;
-                toastContainer.appendChild(newToastEl);
-                const newToast = new bootstrap.Toast(newToastEl, { autohide: true, delay: 5000 });
-                newToast.show();
-                
-                newToastEl.addEventListener('hidden.bs.toast', function () {
-                    newToastEl.remove();
-                });
-            }
-
             function displayFormErrors(errors) {
-                // 清除之前的错误
                 document.querySelectorAll('.modal-body .invalid-feedback').forEach(el => el.remove());
                 document.querySelectorAll('.modal-body .is-invalid').forEach(el => el.classList.remove('is-invalid'));
-
                 const errorObj = JSON.parse(errors); // 解析后端返回的 JSON 错误字符串
-
                 for (const fieldName in errorObj) {
                     if (errorObj.hasOwnProperty(fieldName)) {
                         const fieldErrors = errorObj[fieldName];

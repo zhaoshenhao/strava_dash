@@ -34,7 +34,7 @@ class StravaUserRegistrationForm(forms.ModelForm):
 class CustomUserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email', 'use_metric', 'birth_year', 'gender']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

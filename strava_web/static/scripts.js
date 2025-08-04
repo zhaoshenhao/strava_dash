@@ -201,3 +201,30 @@ function formatNumberWithCommas(number, decimalPlaces = 2) {
     }
 }
 
+function showToast(message, type) {
+    const toastContainer = document.querySelector('.toast-container'); // 选择 base.html 中的 Toast 容器
+    if (!toastContainer) {
+        console.warn("Toast container not found. Message won't be displayed:", message);
+        return;
+    }
+    const toastHtml = `
+        <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="15000">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>`;
+    const div = document.createElement('div');
+    div.innerHTML = toastHtml;
+    const newToastEl = div.firstElementChild;
+    toastContainer.appendChild(newToastEl);
+    const newToast = new bootstrap.Toast(newToastEl, { autohide: true, delay: 5000 });
+    newToast.show();
+    
+    newToastEl.addEventListener('hidden.bs.toast', function () {
+        newToastEl.remove();
+    });
+}
+

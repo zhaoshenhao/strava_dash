@@ -49,3 +49,12 @@ def speed_km_pace(speed):
 def speed_mile_pace(speed):
     return speed_pace(speed, False)
 
+@register.filter
+def format_number(number, decimal_places=2):
+    if isinstance(number, int):
+        return f"{number:,}"
+    elif isinstance(number, float):
+        format_spec = f",.{decimal_places}f"
+        return f"{number:{format_spec}}"
+    else:
+        return number
