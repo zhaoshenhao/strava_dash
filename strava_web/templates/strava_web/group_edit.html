@@ -14,6 +14,7 @@
                     {% csrf_token %}
                     <div class="mb-3">
                         <input type="text" id="id" name="id" class="form-control" value="{{ group.id }}" readonly hidden>
+                        <input type="text" id="next" name="next" class="form-control" value="{{ next_url }}" readonly hidden>
                     </div>
                     <div class="mb-3">
                         <label for="name" class="form-label">{% trans "Name" %}:</label>
@@ -45,7 +46,7 @@
                     </div>
                     <div class="d-flex justify-content-center mt-4 input-group">
                         <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
-                        <a href="{% url 'groups' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+                        <a href="{{ next_url }}" class="btn btn-secondary">{% trans "Cancel" %}</a>
                     </div>
                 </form>
             </div>

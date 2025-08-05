@@ -9,6 +9,7 @@ from .models import GroupApplication
 from django.utils.translation import gettext_lazy as _
 from .utils_group import get_groups
 from django.contrib.auth import get_user_model
+from .utils import get_next_url
 
 User = get_user_model()
 
@@ -144,17 +145,22 @@ def groups(request):
 @user_passes_test(is_admin_or_staff, login_url='/')
 def group_edit(request, group_id):
     group = get_object_or_404(Group, id=group_id)
+    next_url = get_next_url(request, 'groups')
+    print(f"next_url: {next_url}")
     # 权限检查：确保 staff 只能编辑自己管理的组
     if request.user.is_staff and not request.user.is_superuser and group.admin != request.user:
         messages.error(request, _("You do not have permission to edit this group."))
-        return redirect('groups')
-
+        print(f"redirect 1: {next_url}")
+        return redirect(next_url)
+    context = {
+        'group': group,
+        'next_url': next_url,
+        }
     if request.method == 'POST':
         group.name = request.POST.get('name', group.name)
         group.announcement = request.POST.get('announcement', group.announcement)
         group.description = request.POST.get('description', group.description)
         group.is_open = 'is_open' in request.POST # Checkbox
-
         # 更新 admin 用户
         admin_id = request.POST.get('admin')
         if admin_id:
@@ -162,21 +168,13 @@ def group_edit(request, group_id):
                 new_admin = User.objects.get(id=admin_id)
                 group.admin = new_admin
             except User.DoesNotExist:
-                messages.error(request, _(f"User with username '{admin_username}' does not exist."))
-                # 重新渲染页面，保留旧数据
-                context = {'group': group}
+                messages.error(request, _(f"User with id '{admin_id}' does not exist."))
                 return render(request, 'strava_web/group_edit.html', context)
-        
-        # 保存更改
         group.save()
-        print("Save data!")
         messages.success(request, _("Group has been updated successfully."))
-        return redirect('groups')
+        print(f"redirect 2: {next_url}")
+        return redirect(next_url)
     else:
-        # 处理 GET 请求，显示表单
-        context = {
-            'group': group,
-        }
         return render(request, 'strava_web/group_edit.html', context)
 
 @login_required

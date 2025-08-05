@@ -92,20 +92,19 @@
                             </td>
                             <td>
                                 <div class="input-group">
-                                <a href="{% url 'group_edit' group.id %}" class="btn btn-sm btn-warning edit-group-btn" 
+                                <a href="{% url 'group_edit' group.id %}?next={{ request.get_full_path|urlencode }}"
+                                    class="btn btn-sm btn-warning edit-group-btn" 
                                     data-bs-toggle="tooltip" 
                                     data-bs-placement="top"
                                     data-group-id="{{ group.id }}"
-                                    title="{% trans 'Edit Group' %}"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#editGroupModal">
+                                    title="{% trans 'Edit Group' %}">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <a href="{% url 'group_manage_members' group.id %}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Manage Group Member' %}">
+                                <a href="{% url 'group_manage_members' group.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Manage Group Member' %}">
                                     <i class="bi bi-people"></i>
                                 </a>
                                 {% if not group.is_open %}
-                                <a href="{% url 'group_manage_application' group.id %}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-placement="top" title="{% trans 'Manage Application' %}">
+                                <a href="{% url 'group_manage_application' group.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-placement="top" title="{% trans 'Manage Application' %}">
                                     <i class="bi bi-person-add"></i>
                                 </a>
                                 {% endif %}

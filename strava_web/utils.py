@@ -1,5 +1,6 @@
 from datetime import timedelta
 from django.utils import timezone
+from django.urls import reverse
 
 def get_float(val):
     return val if val else 0.0
@@ -61,3 +62,11 @@ def convert_seconds_to_dhms(total_seconds):
 def local_now():
     utc_now = timezone.now()
     return timezone.localtime(utc_now)
+
+def get_next_url(request, def_next):
+    next_url = request.POST.get('next')
+    if not next_url:
+        next_url = request.GET.get('next')
+    if not next_url:
+        next_url = reverse(def_next)
+    return next_url
