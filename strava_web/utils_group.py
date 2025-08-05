@@ -82,8 +82,6 @@ def get_groups(request, mode: 0):
     else:
         sort_field = f'-{sort_by}' if sort_order == 'desc' else sort_by
         groups_list = groups_list.order_by(sort_field)
-    # 分页
-    print(f"count: {groups_list.count()}")
 
     paginator = Paginator(groups_list, 20) # 每页20行
     page_number = request.GET.get('page')

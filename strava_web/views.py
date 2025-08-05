@@ -4,8 +4,14 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import CustomUserProfileForm 
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.views import LogoutView
-from .forms import CustomUserProfileForm 
+from .forms import CustomUserProfileForm
+from django.http import JsonResponse
+from django.db.models.functions import Concat
+from django.contrib.auth.models import User
+from django.db.models import Q, Value as V, F
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 @login_required
 def personal_dashboard(request):
@@ -53,3 +59,34 @@ def home(request):
 class CustomLogoutView(LogoutView):
     next_page = 'home' #
 
+@login_required
+def search_users_ajax(request):
+    query = request.GET.get('q', '')
+    users = User.objects.all()
+
+    if query:
+        # 使用 Q 对象组合 OR 查询
+        users = users.filter(
+            Q(username__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query)
+        )
+
+    # 按用户全名排序：username (first_name last_name)
+    # 我们首先用 Concat 创建一个可排序的字符串
+    users = users.annotate(
+        full_name=Concat(
+            'username', V(' ('), F('first_name'), V(' '), F('last_name'), V(')')
+        )
+    ).order_by('full_name')
+
+    # 准备返回的 JSON 列表
+    results = [
+        {
+            'id': user.id,
+            'text': f"{user.username} ({user.first_name} {user.last_name})"
+        }
+        for user in users
+    ]
+
+    return JsonResponse({'results': results})

@@ -92,7 +92,7 @@
                             </td>
                             <td>
                                 <div class="input-group">
-                                <a href="{% url 'group_edit' group.id %}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Edit Group' %}">
+                                <a href="{% url 'group_edit' group.id %}" class="btn btn-sm btn-warning edit-group-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Edit Group' %}">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
                                 <a href="{% url 'group_manage_members' group.id %}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Manage Group Member' %}">

@@ -6,10 +6,11 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import Group
 from .models import GroupApplication
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Count, Q
 from django.utils.translation import gettext_lazy as _
 from .utils_group import get_groups
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 def is_admin_or_staff(user):
     return user.is_authenticated and (user.is_staff or user.is_superuser)
@@ -148,12 +149,35 @@ def group_edit(request, group_id):
         messages.error(request, _("You do not have permission to edit this group."))
         return redirect('groups')
 
-    # TODO: 在这里添加处理表单提交的逻辑
+    if request.method == 'POST':
+        group.name = request.POST.get('name', group.name)
+        group.announcement = request.POST.get('announcement', group.announcement)
+        group.description = request.POST.get('description', group.description)
+        group.is_open = 'is_open' in request.POST # Checkbox
 
-    context = {
-        'group': group,
-    }
-    return render(request, 'strava_web/group_edit.html', context)
+        # 更新 admin 用户
+        admin_id = request.POST.get('admin')
+        if admin_id:
+            try:
+                new_admin = User.objects.get(id=admin_id)
+                group.admin = new_admin
+            except User.DoesNotExist:
+                messages.error(request, _(f"User with username '{admin_username}' does not exist."))
+                # 重新渲染页面，保留旧数据
+                context = {'group': group}
+                return render(request, 'strava_web/group_edit.html', context)
+        
+        # 保存更改
+        group.save()
+        print("Save data!")
+        messages.success(request, _("Group has been updated successfully."))
+        return redirect('groups')
+    else:
+        # 处理 GET 请求，显示表单
+        context = {
+            'group': group,
+        }
+        return render(request, 'strava_web/group_edit.html', context)
 
 @login_required
 @user_passes_test(is_admin_or_staff, login_url='/')

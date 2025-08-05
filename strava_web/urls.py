@@ -34,7 +34,8 @@ urlpatterns = [
         success_url='/dashboard/' # 修改密码成功后重定向
     ), name='password_change'),
     path('profile/group_membership/', views_group.group_membership_edit, name='group_membership_edit'), # 个人的组修改页面
-    path('users/', views.users, name='users'),
+    path('profiles/', views.users, name='profiles'),
+    path('users/search/', views.search_users_ajax, name='search_users_ajax'),
     
     path('groups/', views_group.groups, name='groups'),
     path('groups/<int:group_id>/edit/', views_group.group_edit, name='group_edit'),
