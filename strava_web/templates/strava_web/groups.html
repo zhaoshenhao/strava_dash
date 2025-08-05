@@ -92,7 +92,13 @@
                             </td>
                             <td>
                                 <div class="input-group">
-                                <a href="{% url 'group_edit' group.id %}" class="btn btn-sm btn-warning edit-group-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Edit Group' %}">
+                                <a href="{% url 'group_edit' group.id %}" class="btn btn-sm btn-warning edit-group-btn" 
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-placement="top"
+                                    data-group-id="{{ group.id }}"
+                                    title="{% trans 'Edit Group' %}"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editGroupModal">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
                                 <a href="{% url 'group_manage_members' group.id %}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Manage Group Member' %}">
@@ -116,7 +122,7 @@
                     </tbody>
                 </table>
             </div>
-            {% include "strava_web/pagination.html" %}
+            {% include "strava_web/frag_pagination.html" %}
         </div>
     </div>
 </div>

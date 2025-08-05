@@ -1,0 +1,17 @@
+{% load i18n %}
+<label for="id_distance" class="form-label visually-hidden">{% trans "Distance" %}:</label>
+<select class="form-select" id="id_distance" name="distance">
+    <option value="">{% trans "All Distances" %}</option>
+    <option value="0-5k" {% if selected_distance == '0-5k' %}selected{% endif %}>0-5 km</option>
+    <option value="5-10k" {% if selected_distance == '5-10k' %}selected{% endif %}>5-10 km</option>
+    <option value="10-15k" {% if selected_distance == '10-15k' %}selected{% endif %}>10-15 km</option>
+    <option value="15-20k" {% if selected_distance == '15-20k' %}selected{% endif %}>15-20 km</option>
+    <option value="20-25k" {% if selected_distance == '20-25k' %}selected{% endif %}>20-25 km</option>
+    <option value="25-30k" {% if selected_distance == '25-30k' %}selected{% endif %}>25-30 km</option>
+    <option value="30-35k" {% if selected_distance == '30-35k' %}selected{% endif %}>30-35 km</option>
+    <option value="35-40k" {% if selected_distance == '35-40k' %}selected{% endif %}>35-40 km</option>
+    <option value="40-45k" {% if selected_distance == '40-45k' %}selected{% endif %}>40-45 km</option>
+    <option value="45-50k" {% if selected_distance == '45-50k' %}selected{% endif %}>45-50 km</option>
+    <option value="50-100k" {% if selected_distance == '50-100k' %}selected{% endif %}>50-100 km</option>
+    <option value="100k_plus" {% if selected_distance == '100k_plus' %}selected{% endif %}>>100 km</option>
+</select>

@@ -57,22 +57,7 @@
                 <div class="input-group">
                     <label for="search-input" class="form-label visually-hidden">{% trans "Filter by Activity Name" %}</label>
                     <input type="text" name="search-input" id="search-input" class="form-control" placeholder='{% trans "Filter by Activity Name" %}' value="{{ search_query|default:'' }}">
-                    <label for="id_distance" class="form-label visually-hidden">{% trans "Distance" %}:</label>
-                    <select class="form-select" id="id_distance" name="distance">
-                        <option value="">{% trans "All Distances" %}</option>
-                        <option value="0-5k" {% if selected_distance == '0-5k' %}selected{% endif %}>0-5 km</option>
-                        <option value="5-10k" {% if selected_distance == '5-10k' %}selected{% endif %}>5-10 km</option>
-                        <option value="10-15k" {% if selected_distance == '10-15k' %}selected{% endif %}>10-15 km</option>
-                        <option value="15-20k" {% if selected_distance == '15-20k' %}selected{% endif %}>15-20 km</option>
-                        <option value="20-25k" {% if selected_distance == '20-25k' %}selected{% endif %}>20-25 km</option>
-                        <option value="25-30k" {% if selected_distance == '25-30k' %}selected{% endif %}>25-30 km</option>
-                        <option value="30-35k" {% if selected_distance == '30-35k' %}selected{% endif %}>30-35 km</option>
-                        <option value="35-40k" {% if selected_distance == '35-40k' %}selected{% endif %}>35-40 km</option>
-                        <option value="40-45k" {% if selected_distance == '40-45k' %}selected{% endif %}>40-45 km</option>
-                        <option value="45-50k" {% if selected_distance == '45-50k' %}selected{% endif %}>45-50 km</option>
-                        <option value="50-100k" {% if selected_distance == '50-100k' %}selected{% endif %}>50-100 km</option>
-                        <option value="100k_plus" {% if selected_distance == '100k_plus' %}selected{% endif %}>>100 km</option>
-                    </select>
+                    {% include "strava_web/frag_search_distance_range.html" %}
                     {% if not is_race_page %}
                         <label for="is-race-filter" class="form-label visually-hidden">{% trans "Is Race?" %}</label>
                         <select class="form-select" id="is-race-filter" name="is_race_filter">
@@ -210,7 +195,7 @@
                 </tbody>
             </table>
         </div>
-        {% include "strava_web/pagination.html" %}
+        {% include "strava_web/frag_pagination.html" %}
     {% else %}
         <div class="alert alert-info" role="alert">
             {% trans "No activities found matching your criteria." %}
@@ -229,7 +214,6 @@
                 <form id="editActivityForm" method="post" data-update-url="{% url 'update_activity_ajax' 0 %}">
                     {% csrf_token %}
                     <input type="hidden" id="modal-activity-id" name="activity_id">
-
                     <div class="mb-3">
                         <label for="modal-date" class="form-label">{% trans "Date" %}:</label>
                         <input type="text" class="form-control" id="modal-date" readonly>
@@ -251,7 +235,6 @@
                         <input class="form-check-input" type="checkbox" id="modal-is-race" name="is_race" {% if is_race_page %}disabled{% endif %}>
                         <label class="form-check-label" for="modal-is-race">{% trans "Is Race?" %}</label>
                     </div>
-
                     <div class="mb-3">
                         <label for="display-chip-time" class="form-label">{% trans "Chip Time" %}:</label>
                         <input type="text" class="form-control" id="display-chip-time" placeholder="HH:MM:SS 或 MM:SS" pattern="^([0-9]{1,2}:)?[0-5]?[0-9]:[0-5][0-9]$">
@@ -261,32 +244,9 @@
                             {% trans "Invalid time format. Please use HH:MM:SS or MM:SS." %}
                         </div>
                     </div>
-
                     <div class="mb-3">
-                        <label for="modal-race-distance" class="form-label">{% trans "Race Distance" %}:</label>
-                        <select class="form-select" id="modal-race-distance" name="race_distance">
-                            <option value="">{% trans "Select distance" %}</option>
-                            {% for key, value in activity_race_distances %}
-                                <option value="{{ key }}">{{ value }}</option>
-                            {% endfor %}
-                            <option value="1km">{% trans "1 km" %}</option>
-                            <option value="1mi">{% trans "1 mile" %}</option>
-                            <option value="5km">{% trans "5 km" %}</option>
-                            <option value="5mi">{% trans "5 mile" %}</option>
-                            <option value="10km">{% trans "10 km" %}</option>
-                            <option value="15km">{% trans "15 km" %}</option>
-                            <option value="10mi">{% trans "10 mile" %}</option>
-                            <option value="HM">{% trans "Half Marathon" %}</option>
-                            <option value="30km">{% trans "30 km" %}</option>
-                            <option value="FM">{% trans "Marathon" %}</option>
-                            <option value="50km">{% trans "50 km" %}</option>
-                            <option value="100km">{% trans "100 km" %}</option>
-                            <option value="150km">{% trans "150 km" %}</option>
-                            <option value="100mi">{% trans "100 mile" %}</option>
-                            <option value="Other">{% trans "Other" %}</option>
-                        </select>
+                        {% include "strava_web/frag_race_distance.html" %}
                     </div>
-
                     <div class="modal-footer d-flex justify-content-end">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
                         <button type="submit" class="btn btn-primary" id="saveActivityChangesBtn">{% trans "Update" %}</button>
