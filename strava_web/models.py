@@ -5,6 +5,11 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 class CustomUser(AbstractUser):
+    first_name = models.CharField(
+         _('Nick Name'),
+         max_length=150,
+         blank=True,
+    )
     # Strava ID: 用于唯一标识 Strava 用户，允许为空以支持非 Strava 登录
     strava_id = models.BigIntegerField(unique=True, null=True, blank=True,
                                        verbose_name=_("Strava ID"),
