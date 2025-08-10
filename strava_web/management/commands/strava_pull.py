@@ -1,8 +1,11 @@
 # strava_app/management/commands/strava_pull.py
-
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth import get_user_model
-from strava_web.services import sync_strava_data_for_user # 导入你的数据同步服务
+from strava_web.services import sync_strava_data_for_user
+from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Q
 import time
 
 User = get_user_model()
@@ -34,14 +37,14 @@ class Command(BaseCommand):
             except User.DoesNotExist:
                 raise CommandError(f'User with ID "{user_id}" does not exist.')
         else:
-            # 获取所有已连接 Strava 的用户
-            users_to_sync = User.objects.filter(strava_id__isnull=False)
+            sync_interval_seconds = getattr(settings, 'STRAVA_SYNC_INTERVAL_SECONDS', 3600)
+            time_threshold = timezone.now() - timedelta(seconds=sync_interval_seconds)
+            users_to_sync = User.objects.filter(strava_id__isnull=False
+                ).filter(Q(last_strava_sync__isnull=True) | Q(last_strava_sync__lt=time_threshold))
             self.stdout.write(self.style.SUCCESS('Attempting to sync data for all connected Strava users.'))
-
         if not users_to_sync.exists():
             self.stdout.write(self.style.WARNING('No Strava connected users found to sync.'))
             return
-
         for user in users_to_sync:
             try:
                 self.stdout.write(f'Syncing data for user: {user.username} (Strava ID: {user.strava_id})...')
