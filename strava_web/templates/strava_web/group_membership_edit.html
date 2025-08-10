@@ -61,6 +61,7 @@
                         {% endfor %}
                         <th>{% trans "Request Status" %}</th>
                         <th>{% trans "Action" %}</th>
+                        <th><i class="bi bi-speedometer2"></i></a></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -84,12 +85,8 @@
                         </td>
                         <td>
                             {% if group.admin %}
-                                {% if group.admin.first_name and group.admin.last_name %}
-                                    {{ group.admin.first_name }} {{ group.admin.last_name }}
-                                {% elif group.admin.first_name %}
+                                {% if group.admin.first_name %}
                                     {{ group.admin.first_name }}
-                                {% elif group.admin.last_name %}
-                                    {{ group.admin.last_name }}
                                 {% else %}
                                     {{ group.admin.username }}
                                 {% endif %}
@@ -107,7 +104,11 @@
                         </td>
                         <td>
                             {% if not group.is_open and not group.is_member and group.last_application_status %}
-                                <span class="badge bg-info">{% trans group.last_application_status %}</span>
+                                {% if group.last_application_status == 'rejected' %}
+                                    <span class="badge bg-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.last_application_reviewed_at }}">{{ group.last_application_status|app_status }}</span>
+                                {% else %}
+                                    <span class="badge bg-info">{{ group.last_application_status|app_status }}</span>
+                                {% endif %}
                             {% else %}
                                 -
                             {% endif %}
@@ -118,12 +119,24 @@
                             {% elif group.is_open %}
                                 {% include "strava_web/group_join_form.html" %}
                             {% else %}
-                                {% include "strava_web/group_apply_form.html" %}
                                 {% if group.last_application_status == 'pending' %}
                                     -
                                 {% elif group.last_application_status == 'rejected' %}
+                                    {% if group.last_application_reviewed_at_days_old and group.last_application_reviewed_at_days_old > 604800000000 %}
+                                        {% include "strava_web/group_apply_form.html" %}
+                                    {% else %}
+                                        <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Please apply later.' %}"></i>
+                                    {% endif %}
+                                {% else %}
                                     {% include "strava_web/group_apply_form.html" %}
                                 {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if group.has_dashboard and group.is_member %}
+                                <a href="{% url 'group_dashboard' group.id %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-speedometer2"></i></a>
+                            {% else %}
+                                -
                             {% endif %}
                         </td>
                     </tr>
@@ -141,6 +154,8 @@
 
 {# 确认退出群组的 JavaScript #}
 <script>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
     document.addEventListener('DOMContentLoaded', function() {
         // 退出群组确认弹窗
         document.querySelectorAll('.confirm-leave-form').forEach(form => {
@@ -156,14 +171,12 @@
                 }
             });
         });
-
         // 搜索框和筛选清除按钮功能
         const searchInput = document.getElementById('search-input');
         const groupTypeFilter = document.getElementById('group-type-filter');
         const isMemberFilter = document.getElementById('is-member-filter');
         const clearSearchBtn = document.getElementById('clear-search-btn');
         const groupSearchForm = document.getElementById('group-search-form');
-
         if (clearSearchBtn && groupSearchForm) {
             clearSearchBtn.addEventListener('click', function() {
                 searchInput.value = ''; // 清空搜索框内容

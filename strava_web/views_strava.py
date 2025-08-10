@@ -100,7 +100,6 @@ def strava_callback(request):
             defaults={
                 'username': f"strava_{strava_athlete_id}", # 默认用户名，后续用户可修改
                 'first_name': athlete_info.get('firstname', ''),
-                'last_name': athlete_info.get('lastname', ''),
                 'strava_access_token': access_token,
                 'strava_refresh_token': refresh_token,
                 'strava_token_expires_at': token_expires_at,

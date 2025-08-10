@@ -19,7 +19,7 @@ def get_days_ago(given_date, days):
 
 def calculate_pace(total_distance_meters, total_time_seconds, is_metric):
     if total_distance_meters <= 0 or total_time_seconds < 0:
-        return "N/A"
+        return "-:--"
     if total_time_seconds == 0:
         return "0:00"
     if is_metric:
@@ -44,7 +44,6 @@ def speed_pace(speed, is_metric):
 
 def convert_seconds_to_dhms(total_seconds):
     if not isinstance(total_seconds, (int, float)) or total_seconds < 0:
-        # Handle non-integer, non-positive, or non-numeric input
         return 0, 0, 0, 0
 
     total_seconds = int(total_seconds) # Ensure it's an integer for calculations

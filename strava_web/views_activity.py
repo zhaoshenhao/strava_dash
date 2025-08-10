@@ -87,7 +87,9 @@ def activities(request, user_id=None):
 
     # 3. Is Race Filter
     is_race_filter = request.GET.get('is_race_filter')
-    if is_race_filter:
+    if is_race_page:
+        user_activities = user_activities.filter(is_race=True)
+    elif is_race_filter:
         if is_race_filter == 'yes':
             user_activities = user_activities.filter(is_race=True)
         elif is_race_filter == 'no':
@@ -117,8 +119,13 @@ def activities(request, user_id=None):
         ('average_heartrate', _('Avg. HR')),
         ('average_cadence', _('Ave. Cadence')),
     ]
-    if not is_race_page:
+    if is_race_page:
+        sortable_fields.insert(3, 
+            ('race_distance', _('Race Distance'))
+        )
+    else:
         sortable_fields.append(('is_race',_('Is Race')))
+        
 
     context = {
         'page_obj': page_obj,
@@ -164,6 +171,7 @@ def update_activity_ajax(request, activity_id):
                 'is_race': activity.is_race,
                 'chip_time': activity.chip_time,
                 'race_distance': activity.race_distance,
+                'race_distance_display': activity.get_race_distance_display(),
                 'strava_id': activity.strava_id,
                 'start_date_local': activity.start_date_local,
                 'strava_url': f"https://www.strava.com/activities/{activity.strava_id}"

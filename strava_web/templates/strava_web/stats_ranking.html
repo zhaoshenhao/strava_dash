@@ -1,0 +1,112 @@
+{% extends 'strava_web/base.html' %}
+{% load i18n %}
+{% load url_tags %}
+{% block title %}{% trans "Group Ranking" %} - {{ group.name }}{% endblock %}
+{% block content %}
+<style>
+.table th:nth-child({{ ranking_position }}),
+.table td:nth-child({{ ranking_position }}) {
+  background-color: #f2f2ff;
+}
+</style>
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">{{ group.name }} - {% trans "Ranking" %}</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="mb-4 d-flex flex-wrap align-items-end">
+                <div class="input-group">
+                    <label for="period" class="form-label visually-hidden">{% trans "Period" %}</label>
+                    <select class="form-select" id="period" name="period">
+                        {% for key, name in periods.items %}
+                            <option value="{{ key }}" {% if key == period %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="rank_type" class="form-label visually-hidden">{% trans "Rank Type" %}</label>
+                    <select class="form-select" id="rank_type" name="rank_type">
+                        {% for key, name in rank_types.items %}
+                            <option value="{{ key }}" {% if key == rank_type %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="gender" class="form-label visually-hidden">{% trans "Gender" %}</label>
+                    <select class="form-select" id="gender" name="gender">
+                        {% for key, name in genders.items %}
+                            <option value="{{ key }}" {% if key == gender %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="age" class="form-label visually-hidden">{% trans "Age Range" %}</label>
+                    <select class="form-select" id="age" name="age">
+                        {% for key, name in age_ranges.items %}
+                            <option value="{{ key }}" {% if key == age %}selected{% endif %}>{{ name.0 }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if not period == 'weekly' or not gender == 'all' or not age == 'all' or not rank_type == 'distance' %}
+                        <a href="{% url 'stats_ranking' group_id=group.id %}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary me-2">{% trans "Refresh" %}</button>
+                </div>
+            </form>
+            <div class="ranking-info mb-3">
+                <p> 
+                {% if is_group_member and current_user_rank %}
+                    <strong>{% trans "Your rank" %}: {{ current_user_rank }}</strong> |
+                {% elif is_group_member %}
+                    {% trans "You are not in the current ranking" %} |
+                {% endif %}
+                {% trans "Total participants" %}: {{ total_participants }}
+                </p>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Rank" %}</th>
+                            <th>{% trans "Member" %}</th>
+                            <th>{% trans "Distance" %}</th>
+                            <th>{% trans "Time" %}</th>
+                            <th>{% trans "Pace" %}</th>
+                            <th>{% trans "Elevation" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in members_list %}
+                            <tr {% if is_group_member and current_user_rank == member.rank %}class="table-primary fw-bold"{% endif %}>
+                                <td>{{ member.rank }}</td>
+                                <td>{{ member.username }}</td>
+                                <td>
+                                     {% if user.use_metric %}
+                                        {{ member.distance|default:0|div:1000|format_number:2 }} {% trans "km" %}
+                                    {% else %}
+                                        {{ member.distance|default:0|div:1609.34|format_number:2 }} {% trans "mile" %}
+                                    {% endif %}
+                                </td>
+                                <td>{{ member.moving_time|default:0|duration:1 }}</td>
+                                <td>
+                                    {% if user.use_metric %}
+                                        {{ member.distance|default:0|km_pace:member.moving_time }} m/km
+                                    {% else %}
+                                        {{ member.distance|default:0|mile_pace:member.moving_time }} m/mile
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.use_metric %}
+                                        {{ member.elevation_gain|default:0|format_number:0 }} {% trans "m" %}
+                                    {% else %}
+                                        {{ member.elevation_gain|default:0|div:0.3048|format_number:0 }} {% trans "feet" %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% include "strava_web/frag_pagination.html" %}
+        </div>
+    </div>
+    <div class="d-flex justify-content-center mt-4 input-group">
+        <a href="{% url 'group_dashboard' group_id=group.id %}" class="btn btn-secondary">{% trans "Group Dashboard" %}</a>
+    </div>
+</div>
+{% endblock %}

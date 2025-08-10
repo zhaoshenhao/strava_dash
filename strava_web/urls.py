@@ -1,7 +1,7 @@
 # strava_web/urls.py
 
 from django.urls import path
-from . import views, views_activity, views_strava, views_group
+from . import views, views_activity, views_strava, views_group, views_rank
 from django.contrib.auth import views as auth_views # 导入 Django 认证视图
 
 urlpatterns = [
@@ -28,21 +28,27 @@ urlpatterns = [
     path('races/<int:user_id>/', views_activity.activities, name='races'),
 
     # 用户信息修改页面
-    path('profile/edit/', views.profile_edit, name='profile_edit'),
-    path('profile/password_change/', auth_views.PasswordChangeView.as_view(
-        template_name='strava_web/password_change_form.html',
+    path('profile/edit/', views.profile_self_edit, name='profile_edit'),
+    path('profile/<int:profile_id>/edit/', views.profile_admin_edit, name='profile_admin_edit'),
+    path('profile/password_reset/', auth_views.PasswordChangeView.as_view(
+        template_name='strava_web/password_reset_form.html',
         success_url='/dashboard/' # 修改密码成功后重定向
-    ), name='password_change'),
+    ), name='password_reset'),
+    path('profiles/<int:profile_id>/password_change/', views.profile_password_change, name='profile_password_change'),
     path('profile/group_membership/', views_group.group_membership_edit, name='group_membership_edit'), # 个人的组修改页面
-    path('profiles/', views.users, name='profiles'),
+    path('profiles/', views.profiles, name='profiles'),
     path('users/search/', views.search_users_ajax, name='search_users_ajax'),
     
     path('groups/', views_group.groups, name='groups'),
+    path('groups/add', views_group.group_add, name='group_add'),
     path('groups/<int:group_id>/edit/', views_group.group_edit, name='group_edit'),
-    path('groups/<int:group_id>/dashboard/', views_group.group_dashboard, name='group_dashboard'),
     path('groups/<int:group_id>/manage_members/', views_group.group_manage_members, name='group_manage_members'),
-    path('groups/<int:group_id>/apply/', views_group.apply_for_group, name='apply_for_group'),
+    path('groups/<int:group_id>/remove/', views_group.remove_from_group, name='remove_from_group'),
+    path('groups/<int:group_id>/apply/', views_group.apply_for_group, name='apply_group'),
     path('application/<int:application_id>/review/', views_group.review_group_application, name='review_group_application'),
     path('groups/<int:group_id>/join/', views_group.join_group, name='join_group'),
     path('groups/<int:group_id>/leave/', views_group.leave_group, name='leave_group'),
+    path('groups/<int:group_id>/dashboard/', views_rank.group_dashboard, name='group_dashboard'),
+    path('groups/<int:group_id>/ranking/', views_rank.stats_ranking, name='stats_ranking'),
+    path('groups/<int:group_id>/race-ranking/',views_rank.race_ranking,name='race_ranking'),
 ]

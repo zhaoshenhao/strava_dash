@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"> {# ADDED: Roboto font for consistent look #}
     <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="{% static 'scripts.js' %}"></script>
     {% block extra_css %}{% endblock %}
     <style>
         .dropdown-menu {
@@ -34,9 +36,8 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
-                        {# Logged in user menu #}
                         <li class="nav-item">
-                            <span class="nav-link text-danger">{% trans "Hello" %} {{ user.get_full_name|default:user.username }}</span>
+                            <span class="nav-link text-danger">{% trans "Hello" %} {{ user.first_name|default:user.username }}</span>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-primary" href="#" id="navbarStatsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -56,7 +57,7 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarProfileDropdown">
                                 <li><a class="dropdown-item text-primary" href="{% url 'profile_edit' %}">{% trans "Profile" %}</a></li>
-                                <li><a class="dropdown-item text-primary" href="{% url 'password_change' %}">{% trans "Password" %}</a></li>
+                                <li><a class="dropdown-item text-primary" href="{% url 'password_reset' %}">{% trans "Password" %}</a></li>
                             </ul>
                         </li>
 
@@ -68,7 +69,9 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarAdminDropdown">
                                     <li><a class="dropdown-item text-primary" href="{% url 'groups' %}">{% trans "Group Management" %}</a></li> {# Assuming this is the correct URL name #}
+                                    {% if user.is_superuser %}
                                     <li><a class="dropdown-item text-primary" href="{% url 'profiles' %}">{% trans "User Management" %}</a></li> {# New: member_management_page #}
+                                    {% endif %}
                                 </ul>
                             </li>
                         {% endif %}
@@ -155,8 +158,6 @@
         {% block content %}
         {% endblock %}
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="{% static 'scripts.js' %}"></script>
     <script>
         // Initialize all toasts
         document.addEventListener('DOMContentLoaded', function() {

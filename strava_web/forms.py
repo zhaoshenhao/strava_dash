@@ -1,5 +1,6 @@
 # strava_web/forms.py
 from django import forms
+from django_select2 import forms as s2forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
@@ -14,7 +15,7 @@ class StravaUserRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'use_metric', 'birth_year', 'gender') # 用户名默认由 Strava ID 生成，不可修改
+        fields = ('first_name', 'email', 'use_metric', 'birth_year', 'gender') # 用户名默认由 Strava ID 生成，不可修改
 
     def clean_email(self):
         email = self.cleaned_data['email']
@@ -31,30 +32,39 @@ class StravaUserRegistrationForm(forms.ModelForm):
             self.add_error('password_confirm', _("Password mismatched"))
         return cleaned_data
 
+class CustomUserProfileAdminForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'email', 'use_metric', 'birth_year', 'gender', 'is_superuser', 'is_staff', 'is_active']
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if not isinstance(field.widget, (forms.CheckboxInput, forms.RadioSelect, forms.ClearableFileInput)):
+                current_classes = field.widget.attrs.get('class', '')
+                if current_classes:
+                    field.widget.attrs['class'] = current_classes + ' form-control'
+                elif field_name == 'gender':
+                    field.widget.attrs['class'] = 'form-control form-select'
+                else:
+                    field.widget.attrs['class'] = 'form-control'
+
 class CustomUserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'use_metric', 'birth_year', 'gender']
-
+        fields = ['username', 'first_name', 'email', 'use_metric', 'birth_year', 'gender']
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # 遍历表单中的所有字段，为它们的部件添加 Bootstrap 的 'form-control' 类
         for field_name, field in self.fields.items():
-            # 排除特定类型的 widget，因为 'form-control' 类可能不适用于它们
-            # 例如：CheckboxInput, RadioSelect, ClearableFileInput
             if not isinstance(field.widget, (forms.CheckboxInput, forms.RadioSelect, forms.ClearableFileInput)):
                 # 检查是否已经有 class 属性，如果有则追加，否则直接设置
                 current_classes = field.widget.attrs.get('class', '')
                 if current_classes:
                     field.widget.attrs['class'] = current_classes + ' form-control'
+                elif field_name == 'gender':
+                    field.widget.attrs['class'] = 'form-control form-select'
                 else:
                     field.widget.attrs['class'] = 'form-control'
-
-            # 可选：为特定字段添加 placeholder 属性
-            # if field_name == 'first_name':
-            #     field.widget.attrs['placeholder'] = _("Enter your first name")
-            # if field_name == 'email':
-            #     field.widget.attrs['placeholder'] = _("Enter your email address")
             
 class GroupMembershipForm(forms.Form):
     groups = forms.ModelMultipleChoiceField(

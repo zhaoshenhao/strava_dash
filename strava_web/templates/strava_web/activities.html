@@ -1,6 +1,5 @@
 {% extends 'strava_web/base.html' %}
 {% load i18n %}
-{% load strava_filters %}
 {% load url_tags %}
 {% load tz %}
 {% block title %}
@@ -66,14 +65,14 @@
                             <option value="no" {% if is_race_filter == 'no' %}selected{% endif %}>{% trans "No" %}</option>
                         </select>
                     {% endif %}
-                    {% if search_query or is_race_filter or id_year or id_month or id_week or id_distance %}
+                    {% if search_query or is_race_filter or selected_year or selected_month or selected_week or selected_distance %}
                         {% if not is_race_page %}
                             <a href="{% url 'activities' user_id %}" class="btn btn-secondary"><i class="bi bi-x-lg"></i></a>
                         {% else %}
                             <a href="{% url 'races' user_id %}" class="btn btn-secondary"><i class="bi bi-x-lg"></i></a>
                         {% endif %}
                     {% endif %}
-                    <button type="submit" class="btn btn-primary">{% trans "Apply Filters" %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
                     {% if is_race_page %}
                         <a href="{% url 'activities' user_id %}" class="btn btn-primary">{% trans "Go To Your Activities" %}</a>
                     {% endif %}
@@ -134,6 +133,7 @@
                             {% endif %}
                         </td>
                         {% if is_race_page %}
+                            <td class="race-distance">{{ activity.get_race_distance_display }}</td>
                             <td class="elapsed-time-cell" title='{% trans "Elapsed Time" %}: {{ activity.elapsed_time|default:0|duration:0 }}'>
                                 {{ activity.chip_time|default:0|duration:0 }}
                             </td>
@@ -202,7 +202,6 @@
         </div>
     {% endif %}
 </div>
-{# START: 活动编辑模态窗口 (Modal) #}
 <div class="modal fade" id="editActivityModal" tabindex="-1" aria-labelledby="editActivityModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -391,6 +390,8 @@
                                 const isRaceTd = activityRow.querySelector('.activity-is-race');
                                 isRaceTd.innerHTML = data.activity_data.is_race ? '<span class="badge bg-success">{% trans "Yes" %}</span>' : '<span class="badge bg-warning text-dark">{% trans "No" %}</span>';
                                 isRaceTd.dataset.isRace = data.activity_data.is_race;
+                            } else {
+                                activityRow.querySelector('.race-distance').textContent = data.activity_data.race_distance_display;
                             }
                             const targetTd = activityRow.querySelector(`.elapsed-time-cell`);
                             const formattedChipTime = formatDuration(data.activity_data.chip_time, 2);

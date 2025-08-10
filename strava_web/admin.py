@@ -11,16 +11,16 @@ from django.utils import timezone
 @admin.register(CustomUser)
 class CustomUserAdmin(BaseUserAdmin, ModelAdmin):
     # 修改列表显示字段
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'strava_id')
+    list_display = ('username', 'email', 'first_name', 'is_staff', 'strava_id')
     # 修改搜索字段
-    search_fields = ('username', 'email', 'first_name', 'last_name', 'strava_id')
+    search_fields = ('username', 'email', 'first_name', 'strava_id')
     # 过滤器
     list_filter = ('is_staff', 'is_active', 'is_superuser', 'groups')
 
     # 定义字段集，用于在 Admin 详情页组织字段
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
+        (('Personal info'), {'fields': ('first_name', 'email')}),
         (('Permissions'), {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'), # 重新加入 'groups'
         }),

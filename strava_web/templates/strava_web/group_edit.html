@@ -3,6 +3,9 @@
 {% load static %}
 {% block title %}{% trans "Edit Group" %} - {{ group.name }}{% endblock %}
 {% block content %}
+<script src="{% static 'jquery.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'select2.min.css' %}">
+<script src="{% static 'select2.min.js' %}"></script>
 <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
         <div class="card shadow-lg">
@@ -10,25 +13,21 @@
                 <h5 class="mb-0">{% trans "Edit Group" %}: {{ group.name }}</h5>
             </div>
             <div class="card-body">
-                <form method="post" action="{% url 'group_edit' group.id %}">
+                <form method="post" action="{% if is_new %}{% url 'group_add' %}{% else %}{% url 'group_edit' group.id %}{% endif %}">
                     {% csrf_token %}
                     <div class="mb-3">
                         <input type="text" id="id" name="id" class="form-control" value="{{ group.id }}" readonly hidden>
                         <input type="text" id="next" name="next" class="form-control" value="{{ next_url }}" readonly hidden>
                     </div>
                     <div class="mb-3">
-                        <label for="name" class="form-label">{% trans "Name" %}:</label>
+                        <label for="name" class="form-label">{% trans "Group Name" %}:</label>
                         <input type="text" id="name" name="name" class="form-control" value="{{ group.name }}" required>
                     </div>
                     <div class="mb-3">
-                        <label for="admin_search_input" class="form-label">{% trans "Admin" %}:</label>
-                        <div class="position-relative">
-                            <input type="text" id="admin_search_input" class="form-control"
-                                placeholder="{% trans "Search for an admin..." %}"
-                                value="{{ group.admin.username }} ({{ group.admin.first_name }} {{ group.admin.last_name }})">
-                            <input type="hidden" id="admin_id_input" name="admin" value="{{ group.admin.id }}">
-                            <div id="admin_results" class="list-group position-absolute w-100 mt-1" style="z-index: 1050; display: none;"></div>
-                        </div>
+                        <label for="admin_search_input" class="form-label">{% trans "Group Admin" %}:</label>
+                        <select class="admin_search_input form-control" id="admin_id_input" name="admin">
+                            <option value="{{ group.admin.id }}" selected="selected">{{ group.admin.username }} ({{ group.admin.first_name }})</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="announcement" class="form-label">{% trans "Announcement" %}:</label>
@@ -55,60 +54,11 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const adminSearchInput = document.getElementById('admin_search_input');
-        const adminIdInput = document.getElementById('admin_id_input');
-        const adminResultsDiv = document.getElementById('admin_results');
-
-        // 监听输入框的键盘事件
-        adminSearchInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault(); // 阻止表单默认提交
-                const query = event.target.value;
-                if (query.length > 0) {
-                    // 发送 AJAX 请求
-                    fetch(`{% url 'search_users_ajax' %}?q=${encodeURIComponent(query)}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            adminResultsDiv.innerHTML = ''; // 清空旧结果
-                            if (data.results.length > 0) {
-                                data.results.forEach(user => {
-                                    const resultItem = document.createElement('a');
-                                    resultItem.href = '#';
-                                    resultItem.className = 'list-group-item list-group-item-action';
-                                    resultItem.textContent = user.text;
-                                    resultItem.dataset.userId = user.id;
-
-                                    // 点击结果项时
-                                    resultItem.addEventListener('click', function(e) {
-                                        e.preventDefault();
-                                        adminSearchInput.value = user.text; // 显示格式化的用户名
-                                        adminIdInput.value = user.id;       // 存储真实的用户ID
-                                        adminResultsDiv.style.display = 'none'; // 隐藏结果列表
-                                    });
-                                    adminResultsDiv.appendChild(resultItem);
-                                });
-                                adminResultsDiv.style.display = 'block'; // 显示结果列表
-                            } else {
-                                const noResultsItem = document.createElement('a');
-                                noResultsItem.className = 'list-group-item disabled';
-                                noResultsItem.textContent = '{% trans "No users found." %}';
-                                adminResultsDiv.appendChild(noResultsItem);
-                                adminResultsDiv.style.display = 'block';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching search results:', error);
-                        });
-                } else {
-                    adminResultsDiv.style.display = 'none'; // 输入为空时隐藏列表
-                }
-            }
-        });
-
-        // 点击输入框外部时隐藏结果列表
-        document.addEventListener('click', function(event) {
-            if (!adminSearchInput.contains(event.target) && !adminResultsDiv.contains(event.target)) {
-                adminResultsDiv.style.display = 'none';
+        $('.admin_search_input').select2({
+            placeholder: `{% trans 'Type to search' %}`,
+            ajax: {
+                url: `{% url 'search_users_ajax' %}`,
+                dataType: 'json'
             }
         });
     });

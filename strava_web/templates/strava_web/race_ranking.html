@@ -1,0 +1,15 @@
+{% extends "strava_web/base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Race Ranking" %} - {{ group.name }}{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">{{ group.name }} - {% trans "Race Ranking" %}</h4>
+        </div>
+        <div class="card-body">
+            <h5 class="text-center">{% trans "This page is a placeholder for future race ranking features." %}</h5>
+        </div>
+    </div>
+</div>
+{% endblock %}

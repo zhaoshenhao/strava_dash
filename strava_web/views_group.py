@@ -7,7 +7,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import Group
 from .models import GroupApplication
 from django.utils.translation import gettext_lazy as _
-from .utils_group import get_groups
+from .utils_group import get_groups, save_group
 from django.contrib.auth import get_user_model
 from .utils import get_next_url
 
@@ -19,27 +19,6 @@ def is_admin_or_staff(user):
 @login_required
 def group_membership_edit(request):
     return get_groups(request, 1)
-
-@login_required
-def group_dashboard(request, group_id):
-    group = get_object_or_404(Group, id=group_id)
-    if not group.has_dashboard:
-        messages.error(request, "该组没有独立的 Dashboard。")
-        return redirect('personal_dashboard')
-
-    if not request.user.groups.filter(id=group.id).exists():
-        messages.error(request, "您没有权限查看该组的 Dashboard。")
-        return redirect('personal_dashboard')
-
-    # 检查当前用户是否是该群组的管理员
-    is_group_admin = (group.admin == request.user)
-    
-    context = {
-        'group': group,
-        'is_group_admin': is_group_admin, # 将管理员状态传递给模板
-        # 这里将是组群排行数据，待实现
-    }
-    return render(request, 'strava_web/group_dashboard.html', context)
 
 # 新增：申请加入封闭组
 @login_required
@@ -85,7 +64,7 @@ def review_group_application(request, application_id):
     group = application.group
 
     # 检查当前用户是否是该群组的管理员
-    if group.admin != request.user:
+    if group.admin != request.user and not request.user.is_superuser:
         messages.error(request, _("You do not have permission to review this request."))
         return redirect('group_dashboard', group_id=group.id)
 
@@ -136,6 +115,21 @@ def leave_group(request, group_id):
         messages.info(request, _("You do not belong to this group: %(gname)s") % {'gname': group.name})
     return redirect('group_membership_edit') # 或重定向到组列表页面
 
+@staff_member_required
+def remove_from_group(request, group_id):
+    group = get_object_or_404(Group, id=group_id)
+    user_id = request.POST.get('user_id')
+    user = get_object_or_404(User, id=user_id)
+    if group.admin != request.user and not request.user.is_superuser:
+        messages.error(request, _("You do not have permission to remove user from group: %(gname)s") % {'gname': group.name})
+        return redirect('group_manage_members', group_id=group.id)
+    if request.user.groups.filter(id=group.id).exists():
+        request.user.groups.remove(group)
+        messages.success(request, _("You removed %(uname)s from the group: %(gname)s") % {'uname': user.username, 'gname': group.name})
+    else:
+        messages.info(request, _("User %(uname)s is not a member of the group: %(gname)s") % {'uname': user.username, 'gname': group.name})
+    return redirect('group_manage_members', group_id=group.id)
+
 @login_required
 @user_passes_test(is_admin_or_staff, login_url='/')
 def groups(request):
@@ -143,37 +137,41 @@ def groups(request):
 
 @login_required
 @user_passes_test(is_admin_or_staff, login_url='/')
-def group_edit(request, group_id):
-    group = get_object_or_404(Group, id=group_id)
+def group_add(request):
+    group = Group(
+        name=_('New Group'),
+        has_dashboard=True,
+        is_open=True,
+    )
     next_url = get_next_url(request, 'groups')
-    print(f"next_url: {next_url}")
-    # 权限检查：确保 staff 只能编辑自己管理的组
-    if request.user.is_staff and not request.user.is_superuser and group.admin != request.user:
-        messages.error(request, _("You do not have permission to edit this group."))
-        print(f"redirect 1: {next_url}")
+    if not request.user.is_superuser:
+        messages.error(request, _("You do not have permission to add group."))
         return redirect(next_url)
     context = {
         'group': group,
         'next_url': next_url,
+        'is_new': True,
         }
     if request.method == 'POST':
-        group.name = request.POST.get('name', group.name)
-        group.announcement = request.POST.get('announcement', group.announcement)
-        group.description = request.POST.get('description', group.description)
-        group.is_open = 'is_open' in request.POST # Checkbox
-        # 更新 admin 用户
-        admin_id = request.POST.get('admin')
-        if admin_id:
-            try:
-                new_admin = User.objects.get(id=admin_id)
-                group.admin = new_admin
-            except User.DoesNotExist:
-                messages.error(request, _(f"User with id '{admin_id}' does not exist."))
-                return render(request, 'strava_web/group_edit.html', context)
-        group.save()
-        messages.success(request, _("Group has been updated successfully."))
-        print(f"redirect 2: {next_url}")
+        return save_group(request, group, context, next_url)
+    else:
+        return render(request, 'strava_web/group_edit.html', context)
+    
+@login_required
+@user_passes_test(is_admin_or_staff, login_url='/')
+def group_edit(request, group_id):
+    group = get_object_or_404(Group, id=group_id)
+    next_url = get_next_url(request, 'groups')
+    if request.user.is_staff and not request.user.is_superuser and group.admin != request.user:
+        messages.error(request, _("You do not have permission to edit this group."))
         return redirect(next_url)
+    context = {
+        'group': group,
+        'next_url': next_url,
+        'is_new': False,
+        }
+    if request.method == 'POST':
+        return save_group(request, group, context, next_url)
     else:
         return render(request, 'strava_web/group_edit.html', context)
 
@@ -181,21 +179,19 @@ def group_edit(request, group_id):
 @user_passes_test(is_admin_or_staff, login_url='/')
 def group_manage_members(request, group_id):
     group = get_object_or_404(Group, id=group_id)
-
-    if group.admin != request.user:
+    next_url = get_next_url(request, 'groups')
+    if group.admin != request.user and not request.user.is_superuser:
         messages.error(request, _("You do not have permission to manage this group."))
         return redirect('group_dashboard', group_id=group.id)
-
     # 获取所有群组成员
     group_members = group.members.all()
-
     # 获取待处理的申请
     pending_applications = GroupApplication.objects.filter(group=group, status='pending')
-
     context = {
         'group': group,
         'group_members': group_members,
         'pending_applications': pending_applications, # 传递待处理申请
         'is_group_admin': True,
+        'next_url': next_url,
     }
     return render(request, 'strava_web/group_manage_members.html', context)

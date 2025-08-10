@@ -1,250 +1,250 @@
 {% extends "strava_web/base.html" %}
 {% load i18n %}
-{% load strava_filters %}
+{% load url_tags %}
 {% block title %}{% trans "Your Dashboard" %}{% endblock %}
 {% block content %}
-    <div class="container mt-4">
-        {% if user.is_strava_connected %}
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h6 class="h6 mb-0">{% trans "Your Strava Run Statistics" %}</h6>
-                </div>
-                <div class="card-body">
-                    <ul class="nav nav-tabs mb-3" id="stats-pills-tab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="weekly-pill-tab" data-bs-toggle="pill" data-bs-target="#weekly-pill" type="button" role="tab" aria-controls="weekly-pill" aria-selected="true">{% trans "This Week (Weekly Totals)" %}</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="four_weeks-pill-tab" data-bs-toggle="pill" data-bs-target="#four_weeks-pill" type="button" role="tab" aria-controls="four_weeks-pill" aria-selected="false">{% trans "4 Weeks (4 Weeks Totals)" %}</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="ytd-pill-tab" data-bs-toggle="pill" data-bs-target="#ytd-pill" type="button" role="tab" aria-controls="ytd-pill" aria-selected="false">{% trans "Year To Date (YTD Totals)" %}</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="all_time-pill-tab" data-bs-toggle="pill" data-bs-target="#all_time-pill" type="button" role="tab" aria-controls="all_time-pill" aria-selected="false">{% trans "All Time Totals" %}</button>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="stats-pills-tabContent">
-                        <div class="tab-pane fade show active" id="weekly-pill" role="tabpanel" aria-labelledby="weekly-pill-tab">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover mb-0">
-                                    <tbody>
-                                        <tr><td class="fixed-col-width">{% trans "Run Count" %}</td><td>{{ user.weekly_run_count|default:0|format_number:0 }}</td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Distance" %}</td><td>
-                                            {% if user.use_metric %}
-                                                {{ user.weekly_run_distance|default:0|div:1000|format_number:2 }} {% trans "km" %}
-                                            {% else %}
-                                                {{ user.weekly_run_distance|default:0|div:1609.34|format_number:2 }} {% trans "mile" %}
-                                            {% endif %}
-                                            </td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Moving Time" %}</td><td>{{ user.weekly_run_moving_time|default:0|duration:1 }}</td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Elapsed Time" %}</td><td>{{ user.weekly_run_elapsed_time|default:0|duration:1 }}</td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Elevation Gain" %}</td><td>
-                                            {% if user.use_metric %}
-                                                {{ user.weekly_run_elevation_gain|default:0|format_number:0 }} {% trans "m" %}
-                                            {% else %}
-                                                {{ user.weekly_run_elevation_gain|default:0|div:0.3048|format_number:0 }} {% trans "feet" %}
-                                            {% endif %}
+<div class="container mt-4">
+    {% if user.is_strava_connected %}
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h6 class="h6 mb-0">{% trans "Your Strava Run Statistics" %}</h6>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs mb-3" id="stats-pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="weekly-pill-tab" data-bs-toggle="pill" data-bs-target="#weekly-pill" type="button" role="tab" aria-controls="weekly-pill" aria-selected="true">{% trans "This Week (Weekly Totals)" %}</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="four_weeks-pill-tab" data-bs-toggle="pill" data-bs-target="#four_weeks-pill" type="button" role="tab" aria-controls="four_weeks-pill" aria-selected="false">{% trans "4 Weeks (4 Weeks Totals)" %}</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="ytd-pill-tab" data-bs-toggle="pill" data-bs-target="#ytd-pill" type="button" role="tab" aria-controls="ytd-pill" aria-selected="false">{% trans "Year To Date (YTD Totals)" %}</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="all_time-pill-tab" data-bs-toggle="pill" data-bs-target="#all_time-pill" type="button" role="tab" aria-controls="all_time-pill" aria-selected="false">{% trans "All Time Totals" %}</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="stats-pills-tabContent">
+                    <div class="tab-pane fade show active" id="weekly-pill" role="tabpanel" aria-labelledby="weekly-pill-tab">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <tbody>
+                                    <tr><td class="fixed-col-width">{% trans "Run Count" %}</td><td>{{ user.weekly_run_count|default:0|format_number:0 }}</td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Distance" %}</td><td>
+                                        {% if user.use_metric %}
+                                            {{ user.weekly_run_distance|default:0|div:1000|format_number:2 }} {% trans "km" %}
+                                        {% else %}
+                                            {{ user.weekly_run_distance|default:0|div:1609.34|format_number:2 }} {% trans "mile" %}
+                                        {% endif %}
                                         </td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Average Pace" %}</td><td>
-                                            {% if user.use_metric %}
-                                                {{ user.weekly_run_distance|default:0|km_pace:user.weekly_run_moving_time }} m/km
-                                            {% else %}
-                                                {{ user.weekly_run_distance|default:0|mile_pace:user.weekly_run_moving_time }} m/mile
-                                            {% endif %}
-                                        </td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Average Heart Rate" %}</td><td>{% if user.weekly_avg_heartrate %}{{ user.weekly_avg_heartrate|default:0|floatformat:0 }} {% trans "bpm" %}{% else %}-{% endif %}</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>                            
+                                    <tr><td class="fixed-col-width">{% trans "Moving Time" %}</td><td>{{ user.weekly_run_moving_time|default:0|duration:1 }}</td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Elapsed Time" %}</td><td>{{ user.weekly_run_elapsed_time|default:0|duration:1 }}</td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Elevation Gain" %}</td><td>
+                                        {% if user.use_metric %}
+                                            {{ user.weekly_run_elevation_gain|default:0|format_number:0 }} {% trans "m" %}
+                                        {% else %}
+                                            {{ user.weekly_run_elevation_gain|default:0|div:0.3048|format_number:0 }} {% trans "feet" %}
+                                        {% endif %}
+                                    </td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Average Pace" %}</td><td>
+                                        {% if user.use_metric %}
+                                            {{ user.weekly_run_distance|default:0|km_pace:user.weekly_run_moving_time }} m/km
+                                        {% else %}
+                                            {{ user.weekly_run_distance|default:0|mile_pace:user.weekly_run_moving_time }} m/mile
+                                        {% endif %}
+                                    </td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Average Heart Rate" %}</td><td>{% if user.weekly_avg_heartrate %}{{ user.weekly_avg_heartrate|default:0|floatformat:0 }} {% trans "bpm" %}{% else %}-{% endif %}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>                            
+                    </div>
+                    <div class="tab-pane fade" id="four_weeks-pill" role="tabpanel" aria-labelledby="four_weeks-pill-tab">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <tbody>
+                                    <tr><td class="fixed-col-width">{% trans "Run Count" %}</td><td>{{ user.recent_run_count|default:0|format_number:0 }}</td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Distance" %}</td><td>
+                                        {% if user.use_metric %}
+                                            {{ user.recent_run_distance|default:0|div:1000|format_number:2 }} {% trans "km" %}
+                                        {% else %}
+                                            {{ user.recent_run_distance|default:0|div:1609.34|format_number:2 }} {% trans "mile" %}
+                                        {% endif %}
+                                    </td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Moving Time" %}</td><td>{{ user.recent_run_moving_time|default:0|duration:1 }}</td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Elapsed Time" %}</td><td>{{ user.recent_run_elapsed_time|default:0|duration:1 }}</td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Elevation Gain" %}</td><td>
+                                        {% if user.use_metric %}
+                                            {{ user.recent_run_elevation_gain|default:0|format_number:0 }} {% trans "m" %}
+                                        {% else %}
+                                            {{ user.recent_run_elevation_gain|default:0|div:0.3048|format_number:0 }} {% trans "feet" %}
+                                        {% endif %}
+                                    </td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Average Pace" %}</td><td>
+                                        {% if user.use_metric %}
+                                            {{ user.recent_run_distance|default:0|km_pace:user.recent_run_moving_time }} m/km
+                                        {% else %}
+                                            {{ user.recent_run_distance|default:0|mile_pace:user.recent_run_moving_time }} m/mile
+                                        {% endif %}
+                                    </td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Average Heart Rate" %}</td><td>{% if user.recent_avg_heartrate %}{{ user.recent_avg_heartrate|default:0|floatformat:0 }} {% trans "bpm" %}{% else %}-{% endif %}</td></tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="tab-pane fade" id="four_weeks-pill" role="tabpanel" aria-labelledby="four_weeks-pill-tab">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover mb-0">
-                                    <tbody>
-                                        <tr><td class="fixed-col-width">{% trans "Run Count" %}</td><td>{{ user.recent_run_count|default:0|format_number:0 }}</td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Distance" %}</td><td>
-                                            {% if user.use_metric %}
-                                                {{ user.recent_run_distance|default:0|div:1000|format_number:2 }} {% trans "km" %}
-                                            {% else %}
-                                                {{ user.recent_run_distance|default:0|div:1609.34|format_number:2 }} {% trans "mile" %}
-                                            {% endif %}
-                                        </td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Moving Time" %}</td><td>{{ user.recent_run_moving_time|default:0|duration:1 }}</td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Elapsed Time" %}</td><td>{{ user.recent_run_elapsed_time|default:0|duration:1 }}</td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Elevation Gain" %}</td><td>
-                                            {% if user.use_metric %}
-                                                {{ user.recent_run_elevation_gain|default:0|format_number:0 }} {% trans "m" %}
-                                            {% else %}
-                                                {{ user.recent_run_elevation_gain|default:0|div:0.3048|format_number:0 }} {% trans "feet" %}
-                                            {% endif %}
-                                        </td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Average Pace" %}</td><td>
-                                            {% if user.use_metric %}
-                                                {{ user.recent_run_distance|default:0|km_pace:user.recent_run_moving_time }} m/km
-                                            {% else %}
-                                                {{ user.recent_run_distance|default:0|mile_pace:user.recent_run_moving_time }} m/mile
-                                            {% endif %}
-                                        </td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Average Heart Rate" %}</td><td>{% if user.recent_avg_heartrate %}{{ user.recent_avg_heartrate|default:0|floatformat:0 }} {% trans "bpm" %}{% else %}-{% endif %}</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                    </div>
+                    <div class="tab-pane fade" id="ytd-pill" role="tabpanel" aria-labelledby="ytd-pill-tab">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <tbody>
+                                    <tr><td class="fixed-col-width">{% trans "Run Count" %}</td><td>{{ user.ytd_run_count|default:0|format_number:0 }}</td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Distance" %}</td><td>
+                                        {% if user.use_metric %}
+                                            {{ user.ytd_run_distance|default:0|div:1000|format_number:2 }} {% trans "km" %}
+                                        {% else %}
+                                            {{ user.ytd_run_distance|default:0|div:1609.34|format_number:2 }} {% trans "mile" %}
+                                        {% endif %}
+                                    </td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Moving Time" %}</td><td>{{ user.ytd_run_moving_time|default:0|duration:1 }}</td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Elapsed Time" %}</td><td>{{ user.ytd_run_elapsed_time|default:0|duration:1 }}</td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Elevation Gain" %}</td><td>
+                                        {% if user.use_metric %}
+                                            {{ user.ytd_run_elevation_gain|default:0|format_number:0 }} {% trans "m" %}
+                                        {% else %}
+                                            {{ user.ytd_run_elevation_gain|default:0|div:0.3048|format_number:0 }} {% trans "feet" %}
+                                        {% endif %}
+                                    </td></tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="tab-pane fade" id="ytd-pill" role="tabpanel" aria-labelledby="ytd-pill-tab">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover mb-0">
-                                    <tbody>
-                                        <tr><td class="fixed-col-width">{% trans "Run Count" %}</td><td>{{ user.ytd_run_count|default:0|format_number:0 }}</td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Distance" %}</td><td>
-                                            {% if user.use_metric %}
-                                                {{ user.ytd_run_distance|default:0|div:1000|format_number:2 }} {% trans "km" %}
-                                            {% else %}
-                                                {{ user.ytd_run_distance|default:0|div:1609.34|format_number:2 }} {% trans "mile" %}
-                                            {% endif %}
-                                        </td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Moving Time" %}</td><td>{{ user.ytd_run_moving_time|default:0|duration:1 }}</td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Elapsed Time" %}</td><td>{{ user.ytd_run_elapsed_time|default:0|duration:1 }}</td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Elevation Gain" %}</td><td>
-                                            {% if user.use_metric %}
-                                                {{ user.ytd_run_elevation_gain|default:0|format_number:0 }} {% trans "m" %}
-                                            {% else %}
-                                                {{ user.ytd_run_elevation_gain|default:0|div:0.3048|format_number:0 }} {% trans "feet" %}
-                                            {% endif %}
-                                        </td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="all_time-pill" role="tabpanel" aria-labelledby="all_time-pill-tab">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover mb-0">
-                                    <tbody>
-                                        <tr><td class="fixed-col-width">{% trans "Run Count" %}</td><td>{{ user.all_time_run_count|default:0|format_number:0 }}</td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Distance" %}</td><td>
-                                            {% if user.use_metric %}
-                                                {{ user.all_time_run_distance|default:0|div:1000|format_number:2 }} {% trans "km" %}
-                                            {% else %}
-                                                {{ user.all_time_run_distance|default:0|div:1609.34|format_number:2 }} {% trans "mile" %}
-                                            {% endif %}
-                                        </td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Moving Time" %}</td><td>{{ user.all_time_run_moving_time|default:0|duration:1 }}</td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Elapsed Time" %}</td><td>{{ user.all_time_run_elapsed_time|default:0|duration:1 }}</td></tr>
-                                        <tr><td class="fixed-col-width">{% trans "Elevation Gain" %}</td><td>
-                                            {% if user.use_metric %}
-                                                {{ user.all_time_run_elevation_gain|default:0|format_number:0 }} {% trans "m" %}
-                                            {% else %}
-                                                {{ user.all_time_run_elevation_gain|default:0|div:0.3048|format_number:0 }} {% trans "feet" %}
-                                            {% endif %}
-                                        </td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                    </div>
+                    <div class="tab-pane fade" id="all_time-pill" role="tabpanel" aria-labelledby="all_time-pill-tab">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <tbody>
+                                    <tr><td class="fixed-col-width">{% trans "Run Count" %}</td><td>{{ user.all_time_run_count|default:0|format_number:0 }}</td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Distance" %}</td><td>
+                                        {% if user.use_metric %}
+                                            {{ user.all_time_run_distance|default:0|div:1000|format_number:2 }} {% trans "km" %}
+                                        {% else %}
+                                            {{ user.all_time_run_distance|default:0|div:1609.34|format_number:2 }} {% trans "mile" %}
+                                        {% endif %}
+                                    </td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Moving Time" %}</td><td>{{ user.all_time_run_moving_time|default:0|duration:1 }}</td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Elapsed Time" %}</td><td>{{ user.all_time_run_elapsed_time|default:0|duration:1 }}</td></tr>
+                                    <tr><td class="fixed-col-width">{% trans "Elevation Gain" %}</td><td>
+                                        {% if user.use_metric %}
+                                            {{ user.all_time_run_elevation_gain|default:0|format_number:0 }} {% trans "m" %}
+                                        {% else %}
+                                            {{ user.all_time_run_elevation_gain|default:0|div:0.3048|format_number:0 }} {% trans "feet" %}
+                                        {% endif %}
+                                    </td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
-        {% else %}
-            <p class="alert alert-info mt-4">{% trans "Connect your Strava account to see your personal statistics and activities!" %}</p>
-            <p class="text-center">
-                <a href="{% url 'strava_login' %}" class="strava-login">{% trans "Connect Strava Account" %}</a>
-            </p>
-        {% endif %}
-        <div class="card mb-4 shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h6 class="h6 mb-0">{% trans "Your Information" %}</h6>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover mb-0">
-                        <tbody>
-                            <tr>
-                                <td class="fixed-col-width">{% trans "Username:" %}</td>
-                                <td><strong>{{ user.username }}</strong></td>
-                            </tr>
-                            <tr>
-                                <td class="fixed-col-width">{% trans "Email:" %}</td>
-                                <td><strong>{{ user.email|default:user.username }}</strong></td>
-                            </tr>
-                            <tr>
-                                <td class="fixed-col-width">{% trans "Name:" %}</td>
-                                <td><strong>{{ user.first_name|default:"" }} {{ user.last_name|default:"" }}</strong></td>
-                            </tr>
-                            <tr>
-                                <td class="fixed-col-width">{% trans "Strava Connected:" %}</td>
-                                <td>
-                                    {% if user.is_strava_connected %}
-                                        <span class="badge bg-success">{% trans "Yes" %}</span> (ID: {{ user.strava_id }})
-                                    {% else %}
-                                        <span class="badge bg-warning text-dark">{% trans "No" %}</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="fixed-col-width">{% trans "Last Strava Sync:" %}</td>
-                                <td><strong>{% if user.last_strava_sync %}{{ user.last_strava_sync|date:"Y-m-d H:i" }}{% else %}{% trans "Never" %}{% endif %}</strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
-        <p class="text-center mt-4">
-            <a href="{% url 'group_membership_edit' %}" class="btn btn-outline-primary">{% trans "Manage Group Memberships" %}</a>
+    {% else %}
+        <p class="alert alert-info mt-4">{% trans "Connect your Strava account to see your personal statistics and activities!" %}</p>
+        <p class="text-center">
+            <a href="{% url 'strava_login' %}" class="strava-login">{% trans "Connect Strava Account" %}</a>
         </p>
-        <div class="card mb-4 shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h6 class="h6 mb-0">{% trans "Your Groups" %}</h6>
-            </div>
-            <div class="card-body">
-                {% if user_groups %}
-                    <table class="table table-striped table-hover mb-0">
-                        <tbody>
-                        {% for group in user_groups %}
-                            <tr>
-                                <td>{{ group.name }}</td>
-                                <td>
-                                    {% if group.is_open %}
-                                        <span class="badge bg-success">{% trans "Open" %}</span>
-                                    {% else %}
-                                        <span class="badge bg-danger">{% trans "Private" %}</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if group.admin %}
-                                        {% if group.admin.first_name and group.admin.last_name %}
-                                            {{ group.admin.first_name }} {{ group.admin.last_name }}
-                                        {% else %}
-                                            {{ group.admin.username }}
-                                        {% endif %}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.announcement }}"></i>
-                                </td>
-                                <td>
-                                    <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.description }}"></i>
-                                </td>
-                                <td style="text-align: right;">
-                                    {% if group.has_dashboard %}
-                                        <a href="{% url 'group_dashboard' group.id %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-speedometer2"></i></a>
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <p class="alert alert-secondary">{% trans "You are not a member of any groups yet." %}</p>
-                    <p class="text-center">
-                        <a href="{% url 'discover_groups' %}" class="btn btn-outline-info btn-lg">{% trans "Discover Groups" %}</a>
-                    </p>
-                {% endif %}
+    {% endif %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h6 class="h6 mb-0">{% trans "Your Information" %}</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <tbody>
+                        <tr>
+                            <td class="fixed-col-width">{% trans "Username:" %}</td>
+                            <td><strong>{{ user.username }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-col-width">{% trans "Email:" %}</td>
+                            <td><strong>{{ user.email|default:user.username }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-col-width">{% trans "Nick Name:" %}</td>
+                            <td><strong>{{ user.first_name|default:"" }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-col-width">{% trans "Strava Connected:" %}</td>
+                            <td>
+                                {% if user.is_strava_connected %}
+                                    <span class="badge bg-success">{% trans "Yes" %}</span> (ID: {{ user.strava_id }})
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">{% trans "No" %}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-col-width">{% trans "Last Strava Sync:" %}</td>
+                            <td><strong>{% if user.last_strava_sync %}{{ user.last_strava_sync|date:"Y-m-d H:i" }}{% else %}{% trans "Never" %}{% endif %}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+    <p class="text-center mt-4">
+        <a href="{% url 'group_membership_edit' %}" class="btn btn-outline-primary">{% trans "Manage Group Memberships" %}</a>
+    </p>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h6 class="h6 mb-0">{% trans "Your Groups" %}</h6>
+        </div>
+        <div class="card-body">
+            {% if user_groups %}
+                <table class="table table-striped table-hover mb-0">
+                    <tbody>
+                    {% for group in user_groups %}
+                        <tr>
+                            <td>{{ group.name }}</td>
+                            <td>
+                                {% if group.is_open %}
+                                    <span class="badge bg-success">{% trans "Open" %}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{% trans "Private" %}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if group.admin %}
+                                    {% if group.admin.first_name %}
+                                        {{ group.admin.first_name }
+                                    {% else %}
+                                        {{ group.admin.username }}
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.announcement }}"></i>
+                            </td>
+                            <td>
+                                <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.description }}"></i>
+                            </td>
+                            <td style="text-align: right;">
+                                {% if group.has_dashboard %}
+                                    <a href="{% url 'group_dashboard' group.id %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-speedometer2"></i></a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="alert alert-secondary">{% trans "You are not a member of any groups yet." %}</p>
+                <p class="text-center">
+                    <a href="{% url 'discover_groups' %}" class="btn btn-outline-info btn-lg">{% trans "Discover Groups" %}</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

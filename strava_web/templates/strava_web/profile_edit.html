@@ -6,13 +6,16 @@
     <div class="col-md-8 col-lg-6">
         <div class="card shadow-sm mt-4 mb-4">
             <div class="card-header bg-primary text-white">
-                <h5 class="card-title h5 mb-0">{% trans "Edit Your Profile" %}</h5>
+                <h6 class="card-title h6 mb-0">{% if is_admin %}{% trans "Edit Profile" %}{% else %}{% trans "Edit Your Profile" %}{% endif %}</h6>
             </div>
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
                     {% for field in form %}
                         <div class="row mb-3 align-items-start">
+                            {% if is_admin %}
+                                <input type="text" id="next" name="next" class="form-control" value="{{ next_url }}" readonly hidden>
+                            {% endif %}
                             <div class="col-sm-4 text-sm-end">
                                 <label for="{{ field.id_for_label }}" class="form-label mb-0">{{ field.label }}:</label>
                             </div>
@@ -29,17 +32,13 @@
                             </div>
                         </div>
                     {% endfor %}
-                    <div class="row mt-4 justify-content-center">
-                        <div class="col-auto">
-                            <button type="submit" class="btn btn-primary">{% trans "Update Profile" %}</button>
-                        </div>
+                    <div class="input-group justify-content-center">
+                        <button type="submit" class="btn btn-primary">{% trans "Update Profile" %}</button>
+                        {% if is_admin %}
+                            <a href="{{ next_url }}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+                        {% endif %}
                     </div>
                 </form>
-            </div>
-            <div class="card-footer text-center">
-                <p class="mb-0">
-                    <a href="{% url 'password_change' %}" class="btn btn-secondary">{% trans "Change Password" %}</a>
-                </p>
             </div>
         </div>
     </div>
