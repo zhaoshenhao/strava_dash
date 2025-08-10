@@ -1,6 +1,5 @@
 # strava_web/forms.py
 from django import forms
-from django_select2 import forms as s2forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
