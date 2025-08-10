@@ -20,8 +20,8 @@ from django.urls import path, include
 from django.views.generic.base import RedirectView # 用于根路径重定向
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('i18n/', include('django.conf.urls.i18n')),
+    path('strava_dash/admin/', admin.site.urls),
+    path('strava_dash/i18n/', include('django.conf.urls.i18n')),
     #path('', RedirectView.as_view(url='/dashboard/', permanent=False)), # 根路径重定向到仪表盘
-    path('', include('strava_web.urls')), # 包含你的应用路由
+    path('strava_dash/', include('strava_web.urls')), # 包含你的应用路由
 ]
