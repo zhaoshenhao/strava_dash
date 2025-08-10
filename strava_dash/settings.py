@@ -88,9 +88,9 @@ WSGI_APPLICATION = 'strava_dash.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'strava_dash',
-        'USER': 'strava_dash',
-        'PASSWORD': 'strava_dash',
+        'NAME': config('DB_NAME') ,
+        'USER': config('DB_USER') ,
+        'PASSWORD': config('DB_PASS') ,
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'OPTIONS': {
@@ -173,3 +173,12 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_REDIRECT_URL = '/home/'
 LOGIN_URL = '/login/'
 STRAVA_SYNC_INTERVAL_SECONDS = 14400 # 4 hours
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://compusky.com',
+    'http://www.compusky.com',
+    'https://compusky.com',
+    'https://www.compusky.com',
+    'http://127.0.0.1:8100',
+    'http://localhost:8100'
+]
