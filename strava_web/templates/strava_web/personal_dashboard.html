@@ -230,7 +230,9 @@
                             </td>
                             <td style="text-align: right;">
                                 {% if group.has_dashboard %}
-                                    <a href="{% url 'group_dashboard' group.id %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-speedometer2"></i></a>
+                                    <a href="{% url 'group_dashboard' group.id %}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-speedometer2" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Go to Group Dashboard' %}"></i>
+                                    </a>
                                 {% else %}
                                     -
                                 {% endif %}

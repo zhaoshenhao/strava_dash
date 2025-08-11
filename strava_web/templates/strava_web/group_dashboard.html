@@ -1,5 +1,6 @@
 {% extends "strava_web/base.html" %}
 {% load i18n %}
+{% load url_tags %}
 {% block title %}{% trans "Group Dashboard" %} - {{ group.name }}{% endblock %}
 {% block content %}
 <div class="container mt-4">
@@ -35,7 +36,7 @@
                             {% if not gender == 'all' or search_query %}
                                 <a href="{% url 'group_dashboard' group_id=group.id %}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
                             {% endif %}
-                            <button type="submit" class="btn btn-primary me-2">{% trans "Search" %}</button>
+                            <button type="submit" class="btn btn-primary me-2"><i class="bi bi-search"></i></button>
                         </div>
                     </form>
                     <div class="table-responsive">
@@ -52,7 +53,7 @@
                                 <tr>
                                     <td>{{ member.username }}</td>
                                     <td>{{ member.first_name }}</td>
-                                    <td>{{ member.gender|default:"-" }}</td>
+                                    <td>{{ member.gender|gender }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

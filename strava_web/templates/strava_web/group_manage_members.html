@@ -1,5 +1,6 @@
 {% extends 'strava_web/base.html' %}
 {% load i18n %}
+{% load url_tags %}
 {% block title %}{{ group.name }}: {% trans "Members" %}{% endblock %}
 {% block content %}
 <div class="container mt-4">
@@ -34,7 +35,7 @@
                                 <tr>
                                     <td>{{ member.username }}</td>
                                     <td>{{ member.first_name }}</td>
-                                    <td>{{ member.gender }}</td>
+                                    <td>{{ member.gender|gender }}</td>
                                     <td>
                                         <form action="{% url 'remove_from_group' group.id %}" method="post" style="display:inline;">
                                             {% csrf_token %}
@@ -73,11 +74,15 @@
                                     <td>
                                         <form action="{% url 'review_group_application' application.id %}" method="post" style="display:inline;">
                                             {% csrf_token %}
-                                            <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">{% trans "Approve" %}</button>
+                                            <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">
+                                                <i class="bi bi-check-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Approve the the application' %}"></i>
+                                            </button>
                                         </form>
                                         <form action="{% url 'review_group_application' application.id %}" method="post" style="display:inline; margin-left: 5px;">
                                             {% csrf_token %}
-                                            <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">{% trans "Reject" %}</button>
+                                            <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">
+                                                <i class="bi bi-x-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Reject the the application' %}"></i>
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>
@@ -96,11 +101,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-{% block extra_js %}
-<script>
-    // 初始化 Bootstrap 的工具提示
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-</script>
 {% endblock %}

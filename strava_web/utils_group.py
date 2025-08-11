@@ -88,7 +88,7 @@ def get_groups(request, mode: 0):
     sort_field = f'-{sort_by}' if sort_order == 'desc' else sort_by
     groups_list = groups_list.order_by(sort_field)
 
-    paginator = Paginator(groups_list, 20) # 每页20行
+    paginator = Paginator(groups_list, 10) # 每页10行
     page_number = request.GET.get('page')
     try:
         page_obj = paginator.page(page_number)

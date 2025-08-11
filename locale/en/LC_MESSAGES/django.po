@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-10 14:54-0400\n"
+"POT-Creation-Date: 2025-08-11 18:16-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,64 +18,64 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\strava_web\forms.py:13 .\strava_web\templates\strava_web\base.html:60
+#: .\strava_web\forms.py:12 .\strava_web\templates\strava_web\base.html:60
 msgid "Password"
 msgstr ""
 
-#: .\strava_web\forms.py:14
+#: .\strava_web\forms.py:13
 msgid "Confirm Password"
 msgstr ""
 
-#: .\strava_web\forms.py:23
+#: .\strava_web\forms.py:22
 msgid ""
 "This email address has been registered. Please use another email address."
 msgstr ""
 
-#: .\strava_web\forms.py:32
+#: .\strava_web\forms.py:31
 msgid "Password mismatched"
 msgstr ""
 
-#: .\strava_web\forms.py:74
+#: .\strava_web\forms.py:73
 msgid "Please choose the group."
 msgstr ""
 
-#: .\strava_web\forms.py:102
+#: .\strava_web\forms.py:101
 msgid "Is this a Race?"
 msgstr ""
 
-#: .\strava_web\forms.py:103
+#: .\strava_web\forms.py:102
 #: .\strava_web\templates\strava_web\activities.html:141
 #: .\strava_web\templates\strava_web\activities.html:238
-#: .\strava_web\templates\strava_web\activities.html:402
-#: .\strava_web\views_activity.py:117
+#: .\strava_web\templates\strava_web\activities.html:406
+#: .\strava_web\views_activity.py:116
 msgid "Chip Time"
 msgstr ""
 
-#: .\strava_web\forms.py:104 .\strava_web\models.py:244
+#: .\strava_web\forms.py:103 .\strava_web\models.py:244
 #: .\strava_web\templates\strava_web\frag_race_distance.html:2
-#: .\strava_web\views_activity.py:125
+#: .\strava_web\views_activity.py:124
 msgid "Race Distance"
 msgstr ""
 
-#: .\strava_web\forms.py:105 .\strava_web\models.py:198
+#: .\strava_web\forms.py:104 .\strava_web\models.py:198
 #: .\strava_web\templates\strava_web\activities.html:221
-#: .\strava_web\views_activity.py:115
+#: .\strava_web\views_activity.py:114
 msgid "Activity Name"
 msgstr ""
 
-#: .\strava_web\forms.py:108
+#: .\strava_web\forms.py:107
 msgid ""
 "Your official race finish time in seconds. Leave blank or 0 to use Elapsed "
 "Time."
 msgstr ""
 
-#: .\strava_web\forms.py:109
+#: .\strava_web\forms.py:108
 msgid "Official distance of the race."
 msgstr ""
 
 #: .\strava_web\models.py:9
-#: .\strava_web\templates\strava_web\group_dashboard.html:46
-#: .\strava_web\templates\strava_web\group_manage_members.html:26
+#: .\strava_web\templates\strava_web\group_dashboard.html:47
+#: .\strava_web\templates\strava_web\group_manage_members.html:27
 #: .\strava_web\templates\strava_web\profiles.html:56
 msgid "Nick Name"
 msgstr ""
@@ -239,9 +239,9 @@ msgid "Female"
 msgstr ""
 
 #: .\strava_web\models.py:81
-#: .\strava_web\templates\strava_web\group_dashboard.html:29
-#: .\strava_web\templates\strava_web\group_dashboard.html:47
-#: .\strava_web\templates\strava_web\group_manage_members.html:27
+#: .\strava_web\templates\strava_web\group_dashboard.html:30
+#: .\strava_web\templates\strava_web\group_dashboard.html:48
+#: .\strava_web\templates\strava_web\group_manage_members.html:28
 #: .\strava_web\templates\strava_web\profiles.html:34
 #: .\strava_web\templates\strava_web\profiles.html:59
 #: .\strava_web\templates\strava_web\stats_ranking.html:32
@@ -291,7 +291,7 @@ msgid "If checked, this group has a dedicated data dashboard."
 msgstr ""
 
 #: .\strava_web\models.py:152
-#: .\strava_web\templates\strava_web\group_dashboard.html:67
+#: .\strava_web\templates\strava_web\group_dashboard.html:69
 #: .\strava_web\templates\strava_web\group_edit.html:27
 #: .\strava_web\utils_group.py:70
 msgid "Group Admin"
@@ -318,7 +318,7 @@ msgid "Group announcement. Max length 1000 chars"
 msgstr ""
 
 #: .\strava_web\models.py:172
-#: .\strava_web\templates\strava_web\group_manage_members.html:16
+#: .\strava_web\templates\strava_web\group_manage_members.html:17
 #: .\strava_web\templatetags\url_tags.py:84
 msgid "Pending"
 msgstr ""
@@ -332,7 +332,7 @@ msgid "Rejected"
 msgstr ""
 
 #: .\strava_web\models.py:177
-#: .\strava_web\templates\strava_web\group_manage_members.html:60
+#: .\strava_web\templates\strava_web\group_manage_members.html:61
 msgid "Requestor"
 msgstr ""
 
@@ -345,7 +345,7 @@ msgid "Status"
 msgstr ""
 
 #: .\strava_web\models.py:180
-#: .\strava_web\templates\strava_web\group_manage_members.html:61
+#: .\strava_web\templates\strava_web\group_manage_members.html:62
 msgid "Applied At"
 msgstr ""
 
@@ -437,7 +437,7 @@ msgstr ""
 msgid "Has Power Data"
 msgstr ""
 
-#: .\strava_web\models.py:223 .\strava_web\views_activity.py:128
+#: .\strava_web\models.py:223 .\strava_web\views_activity.py:127
 msgid "Is Race"
 msgstr ""
 
@@ -584,9 +584,9 @@ msgstr ""
 
 #: .\strava_web\templates\strava_web\activities.html:64
 #: .\strava_web\templates\strava_web\activities.html:164
-#: .\strava_web\templates\strava_web\activities.html:391
+#: .\strava_web\templates\strava_web\activities.html:395
 #: .\strava_web\templates\strava_web\group_edit.html:41
-#: .\strava_web\templates\strava_web\group_membership_edit.html:100
+#: .\strava_web\templates\strava_web\group_membership_edit.html:101
 #: .\strava_web\templates\strava_web\personal_dashboard.html:177
 #: .\strava_web\templates\strava_web\profiles.html:19
 #: .\strava_web\templates\strava_web\profiles.html:25
@@ -599,9 +599,9 @@ msgstr ""
 
 #: .\strava_web\templates\strava_web\activities.html:65
 #: .\strava_web\templates\strava_web\activities.html:166
-#: .\strava_web\templates\strava_web\activities.html:391
+#: .\strava_web\templates\strava_web\activities.html:395
 #: .\strava_web\templates\strava_web\group_edit.html:41
-#: .\strava_web\templates\strava_web\group_membership_edit.html:102
+#: .\strava_web\templates\strava_web\group_membership_edit.html:103
 #: .\strava_web\templates\strava_web\personal_dashboard.html:179
 #: .\strava_web\templates\strava_web\profiles.html:20
 #: .\strava_web\templates\strava_web\profiles.html:26
@@ -612,22 +612,11 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\activities.html:75
-#: .\strava_web\templates\strava_web\group_dashboard.html:27
-#: .\strava_web\templates\strava_web\group_dashboard.html:38
-#: .\strava_web\templates\strava_web\group_membership_edit.html:33
-#: .\strava_web\templates\strava_web\groups.html:25
-#: .\strava_web\templates\strava_web\profiles.html:14
-#: .\strava_web\templates\strava_web\profiles.html:43
-msgid "Search"
-msgstr ""
-
 #: .\strava_web\templates\strava_web\activities.html:77
 msgid "Go To Your Activities"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\activities.html:111
-#: .\strava_web\templates\strava_web\activities.html:251
 msgid "Update"
 msgstr ""
 
@@ -641,8 +630,16 @@ msgstr ""
 #: .\strava_web\templates\strava_web\personal_dashboard.html:74
 #: .\strava_web\templates\strava_web\personal_dashboard.html:107
 #: .\strava_web\templates\strava_web\personal_dashboard.html:132
-#: .\strava_web\views_activity.py:117
+#: .\strava_web\views_activity.py:116
 msgid "Elapsed Time"
+msgstr ""
+
+#: .\strava_web\templates\strava_web\activities.html:181
+msgid "Modify this activity"
+msgstr ""
+
+#: .\strava_web\templates\strava_web\activities.html:187
+msgid "Go to the activity page in Strava"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\activities.html:201
@@ -654,7 +651,7 @@ msgid "Edit Activity"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\activities.html:217
-#: .\strava_web\views_activity.py:114
+#: .\strava_web\views_activity.py:113
 msgid "Date"
 msgstr ""
 
@@ -677,18 +674,22 @@ msgstr ""
 msgid "Invalid time format. Please use HH:MM:SS or MM:SS."
 msgstr ""
 
-#: .\strava_web\templates\strava_web\activities.html:250
+#: .\strava_web\templates\strava_web\activities.html:251
 #: .\strava_web\templates\strava_web\group_edit.html:48
 #: .\strava_web\templates\strava_web\profile_edit.html:38
 #: .\strava_web\templates\strava_web\profile_password_change.html:45
-msgid "Cancel"
+msgid "Cancel the change"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\activities.html:414
+#: .\strava_web\templates\strava_web\activities.html:254
+msgid "Save the change"
+msgstr ""
+
+#: .\strava_web\templates\strava_web\activities.html:418
 msgid "An error occurred."
 msgstr ""
 
-#: .\strava_web\templates\strava_web\activities.html:423
+#: .\strava_web\templates\strava_web\activities.html:427
 msgid "Network error or unexpected response."
 msgstr ""
 
@@ -753,22 +754,6 @@ msgstr ""
 msgid "Login"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\frag_pagination.html:6
-msgid "First"
-msgstr ""
-
-#: .\strava_web\templates\strava_web\frag_pagination.html:7
-msgid "Previous"
-msgstr ""
-
-#: .\strava_web\templates\strava_web\frag_pagination.html:17
-msgid "Next"
-msgstr ""
-
-#: .\strava_web\templates\strava_web\frag_pagination.html:18
-msgid "Last"
-msgstr ""
-
 #: .\strava_web\templates\strava_web\frag_race_distance.html:4
 msgid "Select distance"
 msgstr ""
@@ -781,84 +766,90 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:3
+#: .\strava_web\templates\strava_web\group_dashboard.html:4
 #: .\strava_web\templates\strava_web\stats_ranking.html:109
 msgid "Group Dashboard"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:8
+#: .\strava_web\templates\strava_web\group_dashboard.html:9
 msgid "Dashboard"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:14
+#: .\strava_web\templates\strava_web\group_dashboard.html:15
 msgid "Member List"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:19
+#: .\strava_web\templates\strava_web\group_dashboard.html:20
 msgid "Group Info"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_dashboard.html:28
+#: .\strava_web\templates\strava_web\groups.html:25
+#: .\strava_web\templates\strava_web\profiles.html:14
+msgid "Search"
+msgstr ""
+
+#: .\strava_web\templates\strava_web\group_dashboard.html:29
 msgid "Search by username, nick name"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:45
-#: .\strava_web\templates\strava_web\group_manage_members.html:25
+#: .\strava_web\templates\strava_web\group_dashboard.html:46
+#: .\strava_web\templates\strava_web\group_manage_members.html:26
 #: .\strava_web\templates\strava_web\profiles.html:52
 msgid "Username"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:66
+#: .\strava_web\templates\strava_web\group_dashboard.html:68
 #: .\strava_web\templates\strava_web\group_edit.html:23
 #: .\strava_web\utils_group.py:68
 msgid "Group Name"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:78
+#: .\strava_web\templates\strava_web\group_dashboard.html:80
 #: .\strava_web\utils_group.py:69
 msgid "Group Type"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:80
-#: .\strava_web\templates\strava_web\group_membership_edit.html:81
+#: .\strava_web\templates\strava_web\group_dashboard.html:82
+#: .\strava_web\templates\strava_web\group_membership_edit.html:82
 #: .\strava_web\templates\strava_web\groups.html:73
-#: .\strava_web\templates\strava_web\personal_dashboard.html:208
+#: .\strava_web\templates\strava_web\personal_dashboard.html:209
 msgid "Open"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:82
+#: .\strava_web\templates\strava_web\group_dashboard.html:84
 #: .\strava_web\templates\strava_web\groups.html:75
-#: .\strava_web\templates\strava_web\personal_dashboard.html:210
+#: .\strava_web\templates\strava_web\personal_dashboard.html:211
 msgid "Private"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:85
+#: .\strava_web\templates\strava_web\group_dashboard.html:87
 msgid "Total Members"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:86
+#: .\strava_web\templates\strava_web\group_dashboard.html:88
 #: .\strava_web\templates\strava_web\group_edit.html:33
 #: .\strava_web\templates\strava_web\groups.html:56
 msgid "Announcement"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:87
+#: .\strava_web\templates\strava_web\group_dashboard.html:89
 #: .\strava_web\templates\strava_web\group_edit.html:37
 #: .\strava_web\templates\strava_web\groups.html:57
 msgid "Description"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:96
+#: .\strava_web\templates\strava_web\group_dashboard.html:99
 msgid "Stats Ranking"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:97
+#: .\strava_web\templates\strava_web\group_dashboard.html:100
 #: .\strava_web\templates\strava_web\race_ranking.html:3
 #: .\strava_web\templates\strava_web\race_ranking.html:8
 msgid "Race Ranking"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:98
+#: .\strava_web\templates\strava_web\group_dashboard.html:101
 #: .\strava_web\templates\strava_web\personal_dashboard.html:4
 msgid "Your Dashboard"
 msgstr ""
@@ -873,11 +864,11 @@ msgstr ""
 msgid "Is Open"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_edit.html:47
-msgid "Save"
+#: .\strava_web\templates\strava_web\group_edit.html:51
+msgid "Update the group information"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_edit.html:58
+#: .\strava_web\templates\strava_web\group_edit.html:62
 msgid "Type to search"
 msgstr ""
 
@@ -886,51 +877,51 @@ msgid "Join"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\group_leave_form.html:5
-#: .\strava_web\templates\strava_web\group_membership_edit.html:164
+#: .\strava_web\templates\strava_web\group_membership_edit.html:166
 msgid "Leave"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:3
-#: .\strava_web\templates\strava_web\group_manage_members.html:8
+#: .\strava_web\templates\strava_web\group_manage_members.html:4
+#: .\strava_web\templates\strava_web\group_manage_members.html:9
 #: .\strava_web\utils_group.py:71
 msgid "Members"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:13
+#: .\strava_web\templates\strava_web\group_manage_members.html:14
 msgid "Group Memebers"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:28
-#: .\strava_web\templates\strava_web\group_manage_members.html:63
-#: .\strava_web\templates\strava_web\group_membership_edit.html:63
+#: .\strava_web\templates\strava_web\group_manage_members.html:29
+#: .\strava_web\templates\strava_web\group_manage_members.html:64
+#: .\strava_web\templates\strava_web\group_membership_edit.html:64
 msgid "Action"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:41
+#: .\strava_web\templates\strava_web\group_manage_members.html:42
 msgid "Remove member"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:47
+#: .\strava_web\templates\strava_web\group_manage_members.html:48
 msgid "No members."
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:62
+#: .\strava_web\templates\strava_web\group_manage_members.html:63
 msgid "Staus"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:76
-msgid "Approve"
+#: .\strava_web\templates\strava_web\group_manage_members.html:78
+msgid "Approve the the application"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:80
-msgid "Reject"
+#: .\strava_web\templates\strava_web\group_manage_members.html:84
+msgid "Reject the the application"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:86
+#: .\strava_web\templates\strava_web\group_manage_members.html:91
 msgid "No pending request."
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:94
+#: .\strava_web\templates\strava_web\group_manage_members.html:99
 msgid "Go To Groups"
 msgstr ""
 
@@ -979,27 +970,33 @@ msgstr ""
 msgid "Not Member Of"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_membership_edit.html:62
+#: .\strava_web\templates\strava_web\group_membership_edit.html:63
 msgid "Request Status"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_membership_edit.html:83
+#: .\strava_web\templates\strava_web\group_membership_edit.html:84
 msgid "Closed"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_membership_edit.html:128
+#: .\strava_web\templates\strava_web\group_membership_edit.html:129
 msgid "Please apply later."
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_membership_edit.html:145
+#: .\strava_web\templates\strava_web\group_membership_edit.html:139
+#: .\strava_web\templates\strava_web\groups.html:112
+#: .\strava_web\templates\strava_web\personal_dashboard.html:234
+msgid "Go to Group Dashboard"
+msgstr ""
+
+#: .\strava_web\templates\strava_web\group_membership_edit.html:148
 msgid "Nothing found!"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_membership_edit.html:166
+#: .\strava_web\templates\strava_web\group_membership_edit.html:168
 msgid "this group"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\group_membership_edit.html:167
+#: .\strava_web\templates\strava_web\group_membership_edit.html:169
 msgid "Are you sure to leave"
 msgstr ""
 
@@ -1023,7 +1020,7 @@ msgstr ""
 msgid "Manage Group Member"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\groups.html:122
+#: .\strava_web\templates\strava_web\groups.html:124
 msgid "No groups found with a dashboard."
 msgstr ""
 
@@ -1080,12 +1077,15 @@ msgid "register"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\password_reset_form.html:3
-#: .\strava_web\templates\strava_web\password_reset_form.html:34
 msgid "Change Password"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\password_reset_form.html:9
 msgid "Change Your Password"
+msgstr ""
+
+#: .\strava_web\templates\strava_web\password_reset_form.html:35
+msgid "Reset your password"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\personal_dashboard.html:10
@@ -1219,11 +1219,11 @@ msgstr ""
 msgid "Manage Group Memberships"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\personal_dashboard.html:242
+#: .\strava_web\templates\strava_web\personal_dashboard.html:246
 msgid "You are not a member of any groups yet."
 msgstr ""
 
-#: .\strava_web\templates\strava_web\personal_dashboard.html:244
+#: .\strava_web\templates\strava_web\personal_dashboard.html:248
 msgid "Discover Groups"
 msgstr ""
 
@@ -1237,8 +1237,8 @@ msgstr ""
 msgid "Edit Your Profile"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\profile_edit.html:36
-msgid "Update Profile"
+#: .\strava_web\templates\strava_web\profile_edit.html:42
+msgid "Update the profile"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\profile_password_change.html:3
@@ -1255,8 +1255,8 @@ msgstr ""
 msgid "New password confirmation"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\profile_password_change.html:44
-msgid "Set Password"
+#: .\strava_web\templates\strava_web\profile_password_change.html:48
+msgid "Set the new password"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\profiles.html:4
@@ -1358,10 +1358,6 @@ msgstr ""
 msgid "Age Range"
 msgstr ""
 
-#: .\strava_web\templates\strava_web\stats_ranking.html:47
-msgid "Refresh"
-msgstr ""
-
 #: .\strava_web\templates\strava_web\stats_ranking.html:53
 msgid "Your rank"
 msgstr ""
@@ -1419,87 +1415,87 @@ msgstr ""
 msgid "Please correct the errors below."
 msgstr ""
 
-#: .\strava_web\views_activity.py:42
+#: .\strava_web\views_activity.py:41
 msgid "January"
 msgstr ""
 
-#: .\strava_web\views_activity.py:42
+#: .\strava_web\views_activity.py:41
 msgid "February"
 msgstr ""
 
-#: .\strava_web\views_activity.py:42
+#: .\strava_web\views_activity.py:41
 msgid "March"
 msgstr ""
 
-#: .\strava_web\views_activity.py:42
+#: .\strava_web\views_activity.py:41
 msgid "April"
 msgstr ""
 
-#: .\strava_web\views_activity.py:43
+#: .\strava_web\views_activity.py:42
 msgid "May"
 msgstr ""
 
-#: .\strava_web\views_activity.py:43
+#: .\strava_web\views_activity.py:42
 msgid "June"
 msgstr ""
 
-#: .\strava_web\views_activity.py:43
+#: .\strava_web\views_activity.py:42
 msgid "July"
 msgstr ""
 
-#: .\strava_web\views_activity.py:43
+#: .\strava_web\views_activity.py:42
 msgid "August"
 msgstr ""
 
-#: .\strava_web\views_activity.py:44
+#: .\strava_web\views_activity.py:43
 msgid "September"
 msgstr ""
 
-#: .\strava_web\views_activity.py:44
+#: .\strava_web\views_activity.py:43
 msgid "October"
 msgstr ""
 
-#: .\strava_web\views_activity.py:44
+#: .\strava_web\views_activity.py:43
 msgid "November"
 msgstr ""
 
-#: .\strava_web\views_activity.py:44
+#: .\strava_web\views_activity.py:43
 msgid "December"
 msgstr ""
 
-#: .\strava_web\views_activity.py:116
+#: .\strava_web\views_activity.py:115
 msgid "Distance (km)"
 msgstr ""
 
-#: .\strava_web\views_activity.py:116
+#: .\strava_web\views_activity.py:115
 msgid "Distance (mile)"
 msgstr ""
 
-#: .\strava_web\views_activity.py:118
+#: .\strava_web\views_activity.py:117
 msgid "Elevation Gain (m)"
 msgstr ""
 
-#: .\strava_web\views_activity.py:118
+#: .\strava_web\views_activity.py:117
 msgid "Elevation Gain (feet)"
 msgstr ""
 
-#: .\strava_web\views_activity.py:119
+#: .\strava_web\views_activity.py:118
 msgid "Avg. Pace (min/km)"
 msgstr ""
 
-#: .\strava_web\views_activity.py:119
+#: .\strava_web\views_activity.py:118
 msgid "Avg. Pace (min/mile)"
 msgstr ""
 
-#: .\strava_web\views_activity.py:120
+#: .\strava_web\views_activity.py:119
 msgid "Avg. HR"
 msgstr ""
 
-#: .\strava_web\views_activity.py:121
+#: .\strava_web\views_activity.py:120
 msgid "Ave. Cadence"
 msgstr ""
 
-#: .\strava_web\views_activity.py:166
+#: .\strava_web\views_activity.py:165
 msgid "Activity updated successfully!"
 msgstr ""
 

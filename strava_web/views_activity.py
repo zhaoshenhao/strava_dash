@@ -105,7 +105,7 @@ def activities(request, user_id=None):
         user_activities = user_activities.order_by(selected_sort_by)
 
     # --- Pagination Logic ---
-    paginator = Paginator(user_activities, 20)  # 每页显示 20 条活动
+    paginator = Paginator(user_activities, 10)  # 每页显示 10 条活动
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     

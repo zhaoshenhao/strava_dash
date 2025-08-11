@@ -159,6 +159,8 @@
         {% endblock %}
     </div>
     <script>
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
         // Initialize all toasts
         document.addEventListener('DOMContentLoaded', function() {
             const toastElList = [].slice.call(document.querySelectorAll('.toast'))

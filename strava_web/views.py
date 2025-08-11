@@ -106,7 +106,7 @@ def profiles(request):
             profiles_list_qs = profiles_list_qs.order_by(sort_by)
 
     # --- 分页逻辑 ---
-    paginator = Paginator(profiles_list_qs, 20) # 每页显示 20 个档案
+    paginator = Paginator(profiles_list_qs, 10) # 每页显示 10 个档案
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

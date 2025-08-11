@@ -72,7 +72,7 @@
                             <a href="{% url 'races' user_id %}" class="btn btn-secondary"><i class="bi bi-x-lg"></i></a>
                         {% endif %}
                     {% endif %}
-                    <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
                     {% if is_race_page %}
                         <a href="{% url 'activities' user_id %}" class="btn btn-primary">{% trans "Go To Your Activities" %}</a>
                     {% endif %}
@@ -178,13 +178,13 @@
                                     data-activity-is-race="{{ activity.is_race|lower }}"
                                     data-activity-chip-time="{{ activity.chip_time|default:activity.elapsed_time }}"
                                     data-activity-race-distance="{{ activity.race_distance|default:'' }}">
-                                <i class="bi bi-vector-pen"></i>
+                                <i class="bi bi-vector-pen" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Modify this activity' %}"></i>
                             </button>
                         </td>
                         <td>
                             {% if activity.strava_id %}
                                 <a href="https://www.strava.com/activities/{{ activity.strava_id }}" target="_blank" class="btn btn-sm btn-info">
-                                    <i class="bi bi-link-45deg"></i>
+                                    <i class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Go to the activity page in Strava' %}"></i>
                                 </a>
                             {% else %}
                                 -
@@ -246,9 +246,13 @@
                     <div class="mb-3">
                         {% include "strava_web/frag_race_distance.html" %}
                     </div>
-                    <div class="modal-footer d-flex justify-content-end">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
-                        <button type="submit" class="btn btn-primary" id="saveActivityChangesBtn">{% trans "Update" %}</button>
+                    <div class="d-flex justify-content-center mt-4 input-group">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-lg" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Cancel the change' %}"></i>
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="saveActivityChangesBtn">
+                            <i class="bi bi-floppy" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Save the change' %}"></i>
+                        </button>
                     </div>
                 </form>
             </div>

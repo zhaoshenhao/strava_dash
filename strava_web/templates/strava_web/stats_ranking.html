@@ -44,7 +44,7 @@
                     {% if not period == 'weekly' or not gender == 'all' or not age == 'all' or not rank_type == 'distance' %}
                         <a href="{% url 'stats_ranking' group_id=group.id %}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
                     {% endif %}
-                    <button type="submit" class="btn btn-primary me-2">{% trans "Refresh" %}</button>
+                    <button type="submit" class="btn btn-primary me-2"><i class="bi bi-arrow-repeat"></i></button>
                 </div>
             </form>
             <div class="ranking-info mb-3">
