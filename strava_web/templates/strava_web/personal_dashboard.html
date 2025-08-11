@@ -198,6 +198,7 @@
         </div>
         <div class="card-body">
             {% if user_groups %}
+            <div class="table-responsive">
                 <table class="table table-striped table-hover mb-0">
                     <tbody>
                     {% for group in user_groups %}
@@ -238,6 +239,7 @@
                     {% endfor %}
                     </tbody>
                 </table>
+            </div>
             {% else %}
                 <p class="alert alert-secondary">{% trans "You are not a member of any groups yet." %}</p>
                 <p class="text-center">
