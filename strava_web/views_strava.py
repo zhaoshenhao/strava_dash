@@ -124,11 +124,11 @@ def strava_callback(request):
         if authenticated_user:
             login(request, authenticated_user)
             if created:
-                messages.success(request, f"Welcome to Strava Dash，{user.get_full_name() or user.username}！Please complete your registration.")
-                messages.success(request, _("Welcome to Strava Dash, %(username)s! Please complete your registration.") % {'username': user.get_full_name() or user.username})
+                messages.success(request, f"Welcome to Strava Dash，{user.first_name or user.username}！Please complete your registration.")
+                messages.success(request, _("Welcome to Strava Dash, %(username)s! Please complete your registration.") % {'username': user.first_name or user.username})
                 return HttpResponseRedirect(reverse('register')) # 新用户跳转到完善信息页
             else:
-                messages.success(request, _("Welcome back, %(username)s!") % {'username': user.get_full_name() or user.username})
+                messages.success(request, _("Welcome back, %(username)s!") % {'username': user.first_name or user.username})
                 return HttpResponseRedirect(reverse('personal_dashboard')) # 登录成功重定向
         else:
             messages.error(request, _("Strava login failed, please try again."))

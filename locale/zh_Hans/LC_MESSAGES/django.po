@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-10 14:54-0400\n"
+"POT-Creation-Date: 2025-08-10 20:28-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,58 +17,58 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: .\strava_web\forms.py:13 .\strava_web\templates\strava_web\base.html:60
+#: .\strava_web\forms.py:12 .\strava_web\templates\strava_web\base.html:60
 msgid "Password"
 msgstr "密码"
 
-#: .\strava_web\forms.py:14
+#: .\strava_web\forms.py:13
 msgid "Confirm Password"
 msgstr "确认密码"
 
-#: .\strava_web\forms.py:23
+#: .\strava_web\forms.py:22
 msgid ""
 "This email address has been registered. Please use another email address."
 msgstr "此电子邮件地址已被注册。请使用其他电子邮件地址。"
 
-#: .\strava_web\forms.py:32
+#: .\strava_web\forms.py:31
 msgid "Password mismatched"
 msgstr "密码不匹配"
 
-#: .\strava_web\forms.py:74
+#: .\strava_web\forms.py:73
 msgid "Please choose the group."
 msgstr "请选择群组。"
 
-#: .\strava_web\forms.py:102
+#: .\strava_web\forms.py:101
 msgid "Is this a Race?"
 msgstr "这是一次比赛吗？"
 
-#: .\strava_web\forms.py:103
+#: .\strava_web\forms.py:102
 #: .\strava_web\templates\strava_web\activities.html:141
 #: .\strava_web\templates\strava_web\activities.html:238
 #: .\strava_web\templates\strava_web\activities.html:402
-#: .\strava_web\views_activity.py:117
+#: .\strava_web\views_activity.py:116
 msgid "Chip Time"
 msgstr "官方时间"
 
-#: .\strava_web\forms.py:104 .\strava_web\models.py:244
+#: .\strava_web\forms.py:103 .\strava_web\models.py:244
 #: .\strava_web\templates\strava_web\frag_race_distance.html:2
-#: .\strava_web\views_activity.py:125
+#: .\strava_web\views_activity.py:124
 msgid "Race Distance"
 msgstr "比赛距离"
 
-#: .\strava_web\forms.py:105 .\strava_web\models.py:198
+#: .\strava_web\forms.py:104 .\strava_web\models.py:198
 #: .\strava_web\templates\strava_web\activities.html:221
-#: .\strava_web\views_activity.py:115
+#: .\strava_web\views_activity.py:114
 msgid "Activity Name"
 msgstr "活动名称"
 
-#: .\strava_web\forms.py:108
+#: .\strava_web\forms.py:107
 msgid ""
 "Your official race finish time in seconds. Leave blank or 0 to use Elapsed "
 "Time."
 msgstr "您的官方比赛完成时间（秒）。留空或输入 0 则使用“已用时间”。"
 
-#: .\strava_web\forms.py:109
+#: .\strava_web\forms.py:108
 msgid "Official distance of the race."
 msgstr "比赛的官方距离。"
 
@@ -436,7 +436,7 @@ msgstr "有心率数据"
 msgid "Has Power Data"
 msgstr "有功率数据"
 
-#: .\strava_web\models.py:223 .\strava_web\views_activity.py:128
+#: .\strava_web\models.py:223 .\strava_web\views_activity.py:127
 msgid "Is Race"
 msgstr "是比赛"
 
@@ -640,7 +640,7 @@ msgstr "Strava 数据"
 #: .\strava_web\templates\strava_web\personal_dashboard.html:74
 #: .\strava_web\templates\strava_web\personal_dashboard.html:107
 #: .\strava_web\templates\strava_web\personal_dashboard.html:132
-#: .\strava_web\views_activity.py:117
+#: .\strava_web\views_activity.py:116
 msgid "Elapsed Time"
 msgstr "消耗时间"
 
@@ -653,7 +653,7 @@ msgid "Edit Activity"
 msgstr "编辑活动"
 
 #: .\strava_web\templates\strava_web\activities.html:217
-#: .\strava_web\views_activity.py:114
+#: .\strava_web\views_activity.py:113
 msgid "Date"
 msgstr "日期"
 
@@ -1424,87 +1424,87 @@ msgstr "请更正表格中的错误。"
 msgid "Please correct the errors below."
 msgstr "请更正的错误。"
 
-#: .\strava_web\views_activity.py:42
+#: .\strava_web\views_activity.py:41
 msgid "January"
 msgstr "一月"
 
-#: .\strava_web\views_activity.py:42
+#: .\strava_web\views_activity.py:41
 msgid "February"
 msgstr "二月"
 
-#: .\strava_web\views_activity.py:42
+#: .\strava_web\views_activity.py:41
 msgid "March"
 msgstr "三月"
 
-#: .\strava_web\views_activity.py:42
+#: .\strava_web\views_activity.py:41
 msgid "April"
 msgstr "四月"
 
-#: .\strava_web\views_activity.py:43
+#: .\strava_web\views_activity.py:42
 msgid "May"
 msgstr "五月"
 
-#: .\strava_web\views_activity.py:43
+#: .\strava_web\views_activity.py:42
 msgid "June"
 msgstr "六月"
 
-#: .\strava_web\views_activity.py:43
+#: .\strava_web\views_activity.py:42
 msgid "July"
 msgstr "七月"
 
-#: .\strava_web\views_activity.py:43
+#: .\strava_web\views_activity.py:42
 msgid "August"
 msgstr "八月"
 
-#: .\strava_web\views_activity.py:44
+#: .\strava_web\views_activity.py:43
 msgid "September"
 msgstr "九月"
 
-#: .\strava_web\views_activity.py:44
+#: .\strava_web\views_activity.py:43
 msgid "October"
 msgstr "十月"
 
-#: .\strava_web\views_activity.py:44
+#: .\strava_web\views_activity.py:43
 msgid "November"
 msgstr "十一月"
 
-#: .\strava_web\views_activity.py:44
+#: .\strava_web\views_activity.py:43
 msgid "December"
 msgstr "十二月"
 
-#: .\strava_web\views_activity.py:116
+#: .\strava_web\views_activity.py:115
 msgid "Distance (km)"
 msgstr "距离 (公里)"
 
-#: .\strava_web\views_activity.py:116
+#: .\strava_web\views_activity.py:115
 msgid "Distance (mile)"
 msgstr "距离 (英里)"
 
-#: .\strava_web\views_activity.py:118
+#: .\strava_web\views_activity.py:117
 msgid "Elevation Gain (m)"
 msgstr "海拔增益 (米)"
 
-#: .\strava_web\views_activity.py:118
+#: .\strava_web\views_activity.py:117
 msgid "Elevation Gain (feet)"
 msgstr "海拔增益 (英尺)"
 
-#: .\strava_web\views_activity.py:119
+#: .\strava_web\views_activity.py:118
 msgid "Avg. Pace (min/km)"
 msgstr "平均配速 (分/公里)"
 
-#: .\strava_web\views_activity.py:119
+#: .\strava_web\views_activity.py:118
 msgid "Avg. Pace (min/mile)"
 msgstr "平均配速 (分/英里)"
 
-#: .\strava_web\views_activity.py:120
+#: .\strava_web\views_activity.py:119
 msgid "Avg. HR"
 msgstr "平均心跳"
 
-#: .\strava_web\views_activity.py:121
+#: .\strava_web\views_activity.py:120
 msgid "Ave. Cadence"
 msgstr "平均步频"
 
-#: .\strava_web\views_activity.py:166
+#: .\strava_web\views_activity.py:165
 msgid "Activity updated successfully!"
 msgstr "活动更新成功！"
 
