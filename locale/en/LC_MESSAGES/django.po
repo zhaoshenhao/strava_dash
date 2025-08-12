@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-12 13:38-0400\n"
+"POT-Creation-Date: 2025-08-12 16:05-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -274,8 +274,8 @@ msgstr ""
 msgid "Can view Strava reports"
 msgstr ""
 
-#: .\strava_web\models.py:139
-msgid "Allow Free Join"
+#: .\strava_web\models.py:139 .\strava_web\templatetags\url_tags.py:95
+msgid "Allow Free Joining"
 msgstr ""
 
 #: .\strava_web\models.py:140
@@ -1387,8 +1387,12 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: .\strava_web\templatetags\url_tags.py:97
+#: .\strava_web\templatetags\url_tags.py:98
 msgid "Private"
+msgstr ""
+
+#: .\strava_web\templatetags\url_tags.py:99
+msgid "Apply to join"
 msgstr ""
 
 #: .\strava_web\utils_group.py:74

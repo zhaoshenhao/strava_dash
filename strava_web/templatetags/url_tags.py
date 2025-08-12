@@ -92,7 +92,9 @@ def yes_no(val, second):
 def group_type(val, second):
     if val:
         v = _('Open')
-        return mark_safe(f'<span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Join free">{v}</span>')
+        v2 = _('Allow Free Joining')
+        return mark_safe(f'<span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="top" title="{v2}">{v}</span>')
     else:
         v = _('Private')
-        return mark_safe(f'<span class="badge bg-{second}" data-bs-toggle="tooltip" data-bs-placement="top" title="Apply to join">{v}</span>')
+        v2 = _('Apply to join')
+        return mark_safe(f'<span class="badge bg-{second}" data-bs-toggle="tooltip" data-bs-placement="top" title="{v2}">{v}</span>')

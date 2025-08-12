@@ -136,7 +136,7 @@ class CustomUser(AbstractUser):
         return self.strava_access_token
 
 # 扩展 Django Group 模型，添加组类型字段
-Group.add_to_class('is_open', models.BooleanField(default=True, verbose_name=_("Allow Free Join"),
+Group.add_to_class('is_open', models.BooleanField(default=True, verbose_name=_("Allow Free Joining"),
                                                 help_text=_("If checked, users can freely join this group.")))
 Group.add_to_class('has_dashboard', models.BooleanField(default=True, verbose_name=_("Has Dashboard"),
                                                         help_text=_("If checked, this group has a dedicated data dashboard.")))
