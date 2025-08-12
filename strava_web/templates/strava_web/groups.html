@@ -22,7 +22,7 @@
                     {% if search_query or group_type_filter or is_member_filter %}
                         <a href="{% url 'groups' %}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
                     {% endif %}
-                    <button class="btn btn-primary" type="submit">{% trans "Search" %}</button>
+                    <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
                 </div>
             </form>
 
@@ -68,13 +68,7 @@
                         {% for group in page_obj.object_list %}
                         <tr>
                             <td>{{ group.name }}</td>
-                            <td>
-                                {% if group.is_open %}
-                                    <span class="badge bg-success">{% trans "Open" %}</span>
-                                {% else %}
-                                    <span class="badge bg-danger">{% trans "Private" %}</span>
-                                {% endif %}
-                            </td>
+                            <td>{{ group.is_open|group_type:'secondary' }}</td>
                             <td>
                                 {% if group.admin %}
                                     {% if group.admin.first_name %}
@@ -89,7 +83,7 @@
                             <td>{{ group.member_count }}</td>
                             <td>{{ group.request_count }}</td>
                             <td>
-                                <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.announcement }}"></i>
+                                <i class="bi bi-megaphone" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.announcement }}"></i>
                             </td>
                             <td>
                                 <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.description }}"></i>

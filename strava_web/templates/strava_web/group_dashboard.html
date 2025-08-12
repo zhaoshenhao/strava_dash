@@ -78,11 +78,7 @@
                                     {% endif %}
                                 </td></tr>
                                 <tr><td class="fixed-col-width"><strong>{% trans "Group Type" %}</strong></td><td>
-                                    {% if group.is_open %}
-                                        <span class="badge bg-success">{% trans "Open" %}</span>
-                                    {% else %}
-                                        <span class="badge bg-danger">{% trans "Private" %}</span>
-                                    {% endif %}
+                                    {{ group.is_open|group_type:'secondary' }}
                                 </td></tr>
                                 <tr><td class="fixed-col-width"><strong>{% trans "Total Members" %}</strong></td><td>{{ members_count }}</td></tr>
                                 <tr><td class="fixed-col-width"><strong>{% trans "Announcement" %}</strong></td><td>{{ group.announcement }}</td></tr>

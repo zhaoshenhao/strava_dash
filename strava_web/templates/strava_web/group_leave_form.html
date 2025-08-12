@@ -2,6 +2,6 @@
 <form action="{% url 'leave_group' group.id %}" method="post" style="display:inline;">
     {% csrf_token %}
     <button type="submit" class="btn btn-sm btn-danger">
-        {% trans "Leave" %}
+        <i class="bi bi-box-arrow-right" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Leave the group' %}"></i>
     </button>
 </form>

@@ -37,10 +37,14 @@
                                     <td>{{ member.first_name }}</td>
                                     <td>{{ member.gender|gender }}</td>
                                     <td>
+                                        {% if group.admin == member %}
+                                            <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Group admin cannot be removed' %}"></i>
+                                        {% else %}
                                         <form action="{% url 'remove_from_group' group.id %}" method="post" style="display:inline;">
                                             {% csrf_token %}
                                             <button type="submit" name="user_id" value="{{ member.id }}" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Remove member' %}"><i class="bi bi-person-dash"></i></button>
                                         </form>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -70,18 +74,20 @@
                                 <tr>
                                     <td>{{ application.user.username }}</td>
                                     <td>{{ application.applied_at|date:"Y-m-d H:i" }}</td>
-                                    <td>{{ application.get_status_display }}</td>
+                                    <td>
+                                        {% include "strava_web/frag_application_status2.html" %}
+                                    </td>
                                     <td>
                                         <form action="{% url 'review_group_application' application.id %}" method="post" style="display:inline;">
                                             {% csrf_token %}
                                             <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">
-                                                <i class="bi bi-check-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Approve the the application' %}"></i>
+                                                <i class="bi bi-file-check" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Approve the the application' %}"></i>
                                             </button>
                                         </form>
                                         <form action="{% url 'review_group_application' application.id %}" method="post" style="display:inline; margin-left: 5px;">
                                             {% csrf_token %}
                                             <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">
-                                                <i class="bi bi-x-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Reject the the application' %}"></i>
+                                                <i class="bi bi-file-earmark-excel" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Reject the the application' %}"></i>
                                             </button>
                                         </form>
                                     </td>

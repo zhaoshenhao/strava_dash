@@ -1,6 +1,7 @@
 from django import template
 from strava_web.utils import convert_seconds_to_dhms, calculate_pace, speed_pace
 from django.utils.translation import gettext_lazy as _
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -79,11 +80,19 @@ def gender(gender):
     return '-'
 
 @register.filter
-def app_status(val):
-    if val == 'pending':
-        return _('Pending')
-    if val == 'approved':
-        return _('Approved')
-    if val == 'rejected':
-        return _('Rejected')
-    return '-'
+def yes_no(val, second):
+    if val:
+        v = _('Yes')
+        return mark_safe(f'<span class="badge bg-success">{v}</span>')
+    else:
+        v = _('No')
+        return mark_safe(f'<span class="badge bg-{second}">{v}</span>')
+
+@register.filter
+def group_type(val, second):
+    if val:
+        v = _('Open')
+        return mark_safe(f'<span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Join free">{v}</span>')
+    else:
+        v = _('Private')
+        return mark_safe(f'<span class="badge bg-{second}" data-bs-toggle="tooltip" data-bs-placement="top" title="Apply to join">{v}</span>')

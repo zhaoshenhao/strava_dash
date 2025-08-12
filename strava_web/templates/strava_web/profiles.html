@@ -67,9 +67,9 @@
                         {% for profile in page_obj %}
                         <tr>
                             <td>{{ profile.username }}</td>
-                            <td><span class="badge bg-{% if profile.is_superuser %}success{% else %}secondary{% endif %}">{% if profile.is_superuser %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</span></td>
-                            <td><span class="badge bg-{% if profile.is_staff %}success{% else %}secondary{% endif %}">{% if profile.is_staff %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</span></td>
-                            <td><span class="badge bg-{% if profile.is_active %}success{% else %}danger{% endif %}">{% if profile.is_active %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</span></td>
+                            <td>{{ profile.is_superuser|yes_no:'secondary' }}</td>
+                            <td>{{ profile.is_staff|yes_no:'secondary' }}</td>
+                            <td>{{ profile.is_active|yes_no:'danger' }}</td>
                             <td>{{ profile.first_name }}</td>
                             <td>{{ profile.email }}</td>
                             <td>{{ profile.birth_year|default:"-" }}</td>

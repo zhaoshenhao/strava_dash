@@ -120,6 +120,9 @@ def remove_from_group(request, group_id):
     group = get_object_or_404(Group, id=group_id)
     user_id = request.POST.get('user_id')
     user = get_object_or_404(User, id=user_id)
+    if group.admin == user:
+        messages.error(request, _("You can't remove the admin user %(uname)s from group %(gname)s.") % {'uname': user.username, 'gname': group.name})
+        return redirect('group_manage_members', group_id=group.id)
     if group.admin != request.user and not request.user.is_superuser:
         messages.error(request, _("You do not have permission to remove user from group: %(gname)s") % {'gname': group.name})
         return redirect('group_manage_members', group_id=group.id)
@@ -180,7 +183,8 @@ def group_edit(request, group_id):
 def group_manage_members(request, group_id):
     group = get_object_or_404(Group, id=group_id)
     next_url = get_next_url(request, 'groups')
-    if group.admin != request.user and not request.user.is_superuser:
+    is_group_admin = ( group.admin == request.user )
+    if not is_group_admin and not request.user.is_superuser:
         messages.error(request, _("You do not have permission to manage this group."))
         return redirect('group_dashboard', group_id=group.id)
     # 获取所有群组成员
@@ -191,7 +195,7 @@ def group_manage_members(request, group_id):
         'group': group,
         'group_members': group_members,
         'pending_applications': pending_applications, # 传递待处理申请
-        'is_group_admin': True,
+        'is_group_admin': is_group_admin,
         'next_url': next_url,
     }
     return render(request, 'strava_web/group_manage_members.html', context)

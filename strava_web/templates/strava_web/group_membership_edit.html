@@ -77,13 +77,7 @@
                                     {{ group.name }}
                                 {% endif %}
                             </td>
-                            <td>
-                                {% if group.is_open %}
-                                    <span class="badge bg-primary">{% trans "Open" %}</span>
-                                {% else %}
-                                    <span class="badge bg-dark">{% trans "Closed" %}</span>
-                                {% endif %}
-                            </td>
+                            <td>{{ group.is_open|group_type:'secondary' }}</td>
                             <td>
                                 {% if group.admin %}
                                     {% if group.admin.first_name %}
@@ -96,20 +90,10 @@
                                 {% endif %}
                             </td>
                             <td>{{ group.member_count }}</td>
-                            <td>
-                                {% if group.is_member %}
-                                    <span class="badge bg-success">{% trans "Yes" %}</span>
-                                {% else %}
-                                    <span class="badge bg-secondary">{% trans "No" %}</span>
-                                {% endif %}
-                            </td>
+                            <td>{{ group.is_member|yes_no:'secondary' }}</td>
                             <td>
                                 {% if not group.is_open and not group.is_member and group.last_application_status %}
-                                    {% if group.last_application_status == 'rejected' %}
-                                        <span class="badge bg-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.last_application_reviewed_at }}">{{ group.last_application_status|app_status }}</span>
-                                    {% else %}
-                                        <span class="badge bg-info">{{ group.last_application_status|app_status }}</span>
-                                    {% endif %}
+                                    {% include "strava_web/frag_application_status.html" %}
                                 {% else %}
                                     -
                                 {% endif %}

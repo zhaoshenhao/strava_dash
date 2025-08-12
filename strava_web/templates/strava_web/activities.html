@@ -160,11 +160,7 @@
                         <td>{{ activity.average_cadence|div:0.5|floatformat:0|default_if_none:"-" }}</td>
                         {% if not is_race_page %}
                             <td class="activity-is-race" data-is-race="{{ activity.is_race|lower }}">
-                                {% if activity.is_race %}
-                                    <span class="badge bg-success">{% trans "Yes" %}</span>
-                                {% else %}
-                                    <span class="badge bg-warning text-dark">{% trans "No" %}</span>
-                                {% endif %}
+                                {{ activity.is_race|yes_no:'warning text-dark' }}
                             </td>
                         {% endif %}
                         <td>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 18:19-0400\n"
+"POT-Creation-Date: 2025-08-12 13:38-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,8 +44,8 @@ msgstr "这是一次比赛吗？"
 
 #: .\strava_web\forms.py:102
 #: .\strava_web\templates\strava_web\activities.html:141
-#: .\strava_web\templates\strava_web\activities.html:238
-#: .\strava_web\templates\strava_web\activities.html:406
+#: .\strava_web\templates\strava_web\activities.html:234
+#: .\strava_web\templates\strava_web\activities.html:402
 #: .\strava_web\views_activity.py:116
 msgid "Chip Time"
 msgstr "官方时间"
@@ -57,7 +57,7 @@ msgid "Race Distance"
 msgstr "比赛距离"
 
 #: .\strava_web\forms.py:104 .\strava_web\models.py:198
-#: .\strava_web\templates\strava_web\activities.html:221
+#: .\strava_web\templates\strava_web\activities.html:217
 #: .\strava_web\views_activity.py:114
 msgid "Activity Name"
 msgstr "活动名称"
@@ -228,12 +228,12 @@ msgid "Birth Year"
 msgstr "出生年份"
 
 #: .\strava_web\models.py:78 .\strava_web\templates\strava_web\profiles.html:37
-#: .\strava_web\templatetags\url_tags.py:76 .\strava_web\views_rank.py:40
+#: .\strava_web\templatetags\url_tags.py:77 .\strava_web\views_rank.py:40
 msgid "Male"
 msgstr "男"
 
 #: .\strava_web\models.py:79 .\strava_web\templates\strava_web\profiles.html:38
-#: .\strava_web\templatetags\url_tags.py:78 .\strava_web\views_rank.py:40
+#: .\strava_web\templatetags\url_tags.py:79 .\strava_web\views_rank.py:40
 msgid "Female"
 msgstr "女"
 
@@ -318,20 +318,19 @@ msgstr "群组公告。最长1000个字符。"
 
 #: .\strava_web\models.py:172
 #: .\strava_web\templates\strava_web\group_manage_members.html:17
-#: .\strava_web\templatetags\url_tags.py:84
 msgid "Pending"
 msgstr "待处理"
 
-#: .\strava_web\models.py:173 .\strava_web\templatetags\url_tags.py:86
+#: .\strava_web\models.py:173
 msgid "Approved"
 msgstr "已批准"
 
-#: .\strava_web\models.py:174 .\strava_web\templatetags\url_tags.py:88
+#: .\strava_web\models.py:174
 msgid "Rejected"
 msgstr "已拒绝"
 
 #: .\strava_web\models.py:177
-#: .\strava_web\templates\strava_web\group_manage_members.html:61
+#: .\strava_web\templates\strava_web\group_manage_members.html:65
 msgid "Requestor"
 msgstr "申请人"
 
@@ -344,7 +343,7 @@ msgid "Status"
 msgstr "状态"
 
 #: .\strava_web\models.py:180
-#: .\strava_web\templates\strava_web\group_manage_members.html:62
+#: .\strava_web\templates\strava_web\group_manage_members.html:66
 msgid "Applied At"
 msgstr "申请时间"
 
@@ -577,37 +576,27 @@ msgstr "搜索活动名称"
 
 #: .\strava_web\templates\strava_web\activities.html:61
 #: .\strava_web\templates\strava_web\activities.html:63
-#: .\strava_web\templates\strava_web\activities.html:235
+#: .\strava_web\templates\strava_web\activities.html:231
 msgid "Is Race?"
 msgstr "是比赛?"
 
 #: .\strava_web\templates\strava_web\activities.html:64
-#: .\strava_web\templates\strava_web\activities.html:164
-#: .\strava_web\templates\strava_web\activities.html:395
+#: .\strava_web\templates\strava_web\activities.html:391
 #: .\strava_web\templates\strava_web\group_edit.html:41
-#: .\strava_web\templates\strava_web\group_membership_edit.html:101
-#: .\strava_web\templates\strava_web\personal_dashboard.html:177
 #: .\strava_web\templates\strava_web\profiles.html:19
 #: .\strava_web\templates\strava_web\profiles.html:25
 #: .\strava_web\templates\strava_web\profiles.html:31
-#: .\strava_web\templates\strava_web\profiles.html:70
-#: .\strava_web\templates\strava_web\profiles.html:71
-#: .\strava_web\templates\strava_web\profiles.html:72
+#: .\strava_web\templatetags\url_tags.py:85
 msgid "Yes"
 msgstr "是"
 
 #: .\strava_web\templates\strava_web\activities.html:65
-#: .\strava_web\templates\strava_web\activities.html:166
-#: .\strava_web\templates\strava_web\activities.html:395
+#: .\strava_web\templates\strava_web\activities.html:391
 #: .\strava_web\templates\strava_web\group_edit.html:41
-#: .\strava_web\templates\strava_web\group_membership_edit.html:103
-#: .\strava_web\templates\strava_web\personal_dashboard.html:179
 #: .\strava_web\templates\strava_web\profiles.html:20
 #: .\strava_web\templates\strava_web\profiles.html:26
 #: .\strava_web\templates\strava_web\profiles.html:32
-#: .\strava_web\templates\strava_web\profiles.html:70
-#: .\strava_web\templates\strava_web\profiles.html:71
-#: .\strava_web\templates\strava_web\profiles.html:72
+#: .\strava_web\templatetags\url_tags.py:88
 msgid "No"
 msgstr "否"
 
@@ -624,7 +613,7 @@ msgid "View on Strava"
 msgstr "Strava 数据"
 
 #: .\strava_web\templates\strava_web\activities.html:137
-#: .\strava_web\templates\strava_web\activities.html:229
+#: .\strava_web\templates\strava_web\activities.html:225
 #: .\strava_web\templates\strava_web\personal_dashboard.html:41
 #: .\strava_web\templates\strava_web\personal_dashboard.html:74
 #: .\strava_web\templates\strava_web\personal_dashboard.html:107
@@ -633,28 +622,28 @@ msgstr "Strava 数据"
 msgid "Elapsed Time"
 msgstr "消耗时间"
 
-#: .\strava_web\templates\strava_web\activities.html:181
+#: .\strava_web\templates\strava_web\activities.html:177
 msgid "Modify this activity"
 msgstr "修改活动数据"
 
-#: .\strava_web\templates\strava_web\activities.html:187
+#: .\strava_web\templates\strava_web\activities.html:183
 msgid "Go to the activity page in Strava"
 msgstr "直接从 Strava 查看该活动"
 
-#: .\strava_web\templates\strava_web\activities.html:201
+#: .\strava_web\templates\strava_web\activities.html:197
 msgid "No activities found matching your criteria."
 msgstr "未找到符合您条件的活动。"
 
-#: .\strava_web\templates\strava_web\activities.html:209
+#: .\strava_web\templates\strava_web\activities.html:205
 msgid "Edit Activity"
 msgstr "编辑活动"
 
-#: .\strava_web\templates\strava_web\activities.html:217
+#: .\strava_web\templates\strava_web\activities.html:213
 #: .\strava_web\views_activity.py:113
 msgid "Date"
 msgstr "日期"
 
-#: .\strava_web\templates\strava_web\activities.html:225
+#: .\strava_web\templates\strava_web\activities.html:221
 #: .\strava_web\templates\strava_web\frag_search_distance_range.html:2
 #: .\strava_web\templates\strava_web\personal_dashboard.html:33
 #: .\strava_web\templates\strava_web\personal_dashboard.html:66
@@ -665,30 +654,30 @@ msgstr "日期"
 msgid "Distance"
 msgstr "距离"
 
-#: .\strava_web\templates\strava_web\activities.html:240
+#: .\strava_web\templates\strava_web\activities.html:236
 msgid "Enter time in HH:MM:SS (e.g., 01:05:30) or MM:SS (e.g., 05:30) format."
 msgstr "输入格式：HH:MM:SS (比如 01:05:30) 或 MM:SS (比如 05:30)"
 
-#: .\strava_web\templates\strava_web\activities.html:243
+#: .\strava_web\templates\strava_web\activities.html:239
 msgid "Invalid time format. Please use HH:MM:SS or MM:SS."
 msgstr "错误的时间格式。请使用格式 HH:MM:SS 或 MM:SS。"
 
-#: .\strava_web\templates\strava_web\activities.html:251
+#: .\strava_web\templates\strava_web\activities.html:247
 #: .\strava_web\templates\strava_web\group_edit.html:48
 #: .\strava_web\templates\strava_web\profile_edit.html:38
 #: .\strava_web\templates\strava_web\profile_password_change.html:45
 msgid "Cancel the change"
 msgstr "取消修改内容"
 
-#: .\strava_web\templates\strava_web\activities.html:254
+#: .\strava_web\templates\strava_web\activities.html:250
 msgid "Save the change"
 msgstr "保存修改内容"
 
-#: .\strava_web\templates\strava_web\activities.html:418
+#: .\strava_web\templates\strava_web\activities.html:414
 msgid "An error occurred."
 msgstr "发生错误。"
 
-#: .\strava_web\templates\strava_web\activities.html:427
+#: .\strava_web\templates\strava_web\activities.html:423
 msgid "Network error or unexpected response."
 msgstr "网络错误或未能处理的返回信息。"
 
@@ -713,7 +702,7 @@ msgid "Stats"
 msgstr "统计数据"
 
 #: .\strava_web\templates\strava_web\base.html:51
-#: .\strava_web\templates\strava_web\personal_dashboard.html:197
+#: .\strava_web\templates\strava_web\personal_dashboard.html:194
 msgid "Your Groups"
 msgstr "您的群组"
 
@@ -753,6 +742,21 @@ msgstr "Strava 登录/注册"
 msgid "Login"
 msgstr "登录"
 
+#: .\strava_web\templates\strava_web\frag_application_status.html:3
+#: .\strava_web\templates\strava_web\frag_application_status2.html:3
+msgid "Rejected at"
+msgstr "拒绝时间"
+
+#: .\strava_web\templates\strava_web\frag_application_status.html:7
+#: .\strava_web\templates\strava_web\frag_application_status2.html:7
+msgid "Pending. Applied at"
+msgstr "待审批。申请时间"
+
+#: .\strava_web\templates\strava_web\frag_application_status.html:11
+#: .\strava_web\templates\strava_web\frag_application_status2.html:11
+msgid "Approved at"
+msgstr "批准时间"
+
 #: .\strava_web\templates\strava_web\frag_race_distance.html:4
 msgid "Select distance"
 msgstr "选择距离"
@@ -762,8 +766,8 @@ msgid "All Distances"
 msgstr "所有距离"
 
 #: .\strava_web\templates\strava_web\group_apply_form.html:5
-msgid "Apply"
-msgstr "申请"
+msgid "Request to join the group"
+msgstr "需发送请求加入"
 
 #: .\strava_web\templates\strava_web\group_dashboard.html:4
 #: .\strava_web\templates\strava_web\stats_ranking.html:109
@@ -783,7 +787,6 @@ msgid "Group Info"
 msgstr "群组信息"
 
 #: .\strava_web\templates\strava_web\group_dashboard.html:28
-#: .\strava_web\templates\strava_web\groups.html:25
 #: .\strava_web\templates\strava_web\profiles.html:14
 msgid "Search"
 msgstr "搜索"
@@ -809,53 +812,40 @@ msgstr "群组名"
 msgid "Group Type"
 msgstr "群组类型"
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:82
-#: .\strava_web\templates\strava_web\group_membership_edit.html:82
-#: .\strava_web\templates\strava_web\groups.html:73
-#: .\strava_web\templates\strava_web\personal_dashboard.html:209
-msgid "Open"
-msgstr "开放"
-
-#: .\strava_web\templates\strava_web\group_dashboard.html:84
-#: .\strava_web\templates\strava_web\groups.html:75
-#: .\strava_web\templates\strava_web\personal_dashboard.html:211
-msgid "Private"
-msgstr "封闭"
-
-#: .\strava_web\templates\strava_web\group_dashboard.html:87
+#: .\strava_web\templates\strava_web\group_dashboard.html:83
 msgid "Total Members"
 msgstr "成员数"
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:88
+#: .\strava_web\templates\strava_web\group_dashboard.html:84
 #: .\strava_web\templates\strava_web\group_edit.html:33
 #: .\strava_web\templates\strava_web\groups.html:56
 msgid "Announcement"
 msgstr "公告"
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:89
+#: .\strava_web\templates\strava_web\group_dashboard.html:85
 #: .\strava_web\templates\strava_web\group_edit.html:37
 #: .\strava_web\templates\strava_web\groups.html:57
 msgid "Description"
 msgstr "描述"
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:99
+#: .\strava_web\templates\strava_web\group_dashboard.html:95
 msgid "Stats Ranking"
 msgstr "训练统计排名"
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:100
+#: .\strava_web\templates\strava_web\group_dashboard.html:96
 #: .\strava_web\templates\strava_web\race_ranking.html:3
 #: .\strava_web\templates\strava_web\race_ranking.html:8
 msgid "Race Ranking"
 msgstr "比赛成绩排名"
 
-#: .\strava_web\templates\strava_web\group_dashboard.html:101
+#: .\strava_web\templates\strava_web\group_dashboard.html:97
 #: .\strava_web\templates\strava_web\personal_dashboard.html:4
 msgid "Your Dashboard"
 msgstr "您的仪表盘"
 
 #: .\strava_web\templates\strava_web\group_edit.html:4
 #: .\strava_web\templates\strava_web\group_edit.html:13
-#: .\strava_web\templates\strava_web\groups.html:104
+#: .\strava_web\templates\strava_web\groups.html:98
 msgid "Edit Group"
 msgstr "编辑群组"
 
@@ -872,13 +862,12 @@ msgid "Type to search"
 msgstr "搜索内容进行搜索"
 
 #: .\strava_web\templates\strava_web\group_join_form.html:5
-msgid "Join"
-msgstr "加入"
+msgid "Join the group"
+msgstr "加入该群组"
 
 #: .\strava_web\templates\strava_web\group_leave_form.html:5
-#: .\strava_web\templates\strava_web\group_membership_edit.html:166
-msgid "Leave"
-msgstr "离开"
+msgid "Leave the group"
+msgstr "离开该群组。"
 
 #: .\strava_web\templates\strava_web\group_manage_members.html:4
 #: .\strava_web\templates\strava_web\group_manage_members.html:9
@@ -891,36 +880,40 @@ msgid "Group Memebers"
 msgstr "群组成员"
 
 #: .\strava_web\templates\strava_web\group_manage_members.html:29
-#: .\strava_web\templates\strava_web\group_manage_members.html:64
+#: .\strava_web\templates\strava_web\group_manage_members.html:68
 #: .\strava_web\templates\strava_web\group_membership_edit.html:64
 msgid "Action"
 msgstr "操作"
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:42
+#: .\strava_web\templates\strava_web\group_manage_members.html:41
+msgid "Group admin cannot be removed"
+msgstr "不能移出群组管理员"
+
+#: .\strava_web\templates\strava_web\group_manage_members.html:45
 msgid "Remove member"
 msgstr "移出"
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:48
+#: .\strava_web\templates\strava_web\group_manage_members.html:52
 msgid "No members."
 msgstr "没有成员。"
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:63
+#: .\strava_web\templates\strava_web\group_manage_members.html:67
 msgid "Staus"
 msgstr "状态"
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:78
+#: .\strava_web\templates\strava_web\group_manage_members.html:84
 msgid "Approve the the application"
 msgstr "批准申请"
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:84
+#: .\strava_web\templates\strava_web\group_manage_members.html:90
 msgid "Reject the the application"
 msgstr "拒绝申请"
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:91
+#: .\strava_web\templates\strava_web\group_manage_members.html:97
 msgid "No pending request."
 msgstr "无待处理请求。"
 
-#: .\strava_web\templates\strava_web\group_manage_members.html:99
+#: .\strava_web\templates\strava_web\group_manage_members.html:105
 msgid "Go To Groups"
 msgstr "去群组管理页面"
 
@@ -973,29 +966,29 @@ msgstr "不是成员"
 msgid "Request Status"
 msgstr "请求状态"
 
-#: .\strava_web\templates\strava_web\group_membership_edit.html:84
-msgid "Closed"
-msgstr "封闭"
-
-#: .\strava_web\templates\strava_web\group_membership_edit.html:129
+#: .\strava_web\templates\strava_web\group_membership_edit.html:113
 msgid "Please apply later."
 msgstr "被拒绝7天后可重新申请。"
 
-#: .\strava_web\templates\strava_web\group_membership_edit.html:139
-#: .\strava_web\templates\strava_web\groups.html:112
-#: .\strava_web\templates\strava_web\personal_dashboard.html:234
+#: .\strava_web\templates\strava_web\group_membership_edit.html:123
+#: .\strava_web\templates\strava_web\groups.html:106
+#: .\strava_web\templates\strava_web\personal_dashboard.html:225
 msgid "Go to Group Dashboard"
 msgstr "去群组仪表盘"
 
-#: .\strava_web\templates\strava_web\group_membership_edit.html:148
+#: .\strava_web\templates\strava_web\group_membership_edit.html:132
 msgid "Nothing found!"
 msgstr "未找到任何匹配内容。"
 
-#: .\strava_web\templates\strava_web\group_membership_edit.html:168
+#: .\strava_web\templates\strava_web\group_membership_edit.html:150
+msgid "Leave"
+msgstr "离开"
+
+#: .\strava_web\templates\strava_web\group_membership_edit.html:152
 msgid "this group"
 msgstr "该群组"
 
-#: .\strava_web\templates\strava_web\group_membership_edit.html:169
+#: .\strava_web\templates\strava_web\group_membership_edit.html:153
 msgid "Are you sure to leave"
 msgstr "您确认要退出"
 
@@ -1015,11 +1008,11 @@ msgstr "管理"
 msgid "Add group"
 msgstr "添加群组"
 
-#: .\strava_web\templates\strava_web\groups.html:107
+#: .\strava_web\templates\strava_web\groups.html:101
 msgid "Manage Group Member"
 msgstr "管理群组成员"
 
-#: .\strava_web\templates\strava_web\groups.html:124
+#: .\strava_web\templates\strava_web\groups.html:118
 msgid "No groups found with a dashboard."
 msgstr "没有任何合适的组群。"
 
@@ -1206,23 +1199,23 @@ msgstr "网络花名："
 msgid "Strava Connected:"
 msgstr "Strava 已连接："
 
-#: .\strava_web\templates\strava_web\personal_dashboard.html:184
+#: .\strava_web\templates\strava_web\personal_dashboard.html:181
 msgid "Last Strava Sync:"
 msgstr "上次 Strava 同步："
 
-#: .\strava_web\templates\strava_web\personal_dashboard.html:185
+#: .\strava_web\templates\strava_web\personal_dashboard.html:182
 msgid "Never"
 msgstr "从不"
 
-#: .\strava_web\templates\strava_web\personal_dashboard.html:193
+#: .\strava_web\templates\strava_web\personal_dashboard.html:190
 msgid "Manage Group Memberships"
 msgstr "管理您的群组"
 
-#: .\strava_web\templates\strava_web\personal_dashboard.html:246
+#: .\strava_web\templates\strava_web\personal_dashboard.html:237
 msgid "You are not a member of any groups yet."
 msgstr "您还不是任何群组的成员。"
 
-#: .\strava_web\templates\strava_web\personal_dashboard.html:248
+#: .\strava_web\templates\strava_web\personal_dashboard.html:239
 msgid "Discover Groups"
 msgstr "发现群组"
 
@@ -1388,6 +1381,14 @@ msgstr "配速"
 #: .\strava_web\templates\strava_web\stats_ranking.html:70
 msgid "Elevation"
 msgstr "上升"
+
+#: .\strava_web\templatetags\url_tags.py:94
+msgid "Open"
+msgstr "开放"
+
+#: .\strava_web\templatetags\url_tags.py:97
+msgid "Private"
+msgstr "封闭"
 
 #: .\strava_web\utils_group.py:74
 msgid "Requests"
@@ -1570,33 +1571,39 @@ msgid "You do not belong to this group: %(gname)s"
 msgstr "您不属于此群组：%(gname)s"
 
 #: .\strava_web\views_group.py:124
+#, fuzzy, python-format
+#| msgid "You removed %(uname)s from the group: %(gname)s"
+msgid "You can't remove the admin user %(uname)s from group %(gname)s."
+msgstr "您不能将管理用户 %(uname)s 移出群组：%(gname)s"
+
+#: .\strava_web\views_group.py:127
 #, python-format
 msgid "You do not have permission to remove user from group: %(gname)s"
 msgstr "您无权移出成员：%(gname)s"
 
-#: .\strava_web\views_group.py:128
+#: .\strava_web\views_group.py:131
 #, python-format
 msgid "You removed %(uname)s from the group: %(gname)s"
 msgstr "您已将用户 %(uname)s 移出群组：%(gname)s"
 
-#: .\strava_web\views_group.py:130
+#: .\strava_web\views_group.py:133
 #, python-format
 msgid "User %(uname)s is not a member of the group: %(gname)s"
 msgstr "用户 %(uname)s 不是群组成员：%(gname)s"
 
-#: .\strava_web\views_group.py:142
+#: .\strava_web\views_group.py:145
 msgid "New Group"
 msgstr "新建群组"
 
-#: .\strava_web\views_group.py:148
+#: .\strava_web\views_group.py:151
 msgid "You do not have permission to add group."
 msgstr "您没有添加群组的权限。"
 
-#: .\strava_web\views_group.py:166
+#: .\strava_web\views_group.py:169
 msgid "You do not have permission to edit this group."
 msgstr "您没有修改该群组的权限。"
 
-#: .\strava_web\views_group.py:184
+#: .\strava_web\views_group.py:188
 msgid "You do not have permission to manage this group."
 msgstr "您没有管理该群组的权限。"
 
@@ -1717,33 +1724,3 @@ msgstr "未知错误：%(error_message)s"
 #: .\strava_web\views_strava.py:153 .\strava_web\views_strava.py:165
 msgid "Registration completed."
 msgstr "注册完成。"
-
-#~ msgid "Cancel"
-#~ msgstr "取消"
-
-#~ msgid "First"
-#~ msgstr "第一页"
-
-#~ msgid "Previous"
-#~ msgstr "前页"
-
-#~ msgid "Next"
-#~ msgstr "后页"
-
-#~ msgid "Last"
-#~ msgstr "最后页"
-
-#~ msgid "Save"
-#~ msgstr "保存"
-
-#~ msgid "Approve"
-#~ msgstr "批准"
-
-#~ msgid "Reject"
-#~ msgstr "拒绝"
-
-#~ msgid "Set Password"
-#~ msgstr "保存密码"
-
-#~ msgid "Refresh"
-#~ msgstr "刷新"

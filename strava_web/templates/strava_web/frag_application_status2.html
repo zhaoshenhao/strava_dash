@@ -1,0 +1,14 @@
+{% load i18n %}
+{% if application.status == 'rejected' %}
+    <button class="btn btn-sm bg-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Rejected at' %}: {{ application.reviewed_at }}">
+        <i class="bi bi-file-earmark-excel"></i>
+    </button>
+{% elif application.status == 'pending' %}
+    <button class="btn btn-sm bg-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Pending. Applied at' %}: {{ application.applied_at }}">
+        <i class="bi bi-hourglass"></i>
+    </button>
+{% else %}
+    <button class="btn btn-sm bg-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Approved at' %}: {{ application.reviewed_at }}">
+        <i class="bi bi-file-check"></i>
+    </button>
+{% endif %}
