@@ -60,6 +60,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         $('.admin_search_input').select2({
             placeholder: `{% trans 'Type to search' %}`,
+            width: '100%',
             ajax: {
                 url: `{% url 'search_users_ajax' %}`,
                 dataType: 'json'
