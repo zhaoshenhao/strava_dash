@@ -169,8 +169,8 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend', # Django 默认的用户名/密码认证
 ]
 
-LOGIN_REDIRECT_URL = '/home/'
-LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = 'home'
+LOGIN_URL = 'home'
 STRAVA_SYNC_INTERVAL_SECONDS = 14400 # 4 hours
 
 CSRF_TRUSTED_ORIGINS = [
