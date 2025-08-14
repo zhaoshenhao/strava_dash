@@ -82,16 +82,6 @@ class GroupMembershipForm(forms.Form):
                 is_open=True, has_dashboard=True
             ).exclude(name='admin')
 
-# 不需要为 GroupApplication 创建一个用于用户提交的表单，因为我们使用按钮触发
-# 但可以为管理员审核创建一个简单的表单（如果需要更复杂的审核流程）
-# class GroupApplicationReviewForm(forms.ModelForm):
-#     class Meta:
-#         model = GroupApplication
-#         fields = ['status'] # 管理员可以修改状态
-#         widgets = {
-#             'status': forms.RadioSelect, # 示例：使用单选按钮选择状态
-#         }
-
 class ActivityEditForm(forms.ModelForm):
     class Meta:
         model = Activity
@@ -108,20 +98,3 @@ class ActivityEditForm(forms.ModelForm):
             'race_distance': _("Official distance of the race."),
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            if not isinstance(field.widget, forms.CheckboxInput): # 排除 Checkbox
-                current_classes = field.widget.attrs.get('class', '')
-                if current_classes:
-                    field.widget.attrs['class'] = current_classes + ' form-control'
-                else:
-                    field.widget.attrs['class'] = 'form-control'
-            # Checkbox 需要不同的样式，或者不需要 form-control
-            if isinstance(field.widget, forms.CheckboxInput):
-                field.widget.attrs['class'] = 'form-check-input' # Bootstrap 样式
-                field.label_suffix = '' # 移除复选框标签的冒号
-
-        if self.instance and not self.instance.is_race:
-            self.fields['chip_time'].widget.attrs['disabled'] = True
-            self.fields['race_distance'].widget.attrs['disabled'] = True

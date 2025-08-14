@@ -1,20 +1,19 @@
 {% load i18n %}
-<label for="modal-race-distance" class="form-label">{% trans "Race Distance" %}:</label>
-<select class="form-select" id="modal-race-distance" name="race_distance">
+<select class="form-select" id="id-race-distance" name="race_distance">
     <option value="">{% trans "Select distance" %}</option>
-    <option value="1km">{% trans "1 km" %}</option>
-    <option value="1mi">{% trans "1 mile" %}</option>
-    <option value="5km">{% trans "5 km" %}</option>
-    <option value="5mi">{% trans "5 mile" %}</option>
-    <option value="10km">{% trans "10 km" %}</option>
-    <option value="15km">{% trans "15 km" %}</option>
-    <option value="10mi">{% trans "10 mile" %}</option>
-    <option value="HM">{% trans "Half Marathon" %}</option>
-    <option value="30km">{% trans "30 km" %}</option>
-    <option value="FM">{% trans "Marathon" %}</option>
-    <option value="50km">{% trans "50 km" %}</option>
-    <option value="100km">{% trans "100 km" %}</option>
-    <option value="150km">{% trans "150 km" %}</option>
-    <option value="100mi">{% trans "100 mile" %}</option>
-    <option value="Other">{% trans "Other" %}</option>
+    <option value="1km"   {% if race_distance == '1km' %}selected{% endif %}>{% trans "1 km" %}</option>
+    <option value="1mi"   {% if race_distance == '1mi' %}selected{% endif %}>{% trans "1 mile" %}</option>
+    <option value="5km"   {% if race_distance == '5km' %}selected{% endif %}>{% trans "5 km" %}</option>
+    <option value="5mi"   {% if race_distance == '5mi' %}selected{% endif %}>{% trans "5 mile" %}</option>
+    <option value="10km"  {% if race_distance == '10km' %}selected{% endif %}>{% trans "10 km" %}</option>
+    <option value="15km"  {% if race_distance == '15km' %}selected{% endif %}>{% trans "15 km" %}</option>
+    <option value="10mi"  {% if race_distance == '10mi' %}selected{% endif %}>{% trans "10 mile" %}</option>
+    <option value="HM"    {% if race_distance == 'HM' %}selected{% endif %}>{% trans "Half Marathon" %}</option>
+    <option value="30km"  {% if race_distance == '30km' %}selected{% endif %}>{% trans "30 km" %}</option>
+    <option value="FM"    {% if race_distance == 'FM' %}selected{% endif %}>{% trans "Marathon" %}</option>
+    <option value="50km"  {% if race_distance == '50km' %}selected{% endif %}>{% trans "50 km" %}</option>
+    <option value="100km" {% if race_distance == '100km' %}selected{% endif %}>{% trans "100 km" %}</option>
+    <option value="150km" {% if race_distance == '1km' %}selected{% endif %}>{% trans "150 km" %}</option>
+    <option value="100mi" {% if race_distance == '1km' %}selected{% endif %}>{% trans "100 mile" %}</option>
+    <option value="Other" {% if race_distance == '1km' %}selected{% endif %}>{% trans "Other" %}</option>
 </select>

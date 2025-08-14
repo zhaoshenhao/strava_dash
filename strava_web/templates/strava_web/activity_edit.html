@@ -1,0 +1,146 @@
+{% extends 'strava_web/base.html' %}
+{% load i18n %}
+{% load static %}
+{% load tz %}
+{% load url_tags %}
+{% block title %}{{ item_title }}: {{ activity.name }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{{ item_title }}: {{ activity.name }}</h5>
+            </div>
+            <div class="card-body">
+                <form id="editActivityForm" method="post" action="{% if is_race_page %}{% url 'race_edit' activity.id %}{% else %}{% url 'activity_edit' activity.id %}{% endif %}">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <input type="text" id="next" name="next" class="form-control" value="{{ next_url }}" readonly hidden>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">{% trans "Date" %}:</label>
+                        <input type="text" class="form-control" id="date" name="date" value="{% localtime off %}{{ activity.start_date_local|date:'Y-m-d H:i' }}{% endlocaltime %}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">{% trans "Activity Name" %}:</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ activity.name }}">
+                        {% if form.name.errors %}
+                            <small class="form-text text-danger">{{ form.name.errors }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="distance" class="form-label">{% trans "Distance" %}:</label>
+                        {% if request.user.use_metric %}
+                            <input type="text" class="form-control" id="distance" name="distance" value='{{ activity.distance|div:1000|floatformat:2|default_if_none:"0.00" }} km' readonly>
+                        {% else %}
+                            <input type="text" class="form-control" id="distance" name="distance" value='{{ activity.distance|div:1609.34|floatformat:2|default_if_none:"0.00" }} mile' readonly>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="elapsed_time" class="form-label">{% trans "Elapsed Time" %}:</label>
+                        <input type="text" class="form-control" id="elapsed_time" name="elapsed_time" value='{{ activity.elapsed_time|default:0|duration:0 }}' readonly>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <label class="form-check-label" for="is_race">{% trans "Is Race?" %}</label>
+                        <input class="form-check-input" type="checkbox" id="is_race" name="is_race" {% if activity.is_race %}checked{% endif %} {% if is_race_page %}readonly{% endif %}>
+                        {% if form.is_race.errors %}
+                            <small class="form-text text-danger">{{ form.is_race.errors }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="chip-time" class="form-label">{% trans "Chip Time" %}:</label>
+                        <input type="text" class="form-control" id="display-chip-time" placeholder="HH:MM:SS 或 MM:SS" value="{{ activity.chip_time|default:0|duration:0 }}" pattern="^([0-9]{1,2}:)?[0-5]?[0-9]:[0-5][0-9]$">
+                        <div class="form-text text-muted">{% trans "Enter time in HH:MM:SS (e.g., 01:05:30) or MM:SS (e.g., 05:30) format." %}</div>
+                        <input type="hidden" id="chip_time" name="chip_time" value="{{ activity.chip_time }}">
+                        <div class="invalid-feedback">
+                            {% trans "Invalid time format. Please use HH:MM:SS or MM:SS." %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="race-distance" class="form-label">{% trans "Race Distance" %}:</label>
+                        {% with activity.race_distance as race_distance %}
+                            {% include "strava_web/frag_race_distance.html" %}
+                        {% endwith %}
+                    </div>
+                    <div class="d-flex justify-content-center mt-4 input-group">
+                        <a href="{{ next_url }}" class="btn btn-secondary">
+                            <i class="bi bi-x-lg" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Cancel the change' %}"></i>
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="saveActivityChangesBtn">
+                            <i class="bi bi-floppy" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Save the change' %}"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const isRace = document.getElementById('is_race');
+            const displayChipTimeInput = document.getElementById('display-chip-time');
+            const chipTime = document.getElementById('chip_time');
+            const editActivityForm = document.getElementById('editActivityForm');
+            const raceDistance = document.getElementById('id-race-distance');
+            const saveActivityChangesBtn = document.getElementById('saveActivityChangesBtn');
+            const race_page = "{{ is_race_page }}".toLowerCase() === 'true';
+            if (race_page) {
+                isRace.disabled = true
+            }
+
+            toggleRaceFields(isRace.checked);
+            displayChipTimeInput.addEventListener('blur', function() { // 使用 blur 事件，当失去焦点时触发
+                const hmsString = displayChipTimeInput.value.trim();
+                let seconds = 0;
+                let isValid = true;
+                if (hmsString !== '') {
+                    seconds = hmsToSeconds(hmsString);
+                    if (seconds === 0 && !/^([0-9]{1,2}:)?[0-5]?[0-9]:[0-5][0-9]$/.test(hmsString) && hmsString !== '0' && hmsString !== '00:00') {
+                        isValid = false;
+                    }
+                }
+
+                if (!isValid) {
+                    displayChipTimeInput.classList.add('is-invalid');
+                    chipTime.value = 0; // 无效输入，设置隐藏值为 0
+                } else {
+                    displayChipTimeInput.classList.remove('is-invalid');
+                    chipTime.value = seconds; // 更新隐藏字段的值
+
+                    if (hmsString !== '') { // 只有当用户有输入时才重新格式化
+                        displayChipTimeInput.value = formatDuration(seconds, 2);
+                    }
+                }
+            });
+
+            // 监听表单提交前的验证
+            editActivityForm.addEventListener('submit', function(event) {
+                // 在提交前再次触发 blur 事件，确保最终的值是正确的
+                displayChipTimeInput.blur(); // 强制触发转换和验证
+
+                // 如果此时输入框仍然是无效状态，则阻止提交
+                if (displayChipTimeInput.classList.contains('is-invalid')) {
+                    event.preventDefault();
+                    showToast('Please correct the invalid time format.', 'danger'); // 提示用户
+                }
+                raceDistance.disabled = false;
+                isRace.disabled = false;
+            });
+            isRace.addEventListener('change', function() {
+                toggleRaceFields(this.checked);
+            });
+
+            function toggleRaceFields(isRace) {
+                raceDistance.disabled = !isRace;
+                displayChipTimeInput.disabled = !isRace;
+            }
+        });
+    </script>
+{% endblock %}

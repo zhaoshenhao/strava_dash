@@ -18,7 +18,6 @@ User = get_user_model()
 
 @login_required
 def personal_dashboard(request):
-    print(f"Current language code in view: {request.LANGUAGE_CODE}")
     # 可以从 request.user 获取个人信息
     user_groups = request.user.groups.all()
     context = {

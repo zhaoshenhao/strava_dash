@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Activity, CustomUser
 from django.core.paginator import Paginator
@@ -6,7 +6,58 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.db.models import Q
-from .forms import ActivityEditForm 
+from .forms import ActivityEditForm
+from .utils import get_next_url
+from django.contrib import messages
+
+def select_distance(activities, request):
+    selected_distance = request.GET.get('distance')
+    DIST_5K = 5000 # 5 km
+    DIST_10K = 10000 # 10 km
+    DIST_15K = 15000 # 15 km
+    DIST_20K = 20000 # 20 km
+    DIST_25K = 25000 # 25 km
+    DIST_30K = 30000 # 30 km
+    DIST_35K = 35000 # 35 km
+    DIST_40K = 40000 # 40 km
+    DIST_45K = 45000 # 45 km
+    DIST_50K = 50000 # 50 km
+    DIST_100K = 100000 # 100 km
+    user_activities = activities
+    if selected_distance:
+        if selected_distance == '0-5k':
+            user_activities = user_activities.filter(distance__gte=0, distance__lt=DIST_5K)
+        elif selected_distance == '5-10k':
+            user_activities = user_activities.filter(distance__gte=DIST_5K, distance__lt=DIST_10K)
+        elif selected_distance == '10-15k':
+            user_activities = user_activities.filter(distance__gte=DIST_10K, distance__lt=DIST_15K)
+        elif selected_distance == '15-20k':
+            user_activities = user_activities.filter(distance__gte=DIST_15K, distance__lt=DIST_20K)
+        elif selected_distance == '20-25k':
+            user_activities = user_activities.filter(distance__gte=DIST_20K, distance__lt=DIST_25K)
+        elif selected_distance == '25-30k':
+            user_activities = user_activities.filter(distance__gte=DIST_25K, distance__lt=DIST_30K)
+        elif selected_distance == '30-35k':
+            user_activities = user_activities.filter(distance__gte=DIST_30K, distance__lt=DIST_35K)
+        elif selected_distance == '35-40k':
+            user_activities = user_activities.filter(distance__gte=DIST_35K, distance__lt=DIST_40K)
+        elif selected_distance == '40-45k':
+            user_activities = user_activities.filter(distance__gte=DIST_40K, distance__lt=DIST_45K)
+        elif selected_distance == '45-50k':
+            user_activities = user_activities.filter(distance__gte=DIST_45K, distance__lt=DIST_50K)
+        elif selected_distance == '50-100k':
+            user_activities = user_activities.filter(distance__gte=DIST_50K, distance__lt=DIST_100K)
+        elif selected_distance == '100k_plus':
+            user_activities = user_activities.filter(distance__gte=DIST_100K)
+    return user_activities, selected_distance, ""
+
+def select_official_distance(activites, request):
+    race_distance = request.GET.get('race_distance')
+    if (race_distance):
+        user_activities = activites.filter(race_distance=race_distance)
+    else:
+        user_activities = activites
+    return user_activities, "", race_distance
 
 @login_required
 def activities(request, user_id=None):
@@ -44,46 +95,10 @@ def activities(request, user_id=None):
     ]
     available_weeks = list(range(1, 53)) # Weeks 1-52
 
-    # 2. Distance Filters (using values in meters as per Activity model) - 已恢复为你原始代码的逻辑
-    selected_distance = request.GET.get('distance')
-    # Define distance thresholds in METERS
-    DIST_5K = 5000 # 5 km
-    DIST_10K = 10000 # 10 km
-    DIST_15K = 15000 # 15 km
-    DIST_20K = 20000 # 20 km
-    DIST_25K = 25000 # 25 km
-    DIST_30K = 30000 # 30 km
-    DIST_35K = 35000 # 35 km
-    DIST_40K = 40000 # 40 km
-    DIST_45K = 45000 # 45 km
-    DIST_50K = 50000 # 50 km
-    DIST_100K = 100000 # 100 km
-
-    if selected_distance:
-        if selected_distance == '0-5k':
-            user_activities = user_activities.filter(distance__gte=0, distance__lt=DIST_5K)
-        elif selected_distance == '5-10k':
-            user_activities = user_activities.filter(distance__gte=DIST_5K, distance__lt=DIST_10K)
-        elif selected_distance == '10-15k':
-            user_activities = user_activities.filter(distance__gte=DIST_10K, distance__lt=DIST_15K)
-        elif selected_distance == '15-20k':
-            user_activities = user_activities.filter(distance__gte=DIST_15K, distance__lt=DIST_20K)
-        elif selected_distance == '20-25k':
-            user_activities = user_activities.filter(distance__gte=DIST_20K, distance__lt=DIST_25K)
-        elif selected_distance == '25-30k':
-            user_activities = user_activities.filter(distance__gte=DIST_25K, distance__lt=DIST_30K)
-        elif selected_distance == '30-35k':
-            user_activities = user_activities.filter(distance__gte=DIST_30K, distance__lt=DIST_35K)
-        elif selected_distance == '35-40k':
-            user_activities = user_activities.filter(distance__gte=DIST_35K, distance__lt=DIST_40K)
-        elif selected_distance == '40-45k':
-            user_activities = user_activities.filter(distance__gte=DIST_40K, distance__lt=DIST_45K)
-        elif selected_distance == '45-50k':
-            user_activities = user_activities.filter(distance__gte=DIST_45K, distance__lt=DIST_50K)
-        elif selected_distance == '50-100k':
-            user_activities = user_activities.filter(distance__gte=DIST_50K, distance__lt=DIST_100K)
-        elif selected_distance == '100k_plus':
-            user_activities = user_activities.filter(distance__gte=DIST_100K)
+    if is_race_page:
+        user_activities, selected_distance, race_distance = select_official_distance(user_activities, request)
+    else:
+        user_activities, selected_distance, race_distance = select_distance(user_activities, request)
 
     # 3. Is Race Filter
     is_race_filter = request.GET.get('is_race_filter')
@@ -94,7 +109,6 @@ def activities(request, user_id=None):
             user_activities = user_activities.filter(is_race=True)
         elif is_race_filter == 'no':
             user_activities = user_activities.filter(is_race=False)
-
 
     selected_sort_by = request.GET.get('sort_by', 'start_date_local') # 默认按日期排序
     selected_order = request.GET.get('order', 'desc') # 默认降序
@@ -136,6 +150,7 @@ def activities(request, user_id=None):
         'selected_month': selected_month,
         'selected_week': selected_week,
         'selected_distance': selected_distance,
+        'race_distance': race_distance,
         'is_race_filter': is_race_filter,
         'selected_sort_by': selected_sort_by,
         'selected_order': selected_order,
@@ -144,8 +159,41 @@ def activities(request, user_id=None):
         'use_metric': request.user.use_metric,
         'user_id': page_user_id,
         'is_race_page': is_race_page,
+        'item_title': _('Your Races') if is_race_page else _('Your Activities'),
     }
     return render(request, 'strava_web/activities.html', context)
+
+@login_required
+def activity_edit(request, activity_id):
+    activity = get_object_or_404(Activity, id=activity_id, user=request.user)
+    is_race_page = 'race' in request.path
+    item_title = 'Race' if is_race_page else 'Activity'
+    if is_race_page:
+        next_url = get_next_url(request, 'races')
+    else:
+        next_url = get_next_url(request, 'activities')
+    if request.method == 'POST':
+        form = ActivityEditForm(request.POST, instance=activity)
+        if form.is_valid():
+            if form.cleaned_data['is_race'] and (form.cleaned_data['chip_time'] is None or form.cleaned_data['chip_time'] == 0):
+                form.instance.chip_time = activity.elapsed_time
+            activity = form.save()
+            if is_race_page:
+                messages.success(request, _("The race has been updated successfully."))
+            else:
+                messages.success(request, _("The activity has been updated successfully."))
+            return redirect(next_url)
+    else:
+        form = ActivityEditForm(instance=activity)
+    context = {
+        'form': form,
+        'activity': activity,
+        'next_url': next_url,
+        'is_race_page': is_race_page,
+        'item_title': item_title,
+        'edit_url': 'race_edit ' if is_race_page else 'activity_edit',
+        }
+    return render(request, 'strava_web/activity_edit.html', context)
 
 @login_required
 @require_POST # 只允许 POST 请求
@@ -157,8 +205,7 @@ def update_activity_ajax(request, activity_id):
         # 处理 chip_time 逻辑：如果 is_race 为 True 且 chip_time 为空或 0，则使用 elapsed_time
         if form.cleaned_data['is_race'] and (form.cleaned_data['chip_time'] is None or form.cleaned_data['chip_time'] == 0):
             form.instance.chip_time = activity.elapsed_time # 使用原始活动的 elapsed_time
-        activity = form.save() # 保存到数据库
-
+        activity = form.save()
         # 返回更新后的数据，用于前端刷新行
         return JsonResponse({
             'success': True,
@@ -181,3 +228,4 @@ def update_activity_ajax(request, activity_id):
         # 返回表单错误
         errors = form.errors.as_json()
         return JsonResponse({'success': False, 'errors': errors}, status=400)
+

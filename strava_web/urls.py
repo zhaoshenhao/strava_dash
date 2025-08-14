@@ -26,6 +26,8 @@ urlpatterns = [
     path('activities/update/<int:activity_id>/', views_activity.update_activity_ajax, name='update_activity_ajax'),
     path('races/', views_activity.activities, name='races'),
     path('races/<int:user_id>/', views_activity.activities, name='races'),
+    path('activity/<int:activity_id>/edit', views_activity.activity_edit, name='activity_edit'),
+    path('race/<int:activity_id>/edit', views_activity.activity_edit, name='race_edit'),
 
     # 用户信息修改页面
     path('profile/edit/', views.profile_self_edit, name='profile_edit'),
