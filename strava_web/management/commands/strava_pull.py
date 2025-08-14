@@ -23,12 +23,18 @@ class Command(BaseCommand):
             '--days',
             type=int,
             default=0,
-            help='Optional: Sync data for last n days .',
+            help='Optional: Sync data for last n days.',
+        )
+        parser.add_argument(
+            '--force',
+            action="store_true",
+            help='Force update.',
         )
 
     def handle(self, *args, **options):
         user_id = options['user_id']
         days = options['days']
+        force = options['force']
         self.stdout.write(self.style.SUCCESS(f'Start the data pulling process at: {datetime.now()}'))
         if user_id:
             try:
@@ -38,7 +44,10 @@ class Command(BaseCommand):
             except User.DoesNotExist:
                 raise CommandError(f'User with ID "{user_id}" does not exist.')
         else:
-            sync_interval_seconds = getattr(settings, 'STRAVA_SYNC_INTERVAL_SECONDS', 3600)
+            if force:
+                sync_interval_seconds = 0
+            else:
+                sync_interval_seconds = getattr(settings, 'STRAVA_SYNC_INTERVAL_SECONDS', 3600)
             time_threshold = timezone.now() - timedelta(seconds=sync_interval_seconds)
             users_to_sync = User.objects.filter(strava_id__isnull=False
                 ).filter(Q(last_strava_sync__isnull=True) | Q(last_strava_sync__lt=time_threshold))
