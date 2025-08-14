@@ -1,37 +1,53 @@
 {% extends "strava_web/base.html" %}
 {% load i18n %}
+{% load static %}
 {% block title %}{% trans "Login" %}{% endblock %}
 {% block content %}
-    <h2>{% trans "Login" %}</h2>
-    <p>{% trans "Choose your login method:" %}</p>
-
-    <p>
-        <a href="{% url 'strava_login' %}" class="button-link" style="background-color: #fc4c02;">{% trans "Login with Strava" %}</a>
-    </p>
-
-    <hr>
-
-    <h3>{% trans "Or login with Email/Username" %}</h3>
-    <form method="post">
-        {% csrf_token %}
-        {% if form.non_field_errors %}
-            <ul class="messages error">
-                {% for error in form.non_field_errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-        <div class="form-group">
-            <label for="{{ form.username.id_for_label }}">{% trans "Email or Username:" %}</label>
-            {{ form.username }}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm mt-4 mb-4">
+            <div class="card-header bg-primary text-white">
+                <h6 class="card-title h6 mb-0">{% if is_admin %}{% trans "Edit Profile" %}{% else %}{% trans "Login" %}{% endif %}</h6>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <ul class="messages error">
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    <div class="row mb-3 align-items-start">
+                        <div class="col-sm-4 text-sm-end">
+                            <label for="{{ form.username.id_for_label }}">{% trans "Email or Username:" %}</label>
+                        </div>
+                        <div class="col-sm-8">
+                            {{ form.username }}
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-start">
+                        <div class="col-sm-4 text-sm-end">
+                            <label for="{{ form.password.id_for_label }}">{% trans "Password:" %}</label>
+                        </div>
+                        <div class="col-sm-8">
+                            {{ form.password }}
+                        </div>
+                    </div>
+                    <div class="input-group justify-content-center">
+                        <button type="submit" class="btn btn-primary">{% trans "Login" %}</button>
+                    </div>
+                </form>
+                <p></p>
+                <div class="alert alert-success" role="alert">
+                    {% trans "If you don't have an account, or you want passwordless login:" %}
+                </div>
+                <div class="input-group login-buttons justify-content-center">
+                    <a href="{% url 'strava_login' %}" class="strava-login">{% trans "Login with Strava" %}</a>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="{{ form.password.id_for_label }}">{% trans "Password:" %}</label>
-            {{ form.password }}
-        </div>
-        <div class="form-group">
-            <button type="submit">{% trans "Login" %}</button>
-        </div>
-    </form>
-    <p>{% trans "Don't have an account? Use Strava SSO to " %}<a href="{% url 'strava_login' %}">{% trans "register" %}</a>.</p>
+    </div>
+</div>
 {% endblock %}
