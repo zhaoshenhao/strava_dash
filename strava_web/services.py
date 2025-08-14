@@ -74,7 +74,7 @@ def guess_race_distance(distance_meters):
         return "Other" # Or handle other cases as needed
 
 #@transaction.atomic # 确保数据同步的原子性
-def sync_strava_data_for_user(user_instance, days):
+def sync_strava_data_for_user(user_instance, days, stdout):
     """
     获取用户的 Strava 数据（统计和跑步比赛活动）。
     """
@@ -85,7 +85,9 @@ def sync_strava_data_for_user(user_instance, days):
     headers = {'Authorization': f'Bearer {access_token}'}
 
     # 1. 获取聚合统计数据
+    stdout.write(f"Last Sync of user ({user_instance.username}): {user_instance.last_strava_sync}")
     try:
+        stdout.write(f"Get user stats from Strava")
         stats_url = f"{settings.STRAVA_API_BASE_URL}/athletes/{user_instance.strava_id}/stats"
         stats_response = requests.get(stats_url, headers=headers)
         stats_response.raise_for_status()
@@ -114,8 +116,9 @@ def sync_strava_data_for_user(user_instance, days):
             'ytd_run_distance', 'ytd_run_count', 'ytd_run_moving_time', 'ytd_run_elapsed_time', 'ytd_run_elevation_gain',
             'all_time_run_distance', 'all_time_run_count', 'all_time_run_moving_time', 'all_time_run_elapsed_time', 'all_time_run_elevation_gain',
         ])
+        stdout.write(f"Save user stats. Recent run counts: {user_instance.recent_run_count}")
     except requests.exceptions.RequestException as e:
-        print(f"Failed to get Strava stats for user {user_instance.id}: {e}")
+        stdout.write(f"Failed to get Strava stats for user {user_instance.id}: {e}")
         # 这里可以选择记录错误，或者抛出异常让调用者处理
 
     # 2. 获取跑步比赛活动数据 (增量更新)
@@ -130,8 +133,7 @@ def sync_strava_data_for_user(user_instance, days):
 
     page = 1
     has_more_activities = True
-    has_change = True
-    print(f"{utc_last_sync}")
+    has_change = False
 
     while has_more_activities:
         params['page'] = page
@@ -178,25 +180,25 @@ def sync_strava_data_for_user(user_instance, days):
                             'is_race': is_race, 
                         }
                     )
-                    print(f"Processed run activity: {activity_summary.get('start_date')} (ID: {activity_summary['id']})")
+                    stdout.write(f"Processed run activity: {activity_summary.get('start_date')} (ID: {activity_summary['id']})")
             page += 1
             if len(activities_data) < params['per_page']:
                 has_more_activities = False
         except requests.exceptions.RequestException as e:
-            print(f"Failed to get Strava activities for user {user_instance.id} (page {page}): {e}")
+            stdout.write(f"Failed to get Strava activities for user {user_instance.id} (page {page}): {e}")
             has_more_activities = False # 遇到错误停止分页
         except Exception as e:
-            print(f"Error processing activity data for user {user_instance.id}: {e}")
+            stdout.write(f"Error processing activity data for user {user_instance.id}: {e}")
             has_more_activities = False
 
     # 遍历所有获取到的跑步活动，计算本周数据
     if has_change:
-        update_stats(user_instance)
+        update_stats(user_instance, stdout)
 
     # 更新最后同步时间
     user_instance.last_strava_sync = now()
     user_instance.save(update_fields=['last_strava_sync'])
-    print(f"Strava data sync completed for user {user_instance.id}.")
+    stdout.write(f"Strava data sync completed for user {user_instance.id}.")
     
 def get_weekly_activities(user_instance):
     start_of_28_days = get_days_ago(local_now(), 28)
@@ -207,11 +209,11 @@ def get_weekly_activities(user_instance):
     ).order_by('start_date_local')
     return activities
     
-def update_stats(user_instance):
+def update_stats(user_instance, stdout):
     all_recent_activities = get_weekly_activities(user_instance)
     start_of_week_local = get_monday_of_week(local_now())
     if not all_recent_activities:
-        print(f"Weekly stats for user {user_instance.id} are up-to-date. No save needed.")
+        stdout.write(f"Weekly stats for user {user_instance.id} are up-to-date. No save needed.")
         return
     weekly_distance = 0.0
     weekly_count = 0
@@ -266,5 +268,5 @@ def update_stats(user_instance):
     user_instance.weekly_max_heartrate = weekly_max_heartrate_val
     user_instance.weekly_avg_heartrate = weekly_time_hr / weekly_moving_time1 if weekly_moving_time1 else 0
     user_instance.save(update_fields=update_fields_for_weekly)
-    print(f"Weekly stats updated for user {user_instance.id}.")
+    stdout.write(f"Weekly stats updated for user {user_instance.id}.")
 

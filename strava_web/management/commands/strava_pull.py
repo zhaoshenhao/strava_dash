@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from strava_web.services import sync_strava_data_for_user
 from django.conf import settings
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.db.models import Q
 import time
 
@@ -29,6 +29,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         user_id = options['user_id']
         days = options['days']
+        self.stdout.write(self.style.SUCCESS(f'Start the data pulling process at: {datetime.now()}'))
         if user_id:
             try:
                 user = User.objects.get(pk=user_id)
@@ -48,7 +49,7 @@ class Command(BaseCommand):
         for user in users_to_sync:
             try:
                 self.stdout.write(f'Syncing data for user: {user.username} (Strava ID: {user.strava_id})...')
-                sync_strava_data_for_user(user, days)
+                sync_strava_data_for_user(user, days, self.stdout)
                 self.stdout.write(self.style.SUCCESS(f'Successfully synced data for {user.username}.'))
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f'Failed to sync data for {user.username}: {e}'))
