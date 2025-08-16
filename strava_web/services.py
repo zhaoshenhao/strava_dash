@@ -85,7 +85,7 @@ def sync_strava_data_for_user(user_instance, days, stdout):
     headers = {'Authorization': f'Bearer {access_token}'}
 
     # 1. 获取聚合统计数据
-    stdout.write(f"Last Sync of user ({user_instance.username}): {user_instance.last_strava_sync}")
+    stdout.write(f"Last Sync of user ({user_instance.username}): {user_instance.last_strava_sync} UTC")
     try:
         stdout.write(f"Get user stats from Strava")
         stats_url = f"{settings.STRAVA_API_BASE_URL}/athletes/{user_instance.strava_id}/stats"
@@ -118,7 +118,7 @@ def sync_strava_data_for_user(user_instance, days, stdout):
         ])
         stdout.write(f"Save user stats. Recent run counts: {user_instance.recent_run_count}")
     except requests.exceptions.RequestException as e:
-        stdout.write(f"Failed to get Strava stats for user {user_instance.id}: {e}")
+        stdout.write(f"Failed to get Strava stats for user {user_instance.first_name}({user_instance.id}): {e}")
         # 这里可以选择记录错误，或者抛出异常让调用者处理
 
     # 2. 获取跑步比赛活动数据 (增量更新)
@@ -130,6 +130,7 @@ def sync_strava_data_for_user(user_instance, days, stdout):
         else:
             utc_last_sync = user_instance.last_strava_sync.astimezone(timezone.utc)
         params['after'] = int(utc_last_sync.timestamp())
+    stdout.write(f"Activity Pull Params: {params}")
 
     page = 1
     has_more_activities = True
