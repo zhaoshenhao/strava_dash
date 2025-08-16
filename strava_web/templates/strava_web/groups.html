@@ -4,125 +4,123 @@
 {% load static %}
 {% block title %}{% trans "Group Management" %}{% endblock %}
 {% block content %}
-<div class="container mt-4">
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-            <h6 class="mb-0">{% trans "Group List" %}</h6>
-        </div>
-        <div class="card-body">
-            <form id="group-search-form" method="get" class="mb-3">
-                <div class="input-group">
-                    <input type="text" name="search-input" id="search-input" class="form-control" placeholder='{% trans "Search by Name, Description, Announcement, or Admin" %}' value="{{ search_query|default:'' }}">
-                    <label for="group-type-filter" class="form-label visually-hidden">{% trans "Filter by Group Type" %}</label>
-                    <select class="form-select form-control" id="group-type-filter" name="group_type_filter">
-                        <option value="">{% trans "All Group Types" %}</option>
-                        <option value="open" {% if group_type_filter == "open" %}selected{% endif %}>{% trans "Open Group" %}</option>
-                        <option value="closed" {% if group_type_filter == "closed" %}selected{% endif %}>{% trans "Closed Group" %}</option>
-                    </select>
-                    {% if search_query or group_type_filter or is_member_filter %}
-                        <a href="{% url 'groups' %}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
-                    {% endif %}
-                    <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
-                </div>
-            </form>
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h6 class="mb-0">{% trans "Group List" %}</h6>
+    </div>
+    <div class="card-body">
+        <form id="group-search-form" method="get" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="search-input" id="search-input" class="form-control" placeholder='{% trans "Search by Name, Description, Announcement, or Admin" %}' value="{{ search_query|default:'' }}">
+                <label for="group-type-filter" class="form-label visually-hidden">{% trans "Filter by Group Type" %}</label>
+                <select class="form-select form-control" id="group-type-filter" name="group_type_filter">
+                    <option value="">{% trans "All Group Types" %}</option>
+                    <option value="open" {% if group_type_filter == "open" %}selected{% endif %}>{% trans "Open Group" %}</option>
+                    <option value="closed" {% if group_type_filter == "closed" %}selected{% endif %}>{% trans "Closed Group" %}</option>
+                </select>
+                {% if search_query or group_type_filter or is_member_filter %}
+                    <a href="{% url 'groups' %}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
+                {% endif %}
+                <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+            </div>
+        </form>
 
-            <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead>
-                        <tr>
-                            {% for field_key, display_name in sortable_fields %}
-                            {% with request.GET as GET %}
-                            {% spaceless %}
-                            <th>
-                            {% if sort_order == 'asc' and sort_by == field_key|stringformat:"s"|lower %}
-                                <a href="?{% url_param_replace sort_by=field_key order='desc' %}"
-                                   class="text-decoration-none text-dark">
-                                    {{ display_name }}
-                                    <i class="bi bi-arrow-up"></i>
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        {% for field_key, display_name in sortable_fields %}
+                        {% with request.GET as GET %}
+                        {% spaceless %}
+                        <th>
+                        {% if sort_order == 'asc' and sort_by == field_key|stringformat:"s"|lower %}
+                            <a href="?{% url_param_replace sort_by=field_key order='desc' %}"
+                                class="text-decoration-none text-dark">
+                                {{ display_name }}
+                                <i class="bi bi-arrow-up"></i>
+                            </a>
+                        {% else %}
+                            <a href="?{% url_param_replace sort_by=field_key order='asc' %}"
+                                class="text-decoration-none text-dark">
+                                {{ display_name }}
+                                {% if sort_by == field_key|stringformat:"s"|lower %}
+                                    <i class="bi bi-arrow-down"></i>
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                        </th>
+                        {% endspaceless %}
+                        {% endwith %}
+                        {% endfor %}
+                        <th>{% trans "Announcement" %}</th>
+                        <th>{% trans "Description" %}</th>
+                        <th>{% trans "Manage" %} 
+                            {% if user.is_superuser %}
+                            <a href="{% url 'group_add' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Add group' %}">
+                                <i class="bi bi-plus-circle"></i>
+                            </a>
+                            {% endif %}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for group in page_obj.object_list %}
+                    <tr>
+                        <td>{{ group.name }}</td>
+                        <td>{{ group.is_open|group_type:'secondary' }}</td>
+                        <td>
+                            {% if group.admin %}
+                                {% if group.admin.first_name %}
+                                    {{ group.admin.first_name }}
+                                {% else %}
+                                    {{ group.admin.username }}
+                                {% endif %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ group.member_count }}</td>
+                        <td>{{ group.request_count }}</td>
+                        <td>
+                            <i class="bi bi-megaphone" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.announcement }}"></i>
+                        </td>
+                        <td>
+                            <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.description }}"></i>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                            <a href="{% url 'group_edit' group.id %}?next={{ request.get_full_path|urlencode }}"
+                                class="btn btn-sm btn-warning edit-group-btn" 
+                                data-bs-toggle="tooltip" 
+                                data-bs-placement="top"
+                                data-group-id="{{ group.id }}"
+                                title="{% trans 'Edit Group' %}">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a href="{% url 'group_manage_members' group.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Manage Group Member' %}">
+                                <i class="bi bi-people"></i>
+                            </a>
+                            {% if group.has_dashboard %}
+                                <a href="{% url 'group_dashboard' group.id %}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-speedometer2" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Go to Group Dashboard' %}"></i>
                                 </a>
                             {% else %}
-                                <a href="?{% url_param_replace sort_by=field_key order='asc' %}"
-                                   class="text-decoration-none text-dark">
-                                    {{ display_name }}
-                                    {% if sort_by == field_key|stringformat:"s"|lower %}
-                                        <i class="bi bi-arrow-down"></i>
-                                    {% endif %}
-                                </a>
+                                -
                             {% endif %}
-                            </th>
-                            {% endspaceless %}
-                            {% endwith %}
-                            {% endfor %}
-                            <th>{% trans "Announcement" %}</th>
-                            <th>{% trans "Description" %}</th>
-                            <th>{% trans "Manage" %} 
-                                {% if user.is_superuser %}
-                                <a href="{% url 'group_add' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Add group' %}">
-                                    <i class="bi bi-plus-circle"></i>
-                                </a>
-                                {% endif %}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for group in page_obj.object_list %}
-                        <tr>
-                            <td>{{ group.name }}</td>
-                            <td>{{ group.is_open|group_type:'secondary' }}</td>
-                            <td>
-                                {% if group.admin %}
-                                    {% if group.admin.first_name %}
-                                        {{ group.admin.first_name }}
-                                    {% else %}
-                                        {{ group.admin.username }}
-                                    {% endif %}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td>{{ group.member_count }}</td>
-                            <td>{{ group.request_count }}</td>
-                            <td>
-                                <i class="bi bi-megaphone" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.announcement }}"></i>
-                            </td>
-                            <td>
-                                <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ group.description }}"></i>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                <a href="{% url 'group_edit' group.id %}?next={{ request.get_full_path|urlencode }}"
-                                    class="btn btn-sm btn-warning edit-group-btn" 
-                                    data-bs-toggle="tooltip" 
-                                    data-bs-placement="top"
-                                    data-group-id="{{ group.id }}"
-                                    title="{% trans 'Edit Group' %}">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <a href="{% url 'group_manage_members' group.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Manage Group Member' %}">
-                                    <i class="bi bi-people"></i>
-                                </a>
-                                {% if group.has_dashboard %}
-                                    <a href="{% url 'group_dashboard' group.id %}" class="btn btn-sm btn-outline-secondary">
-                                        <i class="bi bi-speedometer2" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Go to Group Dashboard' %}"></i>
-                                    </a>
-                                {% else %}
-                                    -
-                                {% endif %}
-                                </div>
-                            </td>
-                            <td>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="9">{% trans "No groups found with a dashboard." %}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% include "strava_web/frag_pagination.html" %}
+                            </div>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9">{% trans "No groups found with a dashboard." %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+        {% include "strava_web/frag_pagination.html" %}
     </div>
 </div>
 {% endblock %}

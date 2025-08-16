@@ -44,7 +44,7 @@
                     {% trans "If you don't have an account, or you want passwordless login:" %}
                 </div>
                 <div class="input-group login-buttons justify-content-center">
-                    <a href="{% url 'strava_login' %}" class="strava-login">{% trans "Login with Strava" %}</a>
+                    <a href="{% url 'strava_login' %}" class="strava-link"><img src="{% static 'btn_strava_connect_with_orange.svg' %}" alt="Connect with Strava" class="strava-icon"></a>
                 </div>
             </div>
         </div>

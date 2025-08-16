@@ -3,96 +3,94 @@
 {% load url_tags %}
 {% block title %}{% trans "Profile Management" %}{% endblock %}
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white">
-            <h6 class="mb-0">{% trans "Profile List" %}</h6>
-        </div>
-        <div class="card-body">
-            <form method="get" class="row g-3 align-items-end mb-4">
-                <div class="input-group">
-                    <label for="search" class="form-label visually-hidden">{% trans "Search" %}:</label>
-                    <input type="text" class="form-control" id="search" name="search" placeholder="{% trans "Search username, nick name, email, year of birth." %}" value="{{ search_query }}">
-                    <label for="is_superuser" class="form-label visually-hidden">{% trans "Superuser" %}:</label>
-                    <select class="form-select" id="is_superuser" name="is_superuser">
-                        <option value="">{% trans "Is Super User" %}</option>
-                        <option value="true" {% if is_superuser_filter == 'true' %}selected{% endif %}>{% trans "Yes" %}</option>
-                        <option value="false" {% if is_superuser_filter == 'false' %}selected{% endif %}>{% trans "No" %}</option>
-                    </select>
-                    <label for="is_staff" class="form-label visually-hidden">{% trans "Staff" %}:</label>
-                    <select class="form-select" id="is_staff" name="is_staff">
-                        <option value="">{% trans "Is Staff" %}</option>
-                        <option value="true" {% if is_staff_filter == 'true' %}selected{% endif %}>{% trans "Yes" %}</option>
-                        <option value="false" {% if is_staff_filter == 'false' %}selected{% endif %}>{% trans "No" %}</option>
-                    </select>
-                    <label for="is_active" class="form-label visually-hidden">{% trans "Active" %}:</label>
-                    <select class="form-select" id="is_active" name="is_active">
-                        <option value="">{% trans "Is Active" %}</option>
-                        <option value="true" {% if is_active_filter == 'true' %}selected{% endif %}>{% trans "Yes" %}</option>
-                        <option value="false" {% if is_active_filter == 'false' %}selected{% endif %}>{% trans "No" %}</option>
-                    </select>
-                    <label for="gender" class="form-label visually-hidden">{% trans "Gender" %}:</label>
-                    <select class="form-select" id="gender" name="gender">
-                        <option value="">{% trans "All Genders" %}</option>
-                        <option value="M" {% if gender_filter == 'M' %}selected{% endif %}>{% trans "Male" %}</option>
-                        <option value="F" {% if gender_filter == 'F' %}selected{% endif %}>{% trans "Female" %}</option>
-                    </select>
-                    {% if search_query or is_superuser_filter or is_staff_filter or is_active_filter or gender_filter %}
-                        <a href="{% url 'profiles' %}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
-                    {% endif %}
-                    <button type="submit" class="btn btn-primary me-2"><i class="bi bi-search"></i></button>
-                </div>
-            </form>
-
-            <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead>
-                        <tr>
-                            {% with request_params=request.GET.urlencode %}
-                            <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'username' and sort_order == 'asc' %}sort_by=username&sort_order=desc{% else %}sort_by=username&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Username" %} {% if sort_by == 'username' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
-                            <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'is_superuser' and sort_order == 'asc' %}sort_by=is_superuser&sort_order=desc{% else %}sort_by=is_superuser&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Superuser" %} {% if sort_by == 'is_superuser' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
-                            <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'is_staff' and sort_order == 'asc' %}sort_by=is_staff&sort_order=desc{% else %}sort_by=is_staff&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Staff" %} {% if sort_by == 'is_staff' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
-                            <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'is_active' and sort_order == 'asc' %}sort_by=is_active&sort_order=desc{% else %}sort_by=is_active&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Active" %} {% if sort_by == 'is_active' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
-                            <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'first_name' and sort_order == 'asc' %}sort_by=first_name&sort_order=desc{% else %}sort_by=first_name&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Nick Name" %} {% if sort_by == 'first_name' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
-                            <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'email' and sort_order == 'asc' %}sort_by=email&sort_order=desc{% else %}sort_by=email&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Email" %} {% if sort_by == 'email' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
-                            <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'birth_year' and sort_order == 'asc' %}sort_by=birth_year&sort_order=desc{% else %}sort_by=birth_year&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Birth Year" %} {% if sort_by == 'birth_year' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
-                            <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'gender' and sort_order == 'asc' %}sort_by=gender&sort_order=desc{% else %}sort_by=gender&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Gender" %} {% if sort_by == 'gender' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
-                            <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'date_joined' and sort_order == 'asc' %}sort_by=date_joined&sort_order=desc{% else %}sort_by=date_joined&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Date Joined" %} {% if sort_by == 'date_joined' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
-                            <th>{% trans "Strava ID" %}</th>
-                            <th>{% trans "Actions" %}</th>
-                            {% endwith %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for profile in page_obj %}
-                        <tr>
-                            <td>{{ profile.username }}</td>
-                            <td>{{ profile.is_superuser|yes_no:'secondary' }}</td>
-                            <td>{{ profile.is_staff|yes_no:'secondary' }}</td>
-                            <td>{{ profile.is_active|yes_no:'danger' }}</td>
-                            <td>{{ profile.first_name }}</td>
-                            <td>{{ profile.email }}</td>
-                            <td>{{ profile.birth_year|default:"-" }}</td>
-                            <td>{{ profile.gender|gender }}</td>
-                            <td>{{ profile.date_joined|date:"Y-m-d" }}</td>
-                            <td>{{ profile.strava_id|default:"-" }}</td>
-                            <td>
-                                <div class="input-group">
-                                <a href="{% url 'profile_admin_edit' profile.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="{% trans 'Edit Profile' %}"><i class="bi bi-pencil-square"></i></a>
-                                <a href="{% url 'profile_password_change' profile.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="{% trans 'Reset Password' %}"><i class="bi bi-key"></i></a>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="12">{% trans "No profiles found." %}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h6 class="mb-0">{% trans "Profile List" %}</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end mb-4">
+            <div class="input-group">
+                <label for="search" class="form-label visually-hidden">{% trans "Search" %}:</label>
+                <input type="text" class="form-control" id="search" name="search" placeholder="{% trans "Search username, nick name, email, year of birth." %}" value="{{ search_query }}">
+                <label for="is_superuser" class="form-label visually-hidden">{% trans "Superuser" %}:</label>
+                <select class="form-select" id="is_superuser" name="is_superuser">
+                    <option value="">{% trans "Is Super User" %}</option>
+                    <option value="true" {% if is_superuser_filter == 'true' %}selected{% endif %}>{% trans "Yes" %}</option>
+                    <option value="false" {% if is_superuser_filter == 'false' %}selected{% endif %}>{% trans "No" %}</option>
+                </select>
+                <label for="is_staff" class="form-label visually-hidden">{% trans "Staff" %}:</label>
+                <select class="form-select" id="is_staff" name="is_staff">
+                    <option value="">{% trans "Is Staff" %}</option>
+                    <option value="true" {% if is_staff_filter == 'true' %}selected{% endif %}>{% trans "Yes" %}</option>
+                    <option value="false" {% if is_staff_filter == 'false' %}selected{% endif %}>{% trans "No" %}</option>
+                </select>
+                <label for="is_active" class="form-label visually-hidden">{% trans "Active" %}:</label>
+                <select class="form-select" id="is_active" name="is_active">
+                    <option value="">{% trans "Is Active" %}</option>
+                    <option value="true" {% if is_active_filter == 'true' %}selected{% endif %}>{% trans "Yes" %}</option>
+                    <option value="false" {% if is_active_filter == 'false' %}selected{% endif %}>{% trans "No" %}</option>
+                </select>
+                <label for="gender" class="form-label visually-hidden">{% trans "Gender" %}:</label>
+                <select class="form-select" id="gender" name="gender">
+                    <option value="">{% trans "All Genders" %}</option>
+                    <option value="M" {% if gender_filter == 'M' %}selected{% endif %}>{% trans "Male" %}</option>
+                    <option value="F" {% if gender_filter == 'F' %}selected{% endif %}>{% trans "Female" %}</option>
+                </select>
+                {% if search_query or is_superuser_filter or is_staff_filter or is_active_filter or gender_filter %}
+                    <a href="{% url 'profiles' %}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
+                {% endif %}
+                <button type="submit" class="btn btn-primary me-2"><i class="bi bi-search"></i></button>
             </div>
-            {% include "strava_web/frag_pagination.html" %}
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        {% with request_params=request.GET.urlencode %}
+                        <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'username' and sort_order == 'asc' %}sort_by=username&sort_order=desc{% else %}sort_by=username&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Username" %} {% if sort_by == 'username' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
+                        <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'is_superuser' and sort_order == 'asc' %}sort_by=is_superuser&sort_order=desc{% else %}sort_by=is_superuser&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Superuser" %} {% if sort_by == 'is_superuser' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
+                        <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'is_staff' and sort_order == 'asc' %}sort_by=is_staff&sort_order=desc{% else %}sort_by=is_staff&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Staff" %} {% if sort_by == 'is_staff' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
+                        <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'is_active' and sort_order == 'asc' %}sort_by=is_active&sort_order=desc{% else %}sort_by=is_active&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Active" %} {% if sort_by == 'is_active' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
+                        <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'first_name' and sort_order == 'asc' %}sort_by=first_name&sort_order=desc{% else %}sort_by=first_name&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Nick Name" %} {% if sort_by == 'first_name' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
+                        <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'email' and sort_order == 'asc' %}sort_by=email&sort_order=desc{% else %}sort_by=email&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Email" %} {% if sort_by == 'email' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
+                        <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'birth_year' and sort_order == 'asc' %}sort_by=birth_year&sort_order=desc{% else %}sort_by=birth_year&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Birth Year" %} {% if sort_by == 'birth_year' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
+                        <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'gender' and sort_order == 'asc' %}sort_by=gender&sort_order=desc{% else %}sort_by=gender&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Gender" %} {% if sort_by == 'gender' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
+                        <th><a class="text-decoration-none text-dark" href="{% url 'profiles' %}?{% if sort_by == 'date_joined' and sort_order == 'asc' %}sort_by=date_joined&sort_order=desc{% else %}sort_by=date_joined&sort_order=asc{% endif %}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'sort_order' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{% trans "Date Joined" %} {% if sort_by == 'date_joined' %}{% if sort_order == 'asc' %}<i class="bi bi-arrow-up"></i>{% else %}<i class="bi bi-arrow-down"></i>{% endif %}{% endif %}</a></th>
+                        <th>{% trans "Strava ID" %}</th>
+                        <th>{% trans "Actions" %}</th>
+                        {% endwith %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for profile in page_obj %}
+                    <tr>
+                        <td>{{ profile.username }}</td>
+                        <td>{{ profile.is_superuser|yes_no:'secondary' }}</td>
+                        <td>{{ profile.is_staff|yes_no:'secondary' }}</td>
+                        <td>{{ profile.is_active|yes_no:'danger' }}</td>
+                        <td>{{ profile.first_name }}</td>
+                        <td>{{ profile.email }}</td>
+                        <td>{{ profile.birth_year|default:"-" }}</td>
+                        <td>{{ profile.gender|gender }}</td>
+                        <td>{{ profile.date_joined|date:"Y-m-d" }}</td>
+                        <td>{{ profile.strava_id|default:"-" }}</td>
+                        <td>
+                            <div class="input-group">
+                            <a href="{% url 'profile_admin_edit' profile.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="{% trans 'Edit Profile' %}"><i class="bi bi-pencil-square"></i></a>
+                            <a href="{% url 'profile_password_change' profile.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="{% trans 'Reset Password' %}"><i class="bi bi-key"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="12">{% trans "No profiles found." %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+        {% include "strava_web/frag_pagination.html" %}
     </div>
 </div>
 {% endblock %}

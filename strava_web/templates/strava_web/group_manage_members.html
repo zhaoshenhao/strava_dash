@@ -3,107 +3,105 @@
 {% load url_tags %}
 {% block title %}{{ group.name }}: {% trans "Members" %}{% endblock %}
 {% block content %}
-<div class="container mt-4">
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h6 class="h6 mb-0">{{ group.name }}: {% trans "Members" %}</h6>
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h6 class="h6 mb-0">{{ group.name }}: {% trans "Members" %}</h6>
+    </div>
+    <div class="card-body">
+        <ul class="nav nav-tabs mb-3" id="stats-pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="member-pill-tab" data-bs-toggle="pill" data-bs-target="#member-pill" type="button" role="tab" aria-controls="weekly-pill" aria-selected="true">{% trans "Group Memebers" %}</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pending-pill-tab" data-bs-toggle="pill" data-bs-target="#pending-pill" type="button" role="tab" aria-controls="four_weeks-pill" aria-selected="false">{% trans "Pending" %}</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="member-pills-tabContent">
+            <div class="tab-pane fade show active" id="member-pill" role="tabpanel" aria-labelledby="member-pill-tab">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Username" %}</th>
+                                <th>{% trans "Nick Name" %}</th>
+                                <th>{% trans "Gender" %}</th>
+                                <th>{% trans "Action" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% if group_members %}
+                            {% for member in group_members %}
+                            <tr>
+                                <td>{{ member.username }}</td>
+                                <td>{{ member.first_name }}</td>
+                                <td>{{ member.gender|gender }}</td>
+                                <td>
+                                    {% if group.admin == member %}
+                                        <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Group admin cannot be removed' %}"></i>
+                                    {% else %}
+                                    <form action="{% url 'remove_from_group' group.id %}" method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" name="user_id" value="{{ member.id }}" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Remove member' %}"><i class="bi bi-person-dash"></i></button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="4">{% trans "No members." %}</td></tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <ul class="nav nav-tabs mb-3" id="stats-pills-tab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="member-pill-tab" data-bs-toggle="pill" data-bs-target="#member-pill" type="button" role="tab" aria-controls="weekly-pill" aria-selected="true">{% trans "Group Memebers" %}</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="pending-pill-tab" data-bs-toggle="pill" data-bs-target="#pending-pill" type="button" role="tab" aria-controls="four_weeks-pill" aria-selected="false">{% trans "Pending" %}</button>
-                </li>
-            </ul>
-            <div class="tab-content" id="member-pills-tabContent">
-                <div class="tab-pane fade show active" id="member-pill" role="tabpanel" aria-labelledby="member-pill-tab">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>{% trans "Username" %}</th>
-                                    <th>{% trans "Nick Name" %}</th>
-                                    <th>{% trans "Gender" %}</th>
-                                    <th>{% trans "Action" %}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% if group_members %}
-                                {% for member in group_members %}
-                                <tr>
-                                    <td>{{ member.username }}</td>
-                                    <td>{{ member.first_name }}</td>
-                                    <td>{{ member.gender|gender }}</td>
-                                    <td>
-                                        {% if group.admin == member %}
-                                            <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Group admin cannot be removed' %}"></i>
-                                        {% else %}
-                                        <form action="{% url 'remove_from_group' group.id %}" method="post" style="display:inline;">
-                                            {% csrf_token %}
-                                            <button type="submit" name="user_id" value="{{ member.id }}" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Remove member' %}"><i class="bi bi-person-dash"></i></button>
-                                        </form>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr><td colspan="4">{% trans "No members." %}</td></tr>
-                            {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
+        <div class="tab-content" id="pending-pills-tabContent">
+            <div class="tab-pane fade" id="pending-pill" role="tabpanel" aria-labelledby="pending-pill-tab">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Requestor" %}</th>
+                                <th>{% trans "Applied At" %}</th>
+                                <th>{% trans "Staus" %}</th>
+                                <th>{% trans "Action" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% if pending_applications %}
+                            {% for application in pending_applications %}
+                            <tr>
+                                <td>{{ application.user.username }}</td>
+                                <td>{{ application.applied_at|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    {% include "strava_web/frag_application_status2.html" %}
+                                </td>
+                                <td>
+                                    <form action="{% url 'review_group_application' application.id %}" method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">
+                                            <i class="bi bi-file-check" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Approve the the application' %}"></i>
+                                        </button>
+                                    </form>
+                                    <form action="{% url 'review_group_application' application.id %}" method="post" style="display:inline; margin-left: 5px;">
+                                        {% csrf_token %}
+                                        <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">
+                                            <i class="bi bi-file-earmark-excel" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Reject the the application' %}"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="4">{% trans "No pending request." %}</td></tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="tab-content" id="pending-pills-tabContent">
-                <div class="tab-pane fade" id="pending-pill" role="tabpanel" aria-labelledby="pending-pill-tab">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>{% trans "Requestor" %}</th>
-                                    <th>{% trans "Applied At" %}</th>
-                                    <th>{% trans "Staus" %}</th>
-                                    <th>{% trans "Action" %}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% if pending_applications %}
-                                {% for application in pending_applications %}
-                                <tr>
-                                    <td>{{ application.user.username }}</td>
-                                    <td>{{ application.applied_at|date:"Y-m-d H:i" }}</td>
-                                    <td>
-                                        {% include "strava_web/frag_application_status2.html" %}
-                                    </td>
-                                    <td>
-                                        <form action="{% url 'review_group_application' application.id %}" method="post" style="display:inline;">
-                                            {% csrf_token %}
-                                            <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">
-                                                <i class="bi bi-file-check" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Approve the the application' %}"></i>
-                                            </button>
-                                        </form>
-                                        <form action="{% url 'review_group_application' application.id %}" method="post" style="display:inline; margin-left: 5px;">
-                                            {% csrf_token %}
-                                            <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">
-                                                <i class="bi bi-file-earmark-excel" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Reject the the application' %}"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr><td colspan="4">{% trans "No pending request." %}</td></tr>
-                            {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="input-group justify-content-center">
-                <a href="{{ next_url }}" class="btn btn-secondary">{% trans "Go To Groups" %}</a>
-            </div>
+        </div>
+        <div class="input-group justify-content-center">
+            <a href="{{ next_url }}" class="btn btn-secondary">{% trans "Go To Groups" %}</a>
         </div>
     </div>
 </div>

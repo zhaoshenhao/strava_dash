@@ -1,5 +1,6 @@
 {% extends "strava_web/base.html" %}
 {% load i18n %}
+{% load static %}
 {% block title %}{% trans "Welcome to Strava Dash" %}{% endblock %}
 {% block content %}
     <div class="home-content">
@@ -8,7 +9,7 @@
         <p>{% trans "Connect your Strava account to get started and explore your stats, races, and compete with friends." %}</p>
 
         <div class="login-buttons">
-            <a href="{% url 'strava_login' %}" class="strava-login">{% trans "Login with Strava" %}</a>
+            <a href="{% url 'strava_login' %}" class="strava-link"><img src="{% static 'btn_strava_connect_with_orange.svg' %}" alt="Connect with Strava" class="strava-icon"></a>
             <a href="{% url 'login' %}" class="email-login">{% trans "Login with Email" %}</a>
         </div>
     </div>

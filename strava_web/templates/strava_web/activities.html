@@ -4,178 +4,176 @@
 {% load tz %}
 {% block title %}{{ item_title }}{% endblock %}
 {% block content %}
-<div class="container mt-4">
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">{{ item_title }}</h5>
-        </div>
-        <div class="card-body">
-            <form method="get" class="row g-3 align-items-end">
-                {% if selected_sort_by %}
-                    <input type="hidden" name="sort_by" value="{{ selected_sort_by }}">
-                {% endif %}
-                {% if selected_order %}
-                    <input type="hidden" name="order" value="{{ selected_order }}">
-                {% endif %}
-                {# Date Filters #}
-                <div class="input-group">
-                    <label for="id_year" class="form-label visually-hidden">{% trans "Year" %}:</label>
-                    <select class="form-select" id="id_year" name="year">
-                        <option value="">{% trans "All Years" %}</option>
-                        {% for y in available_years %}
-                            <option value="{{ y }}" {% if selected_year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
-                        {% endfor %}
-                    </select>
-                    <label for="id_month" class="form-label visually-hidden">{% trans "Month" %}:</label>
-                    <select class="form-select" id="id_month" name="month">
-                        <option value="">{% trans "All Months" %}</option>
-                        {% for m_num, m_name in available_months %}
-                            <option value="{{ m_num }}" {% if selected_month == m_num|stringformat:"s" %}selected{% endif %}>{% trans m_name %}</option>
-                        {% endfor %}
-                    </select>
-                    <label for="id_week" class="form-label visually-hidden">{% trans "Week" %}:</label>
-                    <select class="form-select" id="id_week" name="week">
-                        <option value="">{% trans "All Weeks" %}</option>
-                        {% for w in available_weeks %}
-                            <option value="{{ w }}" {% if selected_week == w|stringformat:"s" %}selected{% endif %}>{% trans "Week" %} {{ w }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="search-input" class="form-label visually-hidden">{% trans "Filter by Activity Name" %}</label>
-                    <input type="text" name="search-input" id="search-input" class="form-control" placeholder='{% trans "Filter by Activity Name" %}' value="{{ search_query|default:'' }}">
-                    {% if is_race_page %}
-                        {% include "strava_web/frag_race_distance.html" %}
-                    {% else %}
-                        {% include "strava_web/frag_search_distance_range.html" %}
-                        <label for="is-race-filter" class="form-label visually-hidden">{% trans "Is Race?" %}</label>
-                        <select class="form-select" id="is-race-filter" name="is_race_filter">
-                            <option value="">{% trans "Is Race?" %}</option>
-                            <option value="yes" {% if is_race_filter == 'yes' %}selected{% endif %}>{% trans "Yes" %}</option>
-                            <option value="no" {% if is_race_filter == 'no' %}selected{% endif %}>{% trans "No" %}</option>
-                        </select>
-                    {% endif %}
-                    {% if race_distance or search_query or is_race_filter or selected_year or selected_month or selected_week or selected_distance %}
-                        {% if not is_race_page %}
-                            <a href="{% url 'activities' user_id %}" class="btn btn-secondary"><i class="bi bi-x-lg"></i></a>
-                        {% else %}
-                            <a href="{% url 'races' user_id %}" class="btn btn-secondary"><i class="bi bi-x-lg"></i></a>
-                        {% endif %}
-                    {% endif %}
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
-                </div>
-            </form>
-        </div>
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">{{ item_title }}</h5>
     </div>
-    {% if page_obj %}
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        {% for field_key, display_name in sortable_fields %}
-                        {% with request.GET as GET %}
-                        {% spaceless %}
-                        <th>
-                            {% if selected_order == 'asc' and selected_sort_by == field_key|stringformat:"s"|lower %}
-                                <a href="?{% url_param_replace sort_by=field_key order='desc' %}"
-                                   class="text-decoration-none text-dark">
-                                    {{ display_name }}
-                                    <i class="bi bi-arrow-up"></i>
-                                </a>
-                            {% else %}
-                                <a href="?{% url_param_replace sort_by=field_key order='asc' %}"
-                                   class="text-decoration-none text-dark">
-                                    {{ display_name }}
-                                    {% if selected_sort_by == field_key|stringformat:"s"|lower %}
-                                        <i class="bi bi-arrow-down"></i>
-                                    {% endif %}
-                                </a>
-                            {% endif %}
-                        </th>
-                        {% endspaceless %}
-                        {% endwith %}
-                        {% endfor %}
-                        <th>{% trans "Update" %}</th>
-                        <th>{% trans "View on Strava" %}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for activity in page_obj %}
-                    <tr id="activity-row-{{ activity.id }}">
-                        <td>
-                            {% if activity.start_date_local %}
-                                {% localtime off %}
-                                    {{ activity.start_date_local|date:"Y-m-d H:i" }}
-                                {% endlocaltime %}
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td class="activity-name">{{ activity.name }}</td>
-                        <td>
-                            {% if use_metric %}
-                                {{ activity.distance|div:1000|floatformat:2|default_if_none:"0.00" }}
-                            {% else %}
-                                {{ activity.distance|div:1609.34|floatformat:2|default_if_none:"0.00" }}
-                            {% endif %}
-                        </td>
-                        {% if is_race_page %}
-                            <td class="race-distance">{{ activity.get_race_distance_display }}</td>
-                            <td class="elapsed-time-cell" title='{% trans "Elapsed Time" %}: {{ activity.elapsed_time|default:0|duration:0 }}'>
-                                {{ activity.chip_time|default:0|duration:0 }}
-                            </td>
-                        {% else %}
-                            <td class="elapsed-time-cell" title='{% trans "Chip Time" %}: {{ activity.chip_time|default:0|duration:0 }}'>
-                                {{ activity.elapsed_time|default:0|duration:0 }}
-                            </td>
-                        {% endif %}
-                        <td>
-                            {% if use_metric %}
-                                {{ activity.elevation_gain|default_if_none:0|floatformat:0 }}
-                            {% else %}
-                                {{ activity.elevation_gain|default_if_none:0|div:0.3048|floatformat:0 }}
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if use_metric %}
-                                {{ activity.average_speed|default:0|speed_km_pace }}
-                            {% else %}
-                                {{ activity.average_speed|default:0|speed_mile_pace }}
-                            {% endif %}
-                        </td>
-                        <td>{{ activity.average_heartrate|default_if_none:'0'|floatformat:0 }}</td>
-                        <td>{{ activity.average_cadence|div:0.5|floatformat:0|default_if_none:"-" }}</td>
-                        {% if not is_race_page %}
-                            <td class="activity-is-race" data-is-race="{{ activity.is_race|lower }}">
-                                {{ activity.is_race|yes_no:'warning text-dark' }}
-                            </td>
-                        {% endif %}
-                        <td>
-                            <a href="{% if is_race_page %}{% url 'race_edit' activity.id %}{% else %}{% url 'activity_edit' activity.id %}{% endif %}?next={{ request.get_full_path|urlencode }}"
-                                class="btn btn-sm btn-warning edit-group-btn" data-bs-toggle="tooltip" data-bs-placement="top"
-                                title="{{ item_title }}">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
-                        </td>
-                        <td>
-                            {% if activity.strava_id %}
-                                <a href="https://www.strava.com/activities/{{ activity.strava_id }}" target="_blank" class="btn btn-sm btn-info">
-                                    <i class="bi bi-link-45deg" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans 'Go to the activity page in Strava' %}"></i>
-                                </a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                    </tr>
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            {% if selected_sort_by %}
+                <input type="hidden" name="sort_by" value="{{ selected_sort_by }}">
+            {% endif %}
+            {% if selected_order %}
+                <input type="hidden" name="order" value="{{ selected_order }}">
+            {% endif %}
+            {# Date Filters #}
+            <div class="input-group">
+                <label for="id_year" class="form-label visually-hidden">{% trans "Year" %}:</label>
+                <select class="form-select" id="id_year" name="year">
+                    <option value="">{% trans "All Years" %}</option>
+                    {% for y in available_years %}
+                        <option value="{{ y }}" {% if selected_year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
                     {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% include "strava_web/frag_pagination.html" %}
-    {% else %}
-        <div class="alert alert-info" role="alert">
-            {% trans "No activities found matching your criteria." %}
-        </div>
-    {% endif %}
+                </select>
+                <label for="id_month" class="form-label visually-hidden">{% trans "Month" %}:</label>
+                <select class="form-select" id="id_month" name="month">
+                    <option value="">{% trans "All Months" %}</option>
+                    {% for m_num, m_name in available_months %}
+                        <option value="{{ m_num }}" {% if selected_month == m_num|stringformat:"s" %}selected{% endif %}>{% trans m_name %}</option>
+                    {% endfor %}
+                </select>
+                <label for="id_week" class="form-label visually-hidden">{% trans "Week" %}:</label>
+                <select class="form-select" id="id_week" name="week">
+                    <option value="">{% trans "All Weeks" %}</option>
+                    {% for w in available_weeks %}
+                        <option value="{{ w }}" {% if selected_week == w|stringformat:"s" %}selected{% endif %}>{% trans "Week" %} {{ w }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="search-input" class="form-label visually-hidden">{% trans "Filter by Activity Name" %}</label>
+                <input type="text" name="search-input" id="search-input" class="form-control" placeholder='{% trans "Filter by Activity Name" %}' value="{{ search_query|default:'' }}">
+                {% if is_race_page %}
+                    {% include "strava_web/frag_race_distance.html" %}
+                {% else %}
+                    {% include "strava_web/frag_search_distance_range.html" %}
+                    <label for="is-race-filter" class="form-label visually-hidden">{% trans "Is Race?" %}</label>
+                    <select class="form-select" id="is-race-filter" name="is_race_filter">
+                        <option value="">{% trans "Is Race?" %}</option>
+                        <option value="yes" {% if is_race_filter == 'yes' %}selected{% endif %}>{% trans "Yes" %}</option>
+                        <option value="no" {% if is_race_filter == 'no' %}selected{% endif %}>{% trans "No" %}</option>
+                    </select>
+                {% endif %}
+                {% if race_distance or search_query or is_race_filter or selected_year or selected_month or selected_week or selected_distance %}
+                    {% if not is_race_page %}
+                        <a href="{% url 'activities' user_id %}" class="btn btn-secondary"><i class="bi bi-x-lg"></i></a>
+                    {% else %}
+                        <a href="{% url 'races' user_id %}" class="btn btn-secondary"><i class="bi bi-x-lg"></i></a>
+                    {% endif %}
+                {% endif %}
+                <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
+            </div>
+        </form>
+    </div>
 </div>
+{% if page_obj %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    {% for field_key, display_name in sortable_fields %}
+                    {% with request.GET as GET %}
+                    {% spaceless %}
+                    <th>
+                        {% if selected_order == 'asc' and selected_sort_by == field_key|stringformat:"s"|lower %}
+                            <a href="?{% url_param_replace sort_by=field_key order='desc' %}"
+                                class="text-decoration-none text-dark">
+                                {{ display_name }}
+                                <i class="bi bi-arrow-up"></i>
+                            </a>
+                        {% else %}
+                            <a href="?{% url_param_replace sort_by=field_key order='asc' %}"
+                                class="text-decoration-none text-dark">
+                                {{ display_name }}
+                                {% if selected_sort_by == field_key|stringformat:"s"|lower %}
+                                    <i class="bi bi-arrow-down"></i>
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                    </th>
+                    {% endspaceless %}
+                    {% endwith %}
+                    {% endfor %}
+                    <th>{% trans "Update" %}</th>
+                    <th>{% trans "View on Strava" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in page_obj %}
+                <tr id="activity-row-{{ activity.id }}">
+                    <td>
+                        {% if activity.start_date_local %}
+                            {% localtime off %}
+                                {{ activity.start_date_local|date:"Y-m-d H:i" }}
+                            {% endlocaltime %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td class="activity-name">{{ activity.name }}</td>
+                    <td>
+                        {% if use_metric %}
+                            {{ activity.distance|div:1000|floatformat:2|default_if_none:"0.00" }}
+                        {% else %}
+                            {{ activity.distance|div:1609.34|floatformat:2|default_if_none:"0.00" }}
+                        {% endif %}
+                    </td>
+                    {% if is_race_page %}
+                        <td class="race-distance">{{ activity.get_race_distance_display }}</td>
+                        <td class="elapsed-time-cell" title='{% trans "Elapsed Time" %}: {{ activity.elapsed_time|default:0|duration:0 }}'>
+                            {{ activity.chip_time|default:0|duration:0 }}
+                        </td>
+                    {% else %}
+                        <td class="elapsed-time-cell" title='{% trans "Chip Time" %}: {{ activity.chip_time|default:0|duration:0 }}'>
+                            {{ activity.elapsed_time|default:0|duration:0 }}
+                        </td>
+                    {% endif %}
+                    <td>
+                        {% if use_metric %}
+                            {{ activity.elevation_gain|default_if_none:0|floatformat:0 }}
+                        {% else %}
+                            {{ activity.elevation_gain|default_if_none:0|div:0.3048|floatformat:0 }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if use_metric %}
+                            {{ activity.average_speed|default:0|speed_km_pace }}
+                        {% else %}
+                            {{ activity.average_speed|default:0|speed_mile_pace }}
+                        {% endif %}
+                    </td>
+                    <td>{{ activity.average_heartrate|default_if_none:'0'|floatformat:0 }}</td>
+                    <td>{{ activity.average_cadence|div:0.5|floatformat:0|default_if_none:"-" }}</td>
+                    {% if not is_race_page %}
+                        <td class="activity-is-race" data-is-race="{{ activity.is_race|lower }}">
+                            {{ activity.is_race|yes_no:'warning text-dark' }}
+                        </td>
+                    {% endif %}
+                    <td>
+                        <a href="{% if is_race_page %}{% url 'race_edit' activity.id %}{% else %}{% url 'activity_edit' activity.id %}{% endif %}?next={{ request.get_full_path|urlencode }}"
+                            class="btn btn-sm btn-warning edit-group-btn" data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="{{ item_title }}">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </td>
+                    <td>
+                        {% if activity.strava_id %}
+                            <a href="https://www.strava.com/activities/{{ activity.strava_id }}" target="_blank" style="font-weight: bold; color: #FC5200; font-size: small;">
+                                {% trans 'View on Strava' %}
+                            </a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include "strava_web/frag_pagination.html" %}
+{% else %}
+    <div class="alert alert-info" role="alert">
+        {% trans "No activities found matching your criteria." %}
+    </div>
+{% endif %}
 {% endblock %}

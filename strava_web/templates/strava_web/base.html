@@ -26,7 +26,7 @@
         }
     </style>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="btn btn-link nav-link text-danger" href="{% if user and user.is_authenticated %}{% url 'personal_dashboard' %}{% else %}{% url 'home' %}{% endif %}">{% trans "Home" %}</a>
@@ -60,8 +60,6 @@
                                 <li><a class="dropdown-item text-primary" href="{% url 'password_reset' %}">{% trans "Password" %}</a></li>
                             </ul>
                         </li>
-
-                        {# Admin Dropdown - Only for staff/admin users #}
                         {% if user.is_staff or user.is_superuser %}
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-primary" href="#" id="navbarAdminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -75,8 +73,6 @@
                                 </ul>
                             </li>
                         {% endif %}
-
-                        {# Language Switcher Dropdown #}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-primary" href="#" id="navbarLanguageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {% if request.LANGUAGE_CODE == 'zh-hans' %}中文{% else %}English{% endif %}
@@ -102,11 +98,7 @@
                                 <button type="submit" class="btn btn-link nav-link text-danger">{% trans "Logout" %}</button>
                             </form>
                         </li>
-
                     {% else %}
-                        {# Not logged in user menu #}
-
-                        {# Language Switcher Dropdown #}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarLanguageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {% if request.LANGUAGE_CODE == 'zh-hans' %}中文{% else %}English{% endif %}
@@ -130,7 +122,6 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'strava_login' %}">{% trans "Strava Login/Register" %}</a>
                         </li>
-                        {# Standard Login #}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'login' %}">{% trans "Login" %}</a>
                         </li>
@@ -139,7 +130,6 @@
             </div>
         </div>
     </nav>
-
     <div class="toast-container">
         {% if messages %}
             {% for message in messages %}
@@ -158,6 +148,21 @@
         {% block content %}
         {% endblock %}
     </div>
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container d-flex justify-content-center align-items-center">
+            <a href="https://yourwebsite.com" class="text-muted text-decoration-none">
+                <img src="{% static 'icon.png' %}" alt="Strava Dash" style="height: 24px;">
+            </a>
+            <span class="text-muted mx-2">|</span>
+            <a href="https://strava.com" target="_blank" rel="noopener noreferrer">
+                <img src="{% static 'api_logo_pwrdBy_strava_stack_orange.svg' %}" alt="Powered by Strava" style="height: 24px;">
+            </a>
+            <span class="text-muted mx-2">|</span>
+            <span class="text-muted">
+                &copy; {% now "Y" %}
+            </span>
+        </div>
+    </footer>
     <script>
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
