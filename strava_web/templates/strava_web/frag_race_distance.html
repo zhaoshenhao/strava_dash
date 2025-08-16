@@ -1,6 +1,10 @@
 {% load i18n %}
 <select class="form-select" id="id-race-distance" name="race_distance">
-    <option value="">{% trans "Select distance" %}</option>
+    {% if is_race_ranking_page %}
+        <option value="">{% trans "Select distance. Default Marathon" %}</option>
+    {% else %}
+        <option value="">{% trans "Select distance" %}</option>
+    {% endif %}
     <option value="1km"   {% if race_distance == '1km' %}selected{% endif %}>{% trans "1 km" %}</option>
     <option value="1mi"   {% if race_distance == '1mi' %}selected{% endif %}>{% trans "1 mile" %}</option>
     <option value="5km"   {% if race_distance == '5km' %}selected{% endif %}>{% trans "5 km" %}</option>

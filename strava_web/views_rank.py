@@ -1,13 +1,16 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.db.models import F, Q, ExpressionWrapper, fields
-from django.db.models.functions import Cast
+from django.db.models import F, Q, ExpressionWrapper, fields, OuterRef, Subquery
+from django.db.models.functions import Cast, ExtractYear
 from django.core.paginator import Paginator
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.decorators import login_required
-from .models import Group, CustomUser
+from .models import Group, CustomUser, Activity
 from django.contrib import messages
 from .utils import get_next_url
 import datetime
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Min
 
 AGE_RANGES = {
     'all': (_('All Ages'), (None, None)),
@@ -125,7 +128,7 @@ def stats_ranking(request, group_id):
     for member in page_obj.object_list:
         member_data = {
             'rank': rank,
-            'username': f'{member.username} ({member.first_name})',
+            'username': f'{member.first_name}',
             'is_current_user': (member.pk == request.user.pk),
         }
         for k, v in ranking_field_map.items():
@@ -155,10 +158,94 @@ def stats_ranking(request, group_id):
     return render(request, 'strava_web/stats_ranking.html', context)
 
 def race_ranking(request, group_id):
-    group = get_object_or_404(Group, pk=group_id)
+    if group_id == 0:
+        group = None
+    else:
+        group = get_object_or_404(Group, pk=group_id)
+    date_range = request.GET.get('date_range', 'all')
+    race_distance = request.GET.get('race_distance', "FM")
+    if race_distance == "":
+        race_distance = "FM"
+    gender = request.GET.get('gender', 'all')
+    age_range = request.GET.get('age_range', 'all')
+    fastest_only = request.GET.get('fastest_only') == 'yes'
+    
+    if fastest_only:
+        queryset = Activity.objects.filter(
+            is_race=True,
+            chip_time__isnull=False,
+            user_id=OuterRef('user_id'),
+        ).select_related('user')
+    else:
+        queryset = Activity.objects.filter(
+            is_race=True,
+            chip_time__isnull=False
+        ).select_related('user')
+    if group:
+        queryset = queryset.filter(user__groups__pk=group_id)
+    now = timezone.now()
+    if date_range == 'last_year':
+        queryset = queryset.filter(start_date_local__gte=now - timedelta(days=365))
+    elif date_range == 'last_6_months':
+        queryset = queryset.filter(start_date_local__gte=now - timedelta(days=182))
+    elif date_range.isdigit():
+        queryset = queryset.filter(start_date_local__year=int(date_range))
+    if race_distance:
+        queryset = queryset.filter(race_distance=race_distance)
+    if gender != 'all':
+        queryset = queryset.filter(user__gender=gender)
+        
+    if age_range != 'all' and age_range in AGE_RANGES:
+        queryset.exclude(Q(user__birth_year__isnull=True) | Q(user__birth_year=0))
+        start_age, end_age = AGE_RANGES[age_range][1]
+        current_year = datetime.date.today().year
+        q = Q()
+        if start_age is not None:
+            q &= Q(user__birth_year__lte=current_year - start_age)
+        if end_age is not None:
+            q &= Q(user__birth_year__gte=current_year - end_age)
+        queryset = queryset.filter(q)
+
+    if fastest_only:
+        fastest_times = queryset.order_by('chip_time').values('id')[:1]
+        queryset = Activity.objects.filter(
+            is_race=True,
+            chip_time__isnull=False
+        )
+        queryset = queryset.annotate(
+            min_id=Subquery(fastest_times)
+        ).filter(
+            id=F('min_id')
+        )
+    queryset = queryset.order_by('chip_time')
+    paginator = Paginator(queryset, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # 获取所有可用的年份，用于筛选器
+    available_years = Activity.objects.filter(
+        is_race=True,
+        start_date_local__isnull=False
+    ).annotate(
+        year=ExtractYear('start_date_local')
+    ).values_list(
+        'year', flat=True
+    ).distinct().order_by('-year')
+    
     context = {
+        'page_obj': page_obj,
         'group': group,
+        'date_range': date_range,
+        'race_distance': race_distance,
+        'gender': gender,
+        'genders': GENDERS,
+        'age_range': age_range,
+        'fastest_only': fastest_only,
+        'age_ranges': AGE_RANGES,
+        'available_years': available_years,
+        'is_race_ranking_page': True,
     }
+    print(date_range)
     return render(request, 'strava_web/race_ranking.html', context)
 
 @login_required

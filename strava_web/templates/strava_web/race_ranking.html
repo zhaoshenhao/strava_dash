@@ -1,15 +1,89 @@
 {% extends "strava_web/base.html" %}
 {% load i18n %}
+{% load url_tags %}
 {% block title %}{% trans "Race Ranking" %} - {{ group.name }}{% endblock %}
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-lg">
-        <div class="card-header bg-warning text-dark">
-            <h4 class="mb-0">{{ group.name }} - {% trans "Race Ranking" %}</h4>
-        </div>
-        <div class="card-body">
-            <h5 class="text-center">{% trans "This page is a placeholder for future race ranking features." %}</h5>
-        </div>
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0">{{ group.name }} - {% trans "Race Ranking" %}</h5>
     </div>
+    <div class="card-body">
+        <form method="get" class="mb-4 d-flex flex-wrap align-items-end">
+            <div class="input-group">
+                <label for="date_range" class="form-label visually-hidden">{% trans "Date Range" %}</label>
+                <select id="date_range" name="date_range" class="form-select">
+                    <option value="all" {% if date_range == 'all' %}selected{% endif %}>{% trans "All History" %}</option>
+                    <option value="last_year" {% if date_range == 'last_year' %}selected{% endif %}>{% trans "Last 12 Months" %}</option>
+                    <option value="last_6_months" {% if date_range == 'last_6_months' %}selected{% endif %}>{% trans "Last 6 Months" %}</option>
+                    {% for year in available_years %}
+                    <option value="{{ year }}" {% if date_range == year|stringformat:"s" %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+                {% include "strava_web/frag_race_distance.html" %}
+                <label for="gender" class="form-label visually-hidden">{% trans "Gender" %}</label>
+                <select class="form-select" id="gender" name="gender">
+                    {% for key, name in genders.items %}
+                        <option value="{{ key }}" {% if key == gender %}selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+                <label for="age_range" class="form-label visually-hidden">{% trans "Age Group" %}</label>
+                <select id="age_range" name="age_range" class="form-select">
+                    {% for key, value in age_ranges.items %}
+                    <option value="{{ key }}" {% if age_range == key %}selected{% endif %}>{{ value.0 }}</option>
+                    {% endfor %}
+                </select>
+                <select class="form-select" id="fastest_only" name="fastest_only">
+                    <option value="">{% trans "Fastest record only per member" %}</option>
+                    <option value="yes" {% if fastest_only %}selected{% endif %}>{% trans "Yes" %}</option>
+                    <option value="no" {% if not fastest_only %}selected{% endif %}>{% trans "No" %}</option>
+                </select>
+                <label class="form-label visually-hidden" for="fastest_onlyx">
+                    {% trans "Fastest record only per member" %}
+                </label>
+                {% if date_range != "all" or race_distance != 'FM' or gender != 'all' or age_range != 'all' or fastest_only %}
+                    <a href="{% url 'race_ranking' group_id=group.id %}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
+                {% endif %}
+                <button type="submit" class="btn btn-primary me-2"><i class="bi bi-arrow-repeat"></i></button>
+            </div>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>{% trans "Rank" %}</th>
+                        <th>{% trans "Member" %}</th>
+                        <th>{% trans "Date" %}</th>
+                        <th>{% trans "Distance" %}</th>
+                        <th>{% trans "Activity Name" %}</th>
+                        <th>{% trans "Time" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for activity in page_obj %}
+                    <tr>
+                        <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
+                        <td>{{ activity.user.first_name }}</td>
+                        <td>{{ activity.start_date_local|date:"Y-m-d H:i" }}</td>
+                        <td>{{ activity.get_race_distance_display }}</td>
+                        <td>{{ activity.name }}</td>
+                        <td>{{ activity.chip_time|default:0|duration:0 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">{% trans "No race activities found for the selected filters." %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include "strava_web/frag_pagination.html" %}
+    </div>
+</div>
+<div class="d-flex justify-content-center mt-4 input-group">
+    {% if group %}
+        <a href="{% url 'group_dashboard' group_id=group.id %}" class="btn btn-secondary">{% trans "Group Dashboard" %}</a>
+    {% else %}
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">{% trans "Personal Dashboard" %}</a>
+    {% endif %}
 </div>
 {% endblock %}
