@@ -116,7 +116,7 @@ def sync_strava_data_for_user(user_instance, days, stdout):
             'ytd_run_distance', 'ytd_run_count', 'ytd_run_moving_time', 'ytd_run_elapsed_time', 'ytd_run_elevation_gain',
             'all_time_run_distance', 'all_time_run_count', 'all_time_run_moving_time', 'all_time_run_elapsed_time', 'all_time_run_elevation_gain',
         ])
-        stdout.write(f"Save user stats. Weekly run counts: {user_instance.weekly_run_count}")
+        stdout.write(f"Save user stats. Recent run counts: {user_instance.recent_run_count}")
     except requests.exceptions.RequestException as e:
         stdout.write(f"Failed to get Strava stats for user {user_instance.id}: {e}")
         # 这里可以选择记录错误，或者抛出异常让调用者处理

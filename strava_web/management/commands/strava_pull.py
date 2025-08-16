@@ -52,7 +52,7 @@ class Command(BaseCommand):
             users_to_sync = User.objects.filter(strava_id__isnull=False
                 ).filter(Q(last_strava_sync__isnull=True) | Q(last_strava_sync__lt=time_threshold))
             self.stdout.write(self.style.SUCCESS('Attempting to sync data for all connected Strava users.'))
-        if not users_to_sync.exists():
+        if not users_to_sync:
             self.stdout.write(self.style.WARNING('No Strava connected users found to sync.'))
             return
         for user in users_to_sync:
