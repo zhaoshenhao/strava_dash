@@ -117,6 +117,7 @@ def sync_strava_data_for_user(user_instance, days, stdout):
             'all_time_run_distance', 'all_time_run_count', 'all_time_run_moving_time', 'all_time_run_elapsed_time', 'all_time_run_elevation_gain',
         ])
         stdout.write(f"Save user stats. Recent run counts: {user_instance.recent_run_count}")
+        stdout.write(f"Save user stats. Recent run distance: {user_instance.recent_run_distance}")
     except requests.exceptions.RequestException as e:
         stdout.write(f"Failed to get Strava stats for user {user_instance.first_name}({user_instance.id}): {e}")
         # 这里可以选择记录错误，或者抛出异常让调用者处理
@@ -128,7 +129,7 @@ def sync_strava_data_for_user(user_instance, days, stdout):
         if days:
             utc_last_sync = now() - timedelta(days=days)
         else:
-            utc_last_sync = user_instance.last_strava_sync.astimezone(timezone.utc)
+            utc_last_sync = user_instance.last_strava_sync
         params['after'] = int(utc_last_sync.timestamp())
     stdout.write(f"Activity Pull Params: {params}")
 
