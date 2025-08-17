@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-15 20:16-0400\n"
+"POT-Creation-Date: 2025-08-17 14:48-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -661,11 +661,11 @@ msgid "Hello"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\base.html:44
-msgid "Your Stats"
+msgid "Your Data"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\base.html:47
-msgid "Stats"
+msgid "Your Stats"
 msgstr ""
 
 #: .\strava_web\templates\strava_web\base.html:48

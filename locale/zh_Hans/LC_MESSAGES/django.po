@@ -1,4 +1,3 @@
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -7,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-15 20:17-0400\n"
+"POT-Creation-Date: 2025-08-17 14:48-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -660,11 +659,11 @@ msgid "Hello"
 msgstr "您好"
 
 #: .\strava_web\templates\strava_web\base.html:44
-msgid "Your Stats"
+msgid "Your Data"
 msgstr "您的数据"
 
 #: .\strava_web\templates\strava_web\base.html:47
-msgid "Stats"
+msgid "Your Stats"
 msgstr "统计数据"
 
 #: .\strava_web\templates\strava_web\base.html:48
@@ -1728,42 +1727,3 @@ msgstr "未知错误：%(error_message)s"
 #: .\strava_web\views_strava.py:153 .\strava_web\views_strava.py:165
 msgid "Registration completed."
 msgstr "注册完成。"
-
-#~ msgid "Last Year"
-#~ msgstr "出生年份"
-
-#~ msgid "Go to the activity page in Strava"
-#~ msgstr "直接从 Strava 查看该活动"
-
-#~ msgid "Login with Strava"
-#~ msgstr "通过 Strava 登录"
-
-#~ msgid "Choose your login method:"
-#~ msgstr "选择您的登录方式："
-
-#~ msgid "Or login with Email/Username"
-#~ msgstr "或通过 Email/用户名"
-
-#~ msgid "Don't have an account? Use Strava SSO to "
-#~ msgstr "没有账号？使用 Strava SSO "
-
-#~ msgid "register"
-#~ msgstr "注册"
-
-#~ msgid "This page will display your race activities."
-#~ msgstr "本页记录您的比赛"
-
-#~ msgid "Go To Your Activities"
-#~ msgstr "您的活动"
-
-#~ msgid "Modify this activity"
-#~ msgstr "修改活动数据"
-
-#~ msgid "Edit Activity"
-#~ msgstr "编辑活动"
-
-#~ msgid "An error occurred."
-#~ msgstr "发生错误。"
-
-#~ msgid "Network error or unexpected response."
-#~ msgstr "网络错误或未能处理的返回信息。"
