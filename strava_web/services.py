@@ -123,14 +123,15 @@ def sync_strava_data_for_user(user_instance, days, stdout):
         # 这里可以选择记录错误，或者抛出异常让调用者处理
 
     # 2. 获取跑步比赛活动数据 (增量更新)
+    latest_activity = Activity.objects.filter(user=user_instance).order_by('-start_date').first()
     params = {'per_page': 200, 'type': 'Run'} # 默认只获取 Run 类型活动
-    if user_instance.last_strava_sync:
-        # 将 datetime 对象转换为 Unix timestamp (秒)
-        if days:
-            utc_last_sync = now() - timedelta(days=days)
-        else:
-            utc_last_sync = user_instance.last_strava_sync
-        params['after'] = int(utc_last_sync.timestamp())
+    if days:
+        utc_last_sync = now() - timedelta(days=days)
+    elif latest_activity:
+        utc_last_sync = latest_activity.start_date
+    else:
+        utc_last_sync = now() - timedelta(days=1)
+    params['after'] = int(utc_last_sync.timestamp())
     stdout.write(f"Activity Pull Params: {params}")
 
     page = 1
